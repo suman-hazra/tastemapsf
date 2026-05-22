@@ -1,0 +1,102 @@
+# TODOS — Taste Map SF
+
+Captured during /plan-ceo-review on 2026-05-21. Most items below were explicitly deferred during the cherry-pick ceremony or surfaced by the outside-voice (Codex) review.
+
+Priorities:
+- **P1** — should land in the first iteration after Phase 1 ships
+- **P2** — nice-to-have, do when convenient
+- **P3** — polish; do only if you feel like it
+
+---
+
+## P1 — first follow-up iteration
+
+### 1. Proper mobile responsive (bottom sheet + touch-friendly map)
+**What:** Replace the minimal `@media (max-width: 768px)` panel fallback with a real mobile UX: panel becomes a draggable bottom sheet, map respects touch gestures.
+**Why:** Most share-DM opens are on phones. Phase 1 ships with a survivable but ugly mobile experience.
+**Context:** Phase 1 has only the minimal media query fallback. The bottom-sheet pattern (e.g. `react-spring-bottom-sheet` or a custom implementation) costs ~2h.
+**Effort:** M (~2h human / ~30 min CC)
+**Depends on:** Phase 1 shipped
+
+### 2. Touch zoom on the world map
+**What:** Wrap the map in `react-simple-maps` `<ZoomableGroup>` so phone users can pinch-zoom to tap small countries (Eritrea, Lebanon, Sri Lanka, etc.).
+**Why:** Codex flagged that without zoom, the map is functionally unusable on phones. Accepted as known risk for Phase 1; this is the fix.
+**Context:** `react-simple-maps` ships `ZoomableGroup`. Test event bubbling at high zoom (known quirk).
+**Effort:** S (~30-60 min human / ~10 min CC)
+**Depends on:** Phase 1 shipped; benefits from being paired with item 1
+
+---
+
+## P2 — nice to have
+
+### 3. Continent-level progress breakdown
+**What:** Show per-continent stats below the global counter (e.g. "Asia: 6/14 · Africa: 1/9").
+**Why:** Adds texture beyond the single global count; surfaces "I've barely touched Africa" style insights.
+**Context:** Schema already has `continent` per country, so the grouping is free. Just a render addition.
+**Effort:** S (~30 min human / ~5 min CC)
+
+### 4. "Surprise me" / random untried-country button
+**What:** A button that picks a random untried country, opens its panel, and recommends a starting restaurant.
+**Why:** Turns the app from passive directory into active next-meal planner.
+**Context:** Trivial: filter the country list by `!triedSet.has(id)`, pick random, dispatch the same click handler.
+**Effort:** S (~30 min human / ~5 min CC)
+
+### 5. Keyboard accessibility for the map
+**What:** Tab to focus map, arrow keys to navigate countries, Enter to open panel.
+**Why:** Makes the site usable by keyboard-only users; raises the quality bar.
+**Context:** `react-simple-maps` does not provide this for free. Requires rendering focusable elements over geographies and wiring arrow-key state machine.
+**Effort:** M (~1-2h human / ~20 min CC)
+
+### 6. Persistence + shareable passport URL (paired)
+**What:** Add real persistence (localStorage → eventually Supabase/Firebase + auth) and let users share their passport state via a URL.
+**Why:** This is the actual Phase 2 vision. The session-only Phase 1 passport is a personal experience; this turns it social.
+**Context:** Will likely need a real backend by the time it ships. Plan separately.
+**Effort:** L (~1-2 days human / ~2-4h CC) — design + plan separately
+
+---
+
+## P3 — polish, do if you feel like it
+
+### 7. Animated avatar trail between countries
+**What:** Instead of teleporting, the avatar slides between countries with a tiny flight path or footprint trail.
+**Why:** Cosmetic delight. Pure "made with love" energy.
+**Effort:** S (~1-2h human)
+
+### 8. "You've unlocked X cuisine!" first-time toast
+**What:** When the user marks the first country in a new continent (or just any country), show a celebratory toast.
+**Why:** Amplifies the dopamine of the loop.
+**Effort:** S (~30 min)
+
+### 9. Onboarding tooltip for first-time visitors
+**What:** A subtle tooltip pointing at the map: "Click a country to start your passport."
+**Why:** Reduces "what do I do?" friction.
+**Effort:** S (~20 min)
+
+### 10. About page
+**What:** A small `/about` route explaining the project's premise, data sources, and how to contribute tips.
+**Why:** Useful when sharing — friends often ask "what is this."
+**Effort:** S (~20 min)
+
+### 11. Phase 2 test foundation: two starter tests
+**What:** When Phase 2 begins, write at minimum:
+  - A render test that `<RestaurantCard>` with only `{id, name, neighborhood}` does not crash.
+  - A state test that toggling tried on country A then country B yields `triedSet = {a, b}` and counter = 2.
+**Why:** Bootstraps the test suite cleanly before complexity arrives.
+**Effort:** S (~30 min)
+
+### 12. Restaurant ordering / "go here first" badge (revisit)
+**What:** Originally proposed as a "sort by rating" feature, but ratings were dropped from cards. Could still mark one restaurant per country as "start here" via a `featured: true` flag in the data.
+**Why:** Helps decision paralysis when a country has 3 options.
+**Effort:** S (~30 min)
+**Note:** Re-scope before doing — original premise (Yelp rating) is gone.
+
+---
+
+## Phase 2+ scope (planning placeholder)
+
+The original CLAUDE.md describes Phase 2 (data enrichment via Yelp/Google/Reddit scraping) and Phase 3 (passport tracking). The Phase 1 changes shift the boundaries:
+- The food passport is already in Phase 1.
+- Phase 2 absorbs: persistence + auth + share, full mobile, keyboard a11y, automated data pipeline.
+- Phase 3 becomes the social layer: public passports, leaderboards, restaurant tips, photos.
+
+A new `/plan-ceo-review` session is warranted at the start of Phase 2.
