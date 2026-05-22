@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Surfaces */
+  --color-canvas: #faf7f2;
+  --color-panel: #ffffff;
+
+  /* Text */
+  --color-ink: #1a1a1a;
+  --color-ink-soft: #6b6b6b;
+
+  /* Country fills on the map */
+  --color-tried: #7cc576;
+  --color-seeded: #e5f0ff;
+  --color-unseeded: #eeeeee;
+
+  /* Decorative */
+  --color-avatar: #3d3d3d;
+
+  /* Radii */
+  --radius-chip: 4px;
+  --radius-panel: 8px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
