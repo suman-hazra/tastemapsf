@@ -9,9 +9,19 @@
 // On mount in dev mode, runs the countryIdMap integrity check once. Logs to
 // console.error if any slug/ISO drift is detected. Skipped in production
 // builds entirely (zero runtime cost).
+//
+// Centroids are pre-computed for all seeded countries so the Avatar can
+// teleport to a country's center without re-parsing geometry on every click.
 
 import { useEffect, useState } from "react";
-import type { Topology } from "topojson-specification";
+import { geoCentroid } from "d3-geo";
+import { feature } from "topojson-client";
+import type {
+  Topology,
+  GeometryObject,
+  GeometryCollection,
+} from "topojson-specification";
+import type { Feature, FeatureCollection, Geometry } from "geojson";
 import {
   assertCountryIdMapIntegrity,
   slugForGeoId,
@@ -29,6 +39,8 @@ export interface MapDataReady {
   countryBySlug: ReadonlyMap<string, Country>;
   /** Resolves a TopoJSON geography.id to a Country (or undefined for unseeded). */
   countryForGeoId: (geoId: string | number) => Country | undefined;
+  /** Returns [lng, lat] centroid for a seeded country slug, undefined otherwise. */
+  centroidForSlug: (slug: string) => [number, number] | undefined;
   /** Total number of seeded countries. Used as the counter denominator. */
   total: number;
 }
@@ -68,6 +80,28 @@ export function useMapData(): MapData {
 
         const countryBySlug = new Map(countries.map((c) => [c.id, c]));
 
+        // Pre-compute centroids for all seeded countries. Avatar uses these
+        // for instant placement without re-parsing topology on each click.
+        const centroidBySlug = new Map<string, [number, number]>();
+        const countriesObject = topology.objects.countries as
+          | GeometryCollection
+          | GeometryObject
+          | undefined;
+        if (countriesObject) {
+          const fc = feature(topology, countriesObject) as
+            | Feature<Geometry>
+            | FeatureCollection<Geometry>;
+          const features =
+            "features" in fc ? fc.features : [fc as Feature<Geometry>];
+          for (const f of features) {
+            const slug = slugForGeoId(String(f.id ?? ""));
+            if (slug) {
+              const [lng, lat] = geoCentroid(f);
+              centroidBySlug.set(slug, [lng, lat]);
+            }
+          }
+        }
+
         setState({
           status: "ready",
           topology,
@@ -77,6 +111,7 @@ export function useMapData(): MapData {
             const slug = slugForGeoId(geoId);
             return slug ? countryBySlug.get(slug) : undefined;
           },
+          centroidForSlug: (slug) => centroidBySlug.get(slug),
           total: countries.length,
         });
       } catch (err) {

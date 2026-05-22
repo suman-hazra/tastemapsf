@@ -1,15 +1,19 @@
 // App shell. Owns the global passport state and selection. Children are pure
 // (props in, callbacks out) per the architecture decision in /plan-eng-review.
 //
-//   state.selectedSlug   — slug of the country whose panel is open (Phase D)
+//   state.selectedSlug   — slug of the country whose panel is open
+//                          (null = no panel, or unseeded country was clicked)
+//   state.unseededName   — display name when an unseeded country was clicked
+//                          (mutually exclusive with selectedSlug)
 //   state.triedSet       — slugs the user has marked "tried"
 //
-// Phase C wiring: map renders with 3-tone fills, click selects/deselects a
-// country (visible as stroke ring on the map). Panel renders in Phase D.
-// Counter shows em-dash → "X / N" once data loads. Real Counter component
-// + milestone animation lands in Phase E.
+// Phase D: clicking any country opens the panel — seeded ones get the full
+// experience, unseeded ones get the "no data" mailto state. Avatar teleports
+// to the centroid of the selected seeded country. Real Counter component
+// (with milestone colors and +1 animation) lands in Phase E.
 
 import { useState } from "react";
+import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingState from "./components/LoadingState";
 import WorldMap from "./components/WorldMap";
@@ -18,19 +22,63 @@ import { useMapData } from "./hooks/useMapData";
 export default function App() {
   const mapData = useMapData();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
-  const [triedSet] = useState<Set<string>>(() => new Set());
+  const [unseededName, setUnseededName] = useState<string | null>(null);
+  const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
 
-  // Toggle semantic: clicking the currently selected country closes the panel.
-  const selectCountry = (slug: string | null) => {
-    if (slug === null) {
-      setSelectedSlug(null);
+  // Click handler from WorldMap. Toggle semantic: re-clicking the currently
+  // open country closes the panel. Clicking an unseeded country opens the
+  // panel in unseeded mode, with the country's display name.
+  const handleSelect = (
+    slug: string | null,
+    unseededDisplayName: string | null,
+  ) => {
+    if (slug) {
+      setUnseededName(null);
+      setSelectedSlug((prev) => (prev === slug ? null : slug));
       return;
     }
-    setSelectedSlug((prev) => (prev === slug ? null : slug));
+    if (unseededDisplayName) {
+      setSelectedSlug(null);
+      setUnseededName((prev) =>
+        prev === unseededDisplayName ? null : unseededDisplayName,
+      );
+      return;
+    }
+    setSelectedSlug(null);
+    setUnseededName(null);
+  };
+
+  const closePanel = () => {
+    setSelectedSlug(null);
+    setUnseededName(null);
+  };
+
+  const toggleTried = () => {
+    if (!selectedSlug) return;
+    setTriedSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(selectedSlug)) next.delete(selectedSlug);
+      else next.add(selectedSlug);
+      return next;
+    });
   };
 
   const triedCount = triedSet.size;
   const total = mapData.status === "ready" ? mapData.total : null;
+  const selectedCountry =
+    mapData.status === "ready" && selectedSlug
+      ? (mapData.countryBySlug.get(selectedSlug) ?? null)
+      : null;
+  const selectedCentroid =
+    mapData.status === "ready" && selectedSlug
+      ? (mapData.centroidForSlug(selectedSlug) ?? null)
+      : null;
+
+  const panelCountry = selectedCountry
+    ? selectedCountry
+    : unseededName
+      ? { displayName: unseededName }
+      : null;
 
   return (
     <ErrorBoundary>
@@ -53,7 +101,11 @@ export default function App() {
               </span>
             </div>
             <div className="mt-2 text-sm text-ink-soft">
-              {total === null ? "Loading map…" : "Click a country to start"}
+              {total === null
+                ? "Loading map…"
+                : selectedSlug || unseededName
+                  ? " "
+                  : "Click a country to start"}
             </div>
           </div>
         </header>
@@ -80,12 +132,23 @@ export default function App() {
           )}
 
           {mapData.status === "ready" && (
-            <WorldMap
-              topology={mapData.topology}
-              triedSet={triedSet}
-              selectedSlug={selectedSlug}
-              onSelect={selectCountry}
-            />
+            <>
+              <WorldMap
+                topology={mapData.topology}
+                triedSet={triedSet}
+                selectedSlug={selectedSlug}
+                selectedCentroid={selectedCentroid}
+                onSelect={(slug, displayName) =>
+                  handleSelect(slug, displayName)
+                }
+              />
+              <CountryPanel
+                country={panelCountry}
+                tried={selectedSlug ? triedSet.has(selectedSlug) : false}
+                onToggleTried={toggleTried}
+                onClose={closePanel}
+              />
+            </>
           )}
         </main>
       </div>

@@ -11,21 +11,36 @@
 // Re-clicking the currently selected country closes the panel — handled by
 // the parent via the toggle semantic in App.tsx.
 
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+  ZoomableGroup,
+} from "react-simple-maps";
 import { colors } from "../styles/tokens";
 import { slugForGeoId } from "../data/countryIdMap";
+import Avatar from "./Avatar";
 
 interface Props {
   topology: object;
   triedSet: ReadonlySet<string>;
   selectedSlug: string | null;
-  onSelect: (slug: string | null) => void;
+  selectedCentroid: [number, number] | null;
+  /**
+   * Called on country click. If the country is in our seed (has a slug),
+   * `slug` is set and `unseededName` is null. If clicked country is not
+   * seeded, `slug` is null and `unseededName` is the country's display name
+   * (so the panel can show the "No data yet — got a tip?" state).
+   */
+  onSelect: (slug: string | null, unseededName: string | null) => void;
 }
 
 export default function WorldMap({
   topology,
   triedSet,
   selectedSlug,
+  selectedCentroid,
   onSelect,
 }: Props) {
   return (
@@ -65,7 +80,9 @@ export default function WorldMap({
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    onClick={() => onSelect(slug ?? null)}
+                    onClick={() =>
+                      onSelect(slug ?? null, slug ? null : geo.properties.name)
+                    }
                     aria-label={geo.properties.name}
                     style={{
                       default: {
@@ -95,6 +112,12 @@ export default function WorldMap({
               })
             }
           </Geographies>
+
+          {selectedCentroid && selectedSlug && (
+            <Marker coordinates={selectedCentroid}>
+              <Avatar />
+            </Marker>
+          )}
         </ZoomableGroup>
       </ComposableMap>
     </div>
