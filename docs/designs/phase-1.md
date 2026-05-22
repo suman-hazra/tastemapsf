@@ -70,6 +70,61 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 - Counter does a brief +1 animation: pure CSS transition, ~300ms color flash + tiny scale tick. **No motion library** — keep bundle small.
 - A single static, site-level OG image (text on color) + `og:title` / `og:description` / `og:image` / `twitter:card` meta tags. Per-country share previews are out of scope.
 
+## Eng Review Refinements (from /plan-eng-review)
+- `useMapData` returns `{ status: 'loading' | 'ready' | 'error', topology, restaurants }`. App.tsx renders `<LoadingState />` until status is `ready`. Loading is gated specifically on the TopoJSON async fetch (restaurants.ts is a synchronous import).
+- Vercel build command: `tsc --noEmit && vite build`. Type errors fail the build, never ship to prod.
+- `triedSet` is a `Set<string>` (O(1) lookup on every render — ~200 calls per repaint).
+- `src/data/types.ts` exports only types; `src/data/restaurants.ts` imports from it. Never the reverse. Avoids circular import.
+- Note: react-simple-maps re-renders all `<Geography>` children when any prop changes. At ~200 paths, fine (sub-50ms). Worth knowing if perf becomes jank.
+- Color tokens live in `src/styles/tokens.ts` as exported hex constants. `tailwind.config.js` imports them; `WorldMap.tsx` imports them directly for the `<Geography fill>` prop. Single source of truth.
+- App.tsx passes a resolved `selectedCountry: Country | null` object (not `selectedId: string`) to `<CountryPanel>` and an `isSelected(geo) => boolean` predicate to `<WorldMap>`. Lookup happens once in App; children don't know the mechanism.
+
+## Design Review Refinements (from /plan-design-review)
+
+**Design tokens (locked):**
+- **Color:** tried `#7CC576`, seeded `#E5F0FF`, unseeded `#EEEEEE`, background `#FAF7F2`, primary text `#1A1A1A`, avatar `#3D3D3D`.
+- **Typography:** Fraunces (display + tabular numerics, Google Fonts) and Inter (body, Google Fonts). Loaded once in `index.html`; configured in `tailwind.config.js`. **Never fall back to system-ui as primary.**
+- **Border-radius:** 4px on chips/cards/buttons, 8px on the side panel itself. No `rounded-full` (except panel close button if circular) or `rounded-2xl` defaults.
+- **Spacing:** Tailwind default scale (4px base).
+
+**First-load information hierarchy:**
+```
+  Header strip (64px tall, #FAF7F2 background)
+    Left:  🗺️ Taste Map SF wordmark (Fraunces, ~24px)
+    Right: Counter "X / 20 tried" (Fraunces tabular-nums, ~36px for the number, ~14px for "/ 20 tried"),
+           with hint underneath "Click a country to start" (Inter, 13px, secondary text)
+  Below header: map fills remaining viewport
+  On click: panel slides over the right ~400px (40% on tablet, full-width on mobile)
+```
+
+**Interaction states (every component, every state):**
+- Counter loading: `"— / —"` (em-dashes), then snaps to `"0 / 20"` when data ready.
+- Map loading: centered spinner + "Loading map…" (already locked in earlier reviews).
+- Country with **0 restaurants but seeded** (cuisine + dishes defined, restaurants empty): show cuisine_summary + dishes + "Restaurants coming soon — got a pick?" mailto. NOT the unseeded empty state.
+- Avatar at first load: hidden. Only appears after first country click.
+- Tablet (768-1024px): panel widens to 40% of viewport; desktop layout preserved.
+- Mobile (<768px): panel becomes full-width / full-height (already locked).
+- Panel keyboard a11y: tab through controls in DOM order, ESC closes, Enter triggers toggle/links. Map keyboard nav remains deferred to TODO.
+- Touch targets: 44px minimum for panel close, tried-toggle, restaurant links.
+
+**Emotional arc reinforcement:**
+- Milestones: counter color shifts subtly at 5 (light green), 10 (warm green), 15 (rich green), 20 (gold/celebration). No interrupting toasts. Just background reinforcement of progress.
+- Cuisine warmth: each country panel uses `cuisine_summary` (schema field) as a beginner's intro to the cuisine (e.g., "Eritrean food is spongy sourdough bread torn into stews you eat with your hands — expect spice, depth, and shared plates."). Per-dish descriptions are also written for beginners.
+- "Want to come back" gap: explicitly accepted as a Phase 1 trade. Phase 2 (auth + share URL) closes it. No bookmark microcopy added.
+
+**Copy tone — locked direction: warm + concrete, not cute.**
+- "Click a country to start" (not "Begin your journey!")
+- "No restaurants seeded yet — got a tip?" (not "Help us out!")
+- At 20 tried: "You've tried everything we've got." (not "Congrats champion!")
+- Direct, friendly, low-key. Avoid exclamation points unless the moment earns them.
+
+**Avatar visual lock:** 16px square, solid dark grey `#3D3D3D` silhouette, simplified standing figure. Single SVG path. No animation, no expressive variants.
+
+**OG image visual brief:**
+- Background: simplified world outline in `#E5F0FF` on `#FAF7F2`.
+- Foreground: "Taste Map SF" wordmark in Fraunces (large), tagline "Eat the world without leaving the city" in Inter (smaller), and a stylized counter mark `0 / 20` in `#7CC576`.
+- 1200×630px (Twitter/OG standard). Static PNG. Generate once.
+
 ## Architecture Hardening (from Section 1)
 - `src/data/countryIdMap.ts` is the single source of truth mapping TopoJSON ISO codes ↔ restaurants.json slugs.
 - Dev-mode assertion runs on app boot: for each `restaurants.json` country, verify a mapping entry exists; log any orphans/duplicates. Catches drift at edit time.
@@ -80,7 +135,10 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 - All external links (Yelp, Google) include `rel="noopener noreferrer"` and `target="_blank"`. Standard hygiene.
 - Re-clicking the same country on the map toggles the panel closed (in addition to the close button and ESC).
 - Restaurant TS type: `id`, `name`, `neighborhood` required; everything else (`address`, `rating_yelp`, `price_range`, `google_place_id`, `yelp_url`, `must_order`, etc.) optional. `RestaurantCard` renders each conditionally.
-- No tests in Phase 1 (personal project). Two snapshot/state tests logged as P3 TODO so Phase 2 picks them up.
+- **Phase 1 test bootstrap (revised by eng review):** Vitest + React Testing Library installed. Two starter tests:
+  - `src/components/Counter.test.tsx` — renders `"0 / 20"` (or current N) on initial mount with `tried={0}`, `total={20}`.
+  - `src/App.test.tsx` — calling `toggleTried("france")` on a fresh `triedSet` adds the slug; calling again removes it; counter updates accordingly. State logic only, no DOM.
+  Effort: human ~30 min / CC ~5 min. Phase 2 starts at coverage > 0% with a working test harness.
 - Loading state: subtle centered spinner + "Loading map…" text while data fetches resolve.
 - Keyboard accessibility for map navigation: explicitly deferred to a Phase 2 a11y pass; Phase 1 is mouse/tap.
 - Vercel preview deploys per branch/PR enabled by default — useful for "show a friend this WIP" links.
