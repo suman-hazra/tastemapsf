@@ -31,7 +31,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 
 **Cherry-picked expansions (accepted):**
 0. **Minimal mobile fallback.** Single CSS media query: viewports < 768px get a full-width / full-height panel instead of a right-side slide-in. Map still renders, click still works. No bottom-sheet animation, no touch-zoom polish — those stay in TODO. ~15 min effort. Resolves the OG-vs-mobile tension.
-1. **Map shading for tried countries.** Three-tone fill: tried = warm green (`#7CC576`), seeded-but-not-tried = light blue (`#E5F0FF`), unseeded = neutral grey (`#EEEEEE`). Lock these tokens; do not bikeshed mid-build.
+1. **Map shading for tried countries.** Three-tone fill: tried = warm green (`#7CC576`), seeded-but-not-tried = light blue (`#B8D4F0`), unseeded = neutral grey (`#EEEEEE`). Lock these tokens; do not bikeshed mid-build.
 2. **Counter +1 animation.** Pure CSS transition (300ms color flash + tiny scale tick). **No `react-spring` or motion library dependency** — keep the bundle tiny.
 3. **Custom OG / share preview.** One **static, site-level** PNG framed as **first-impression of the URL** (not progress sharing — the in-memory passport doesn't survive a click anyway, see Codex tension #1). Copy direction: "Taste Map SF — eat the world without leaving the city." Standard `og:title`, `og:description`, `og:image`, `twitter:card` meta tags. **Per-country and progress-sharing OG are explicitly out of scope** for Phase 1; the OG is generic and lives in the marketing slot, not the brag slot.
 
@@ -66,7 +66,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 
 ## Accepted Scope (added to this plan beyond office-hours baseline)
 - Minimal mobile fallback (single `@media (max-width: 768px)` media query → panel goes full-width / full-height; map stays as-is). No bottom-sheet animation.
-- Tried countries get a distinct fill color on the world SVG: tried = warm green (`#7CC576`), seeded = light blue (`#E5F0FF`), unseeded = neutral grey (`#EEEEEE`). Tokens locked.
+- Tried countries get a distinct fill color on the world SVG: tried = warm green (`#7CC576`), seeded = light blue (`#B8D4F0`), unseeded = neutral grey (`#EEEEEE`). Tokens locked.
 - Counter does a brief +1 animation: pure CSS transition, ~300ms color flash + tiny scale tick. **No motion library** — keep bundle small.
 - A single static, site-level OG image (text on color) + `og:title` / `og:description` / `og:image` / `twitter:card` meta tags. Per-country share previews are out of scope.
 
@@ -82,7 +82,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 ## Design Review Refinements (from /plan-design-review)
 
 **Design tokens (locked):**
-- **Color:** tried `#7CC576`, seeded `#E5F0FF`, unseeded `#EEEEEE`, background `#FAF7F2`, primary text `#1A1A1A`, avatar `#3D3D3D`.
+- **Color:** tried `#7CC576`, seeded `#B8D4F0`, unseeded `#EEEEEE`, background `#FAF7F2`, primary text `#1A1A1A`, avatar `#3D3D3D`.
 - **Typography:** Fraunces (display + tabular numerics, Google Fonts) and Inter (body, Google Fonts). Loaded once in `index.html`; configured in `tailwind.config.js`. **Never fall back to system-ui as primary.**
 - **Border-radius:** 4px on chips/cards/buttons, 8px on the side panel itself. No `rounded-full` (except panel close button if circular) or `rounded-2xl` defaults.
 - **Spacing:** Tailwind default scale (4px base).
@@ -121,7 +121,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 **Avatar visual lock:** 16px square, solid dark grey `#3D3D3D` silhouette, simplified standing figure. Single SVG path. No animation, no expressive variants.
 
 **OG image visual brief:**
-- Background: simplified world outline in `#E5F0FF` on `#FAF7F2`.
+- Background: simplified world outline in `#B8D4F0` on `#FAF7F2`.
 - Foreground: "Taste Map SF" wordmark in Fraunces (large), tagline "Eat the world without leaving the city" in Inter (smaller), and a stylized counter mark `0 / 20` in `#7CC576`.
 - 1200×630px (Twitter/OG standard). Static PNG. Generate once.
 

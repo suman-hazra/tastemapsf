@@ -55,7 +55,7 @@ export default function WorldMap({
                 const hoverFill = isTried
                   ? colors.tried
                   : isSeeded
-                    ? "#D5E5FF"
+                    ? colors.seededHover
                     : "#E0E0E0";
 
                 const strokeColor = isSelected ? colors.ink : colors.border;

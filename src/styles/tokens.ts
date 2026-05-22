@@ -10,7 +10,8 @@
 export const colors = {
   // Country fills on the map
   tried: "#7CC576",
-  seeded: "#E5F0FF",
+  seeded: "#B8D4F0",
+  seededHover: "#9DBFE2",
   unseeded: "#EEEEEE",
 
   // Surfaces
