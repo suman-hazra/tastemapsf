@@ -6,13 +6,9 @@
 //   state.unseededName   — display name when an unseeded country was clicked
 //                          (mutually exclusive with selectedSlug)
 //   state.triedSet       — slugs the user has marked "tried"
-//
-// Phase D: clicking any country opens the panel — seeded ones get the full
-// experience, unseeded ones get the "no data" mailto state. Avatar teleports
-// to the centroid of the selected seeded country. Real Counter component
-// (with milestone colors and +1 animation) lands in Phase E.
 
 import { useState } from "react";
+import Counter from "./components/Counter";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingState from "./components/LoadingState";
@@ -80,6 +76,13 @@ export default function App() {
       ? { displayName: unseededName }
       : null;
 
+  const hint =
+    total === null
+      ? "Loading map…"
+      : selectedSlug || unseededName
+        ? " "
+        : "Click a country to start";
+
   return (
     <ErrorBoundary>
       <div className="flex h-full flex-col">
@@ -91,23 +94,7 @@ export default function App() {
               className="h-20 w-auto mix-blend-multiply"
             />
           </a>
-          <div className="flex flex-col items-end leading-none">
-            <div className="font-display tabular-nums">
-              <span className="text-5xl font-semibold">
-                {total === null ? "—" : triedCount}
-              </span>
-              <span className="ml-2 text-xl text-ink-soft">
-                / {total === null ? "—" : total}
-              </span>
-            </div>
-            <div className="mt-2 text-sm text-ink-soft">
-              {total === null
-                ? "Loading map…"
-                : selectedSlug || unseededName
-                  ? " "
-                  : "Click a country to start"}
-            </div>
-          </div>
+          <Counter tried={triedCount} total={total} hint={hint} />
         </header>
 
         <main className="relative flex-1 overflow-hidden">
