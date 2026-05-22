@@ -14,6 +14,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import LoadingState from "./components/LoadingState";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
+import { toggleSlug } from "./utils/toggleSlug";
 
 export default function App() {
   const mapData = useMapData();
@@ -51,12 +52,7 @@ export default function App() {
 
   const toggleTried = () => {
     if (!selectedSlug) return;
-    setTriedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(selectedSlug)) next.delete(selectedSlug);
-      else next.add(selectedSlug);
-      return next;
-    });
+    setTriedSet((prev) => toggleSlug(prev, selectedSlug));
   };
 
   const triedCount = triedSet.size;
