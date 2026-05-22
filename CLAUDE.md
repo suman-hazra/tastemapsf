@@ -61,58 +61,44 @@ Restaurant data will be sourced through a mix of automated scraping and light ma
 | **Reddit (r/sanfrancisco, r/AskSF)** | Community-sourced hidden gems and strong local recommendations |
 | **Manual review** | Final pass to prune low-quality entries and spot-check recommendations |
 
-### JSON Schema
+### Schema (Phase 1)
 
-Each country in the dataset maps to a list of restaurants. The schema is intentionally flat and easy to edit by hand.
+Each country maps to a list of restaurants. The schema is intentionally flat and easy to edit by hand. Data is authored as a typed TypeScript module (`src/data/restaurants.ts`) — same shape, but TypeScript catches missing fields and typos at compile time.
 
-```json
+```ts
 {
-  "countries": [
+  id: "france",
+  name: "France",
+  continent: "Europe",
+  flag: "🇫🇷",
+  cuisine_summary: "Classic French cooking — buttery sauces, fresh bread, and long dinners.",
+  signature_dishes: [
+    { name: "Steak frites",     description: "Grilled steak served with crispy fries — a French bistro staple." },
+    { name: "Croque monsieur",  description: "A hot ham and melted cheese sandwich, often served with béchamel." },
+    { name: "Crème brûlée",     description: "Vanilla custard with a caramelized sugar crust, cracked tableside." },
+  ],
+  restaurants: [
     {
-      "id": "france",
-      "name": "France",
-      "continent": "Europe",
-      "flag": "🇫🇷",
-      "cuisine_summary": "Classic French cooking — buttery sauces, fresh bread, and long dinners.",
-      "signature_dishes": [
-        {
-          "name": "Steak frites",
-          "description": "Grilled steak served with crispy fries — a French bistro staple."
-        },
-        {
-          "name": "Croque monsieur",
-          "description": "A hot ham and melted cheese sandwich, often served with béchamel."
-        },
-        {
-          "name": "Crème brûlée",
-          "description": "Vanilla custard with a caramelized sugar crust, cracked tableside."
-        }
-      ],
-      "restaurants": [
-        {
-          "id": "cafe-claude",
-          "name": "Café Claude",
-          "neighborhood": "Union Square",
-          "address": "7 Claude Ln, San Francisco, CA 94108",
-          "yelp_url": "https://www.yelp.com/biz/cafe-claude-san-francisco",
-          "google_place_id": null,
-          "rating_yelp": 4.2,
-          "price_range": "$$",
-          "must_order": ["Steak frites", "French onion soup"],
-          "menu_verified": false,
-          "sources": ["yelp", "reddit"],
-          "tried": false
-        }
-      ]
-    }
-  ]
+      id: "cafe-claude",
+      name: "Café Claude",
+      neighborhood: "Union Square",
+      // address?: optional, surfaced in Phase 2
+      // tried?:   optional, reserved for Phase 3 food passport
+    },
+  ],
 }
 ```
 
 **Field notes:**
-- `tried` is a boolean reserved for the Phase 3 food passport feature — include it now, leave it `false` for all entries
-- `menu_verified` indicates whether the must-order dishes were confirmed against an actual menu (Phase 2 goal)
-- `sources` is an array tracking where the restaurant data came from
+- Only `id`, `name`, `neighborhood` are required on a restaurant. Everything else is optional and rendered conditionally.
+- The restaurant card builds a Google Maps search link on the fly from `name + neighborhood + "San Francisco"` — no per-entry URL field to maintain.
+- `tried` is reserved for the Phase 3 food passport. Not displayed in Phase 1.
+
+**Phase 2 will add to the restaurant schema:**
+- Full street `address` filled in for every entry
+- `must_order` dishes (cross-referenced against actual menus)
+- `sources` array tracking provenance (Yelp, Google, Reddit, etc.)
+- `menu_verified` flag once must-order dishes are confirmed on a real menu
 
 ---
 
@@ -122,11 +108,11 @@ Each country in the dataset maps to a list of restaurants. The schema is intenti
 
 | Layer | Choice |
 |---|---|
-| Framework | React |
-| Map rendering | D3.js (SVG world map with TopoJSON) — recommended for the level of custom interactivity needed |
-| Data | Static JSON files, co-located with the app |
-| Styling | TBD (Tailwind CSS recommended for speed) |
-| Routing | React Router (for deep-linking to `/country/france` later) |
+| Framework | React + TypeScript (Vite) |
+| Map rendering | `react-simple-maps` over D3-geo, with a static TopoJSON world file |
+| Data | Static typed TS module (`src/data/restaurants.ts`), co-located with the app |
+| Styling | Tailwind CSS |
+| Routing | None in Phase 1. React Router added later for deep-linking to `/country/france`. |
 
 ### Map Behavior
 
@@ -150,10 +136,10 @@ Slides in from the right when a country is selected. Contains:
 3. Signature dishes to order (with short descriptions)
 4. Restaurant cards, each showing:
    - Name + neighborhood
-   - Price range
-   - Rating
+   - A link that opens the restaurant in Google Maps (built on the fly from name + neighborhood + "San Francisco")
    - Which signature dishes are available there (Phase 2)
-   - Link to Yelp/Google
+
+   No rating or price range is copied into the card — those go stale and create attribution liability. The Google Maps listing is the source of truth for fresh details.
 
 ---
 
@@ -225,4 +211,4 @@ taste-map-sf/
 
 ---
 
-*Last updated: May 2026*
+*Last updated: 2026-05-22*

@@ -10,19 +10,22 @@ San Francisco is one of the few cities in the world where you can eat cuisine fr
 
 ## Features
 
-- **Interactive world map** — zoomable and pannable, every country is clickable
+- **Interactive world map** — every country is clickable
 - **Traveling avatar** — a small figure that teleports to whichever country you select
 - **Slide-in country panel** — restaurants, signature dishes, and what to order for each cuisine
-- **Curated data** — restaurants sourced from Yelp, Google Places, and the SF Reddit community
-- **No backend required** — all data lives in static JSON files
+- **Google Maps deep-links** — every restaurant card opens directly in Google Maps
+- **Hand-curated data** — Phase 1 picks sourced from Eater 38, Michelin Bib Gourmand, and r/sanfrancisco
+- **No backend required** — all data is bundled with the app
 
 ---
 
 ## Tech Stack
 
-- **React** — UI framework
-- **D3.js + TopoJSON** — SVG world map rendering and interactivity
-- **Static JSON** — restaurant and cuisine data, bundled with the app
+- **React + TypeScript** (Vite) — UI framework
+- **react-simple-maps** over D3-geo — SVG world map with TopoJSON
+- **Tailwind CSS** — styling
+- **Vitest + React Testing Library** — tests
+- **Static TypeScript data** — restaurants live in `src/data/restaurants.ts`
 
 ---
 
@@ -54,60 +57,41 @@ npm run build
 
 ## Data
 
-All restaurant data lives in `src/data/restaurants.json`. Each entry follows this shape:
+All restaurant data lives in `src/data/restaurants.ts` as a typed TypeScript constant — TypeScript catches missing fields and typos at compile time. Each restaurant entry is minimal:
 
-```json
+```ts
 {
-  "id": "cafe-claude",
-  "name": "Café Claude",
-  "neighborhood": "Union Square",
-  "address": "7 Claude Ln, San Francisco, CA 94108",
-  "rating_yelp": 4.2,
-  "price_range": "$$",
-  "must_order": ["Steak frites", "French onion soup"],
-  "sources": ["yelp", "reddit"],
-  "tried": false
+  id: "cafe-claude",
+  name: "Café Claude",
+  neighborhood: "Union Square",
+  // address?: optional, surfaced in Phase 2
+  // tried?:   optional, reserved for Phase 3 food passport
 }
 ```
 
+Only `id`, `name`, and `neighborhood` are required. The restaurant card builds a Google Maps search link on the fly from `name + neighborhood + "San Francisco"`, so there's no per-entry URL field to keep current.
+
+Phase 2 will enrich each record with `address`, `must_order` dishes (cross-referenced against actual menus), and `sources` (provenance: Yelp / Google / Reddit).
+
 ### Building the Dataset
 
-A set of data collection scripts lives in `scripts/build-data/`. They pull from the Yelp Fusion API, Google Places API, and Reddit to seed the restaurant list.
+Phase 1 data is hand-curated. Edit `src/data/restaurants.ts` directly — there is no automated build pipeline yet.
 
-```bash
-cd scripts/build-data
-npm install
-node merge.js   # runs the full pipeline and outputs src/data/restaurants.json
-```
-
-You'll need API keys for Yelp and Google Places — see [Configuration](#configuration) below.
-
----
-
-## Configuration
-
-Create a `.env` file in the project root:
-
-```
-VITE_YELP_API_KEY=your_yelp_api_key
-VITE_GOOGLE_PLACES_API_KEY=your_google_places_api_key
-```
-
-API keys are only needed to rebuild the dataset. The app itself runs entirely off the pre-built JSON.
+A Phase 2 effort will add `scripts/build-data/` to pull from the Yelp Fusion API, Google Places, and Reddit, with a merge + manual review pass that emits a new `restaurants.ts`. API keys will be needed at that point; none are required for Phase 1.
 
 ---
 
 ## Roadmap
 
 - [x] Project spec & data schema
-- [ ] World map with clickable countries
-- [ ] Avatar + teleport mechanic
-- [ ] Side panel with restaurant cards
-- [ ] Data pipeline (Yelp + Google + Reddit)
-- [ ] Seed data for ~40 cuisines
-- [ ] Restaurant addresses and neighborhood tags
-- [ ] Menu cross-reference for must-order dishes
-- [ ] Food passport — personal "tried this" tracking
+- [x] World map with clickable countries
+- [x] Avatar + teleport mechanic
+- [x] Side panel with restaurant cards
+- [x] Seed data for ~18 cuisines (hand-curated)
+- [ ] Data pipeline (Yelp + Google + Reddit) — Phase 2
+- [ ] Restaurant addresses for every entry — Phase 2
+- [ ] Menu cross-reference for must-order dishes — Phase 2
+- [ ] Food passport — personal "tried this" tracking — Phase 3
 
 ---
 
@@ -116,7 +100,7 @@ API keys are only needed to rebuild the dataset. The app itself runs entirely of
 Found a great restaurant that's missing? Spotted an error? Contributions are welcome.
 
 1. Fork the repo
-2. Edit `src/data/restaurants.json` directly, or open an issue with the restaurant details
+2. Edit `src/data/restaurants.ts` directly, or open an issue with the restaurant details
 3. Submit a pull request
 
 Please keep entries to restaurants that are currently open and genuinely represent the cuisine well.

@@ -33,10 +33,6 @@ export interface Restaurant {
   neighborhood: string;
   /** Optional full street address. */
   address?: string;
-  /** Optional Yelp listing URL (preferred — covers freshness via Yelp). */
-  yelp_url?: string;
-  /** Optional Google Maps URL. */
-  google_url?: string;
   /**
    * Phase 1 reserved for the food passport. Never displayed in Phase 1
    * (passport is country-level), but here so the schema is forward-compatible.

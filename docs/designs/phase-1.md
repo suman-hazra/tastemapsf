@@ -20,7 +20,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 - Static React app deployed to **Vercel** (chosen for fastest `git push` → public URL with zero config). GitHub Pages and Netlify are acceptable fallbacks but pick one and stick.
 - World map rendered with `react-simple-maps` over a TopoJSON world data file
 - Countries with seeded restaurant data are visually distinct (light blue fill, `#e5f0ff`-ish); countries without seeded data still clickable but the side panel shows: country name + flag + "No restaurants seeded yet — got a tip?" with a `mailto:` link, and a close button. No tried-toggle for unseeded countries.
-- Clicking a country slides in a right-side panel: country name + flag, one-line cuisine summary, 3-5 signature dishes with short descriptions, restaurant cards. **Card content: name, neighborhood, Yelp/Google link only** (no rating, no price_range copied into the card — see Codex tension #3). Your endorsement is the signal; fresh details live on Yelp.
+- Clicking a country slides in a right-side panel: country name + flag, one-line cuisine summary, 3-5 signature dishes with short descriptions, restaurant cards. **Card content: name + neighborhood only, with the whole card linking out to a Google Maps search built on the fly from name + neighborhood + "San Francisco"** (no rating, no price_range copied into the card — see Codex tension #3). Your endorsement is the signal; fresh details live on Google Maps.
 - A small inline SVG human-like avatar (single static silhouette, no animation — defer expressive avatar to Phase 2) teleports to `d3.geoCentroid(feature)` of the clicked country. For multi-polygon countries (US, Russia, France with territories) we accept the d3-geo default centroid, which may visually land in an unexpected place; do not custom-handle this in Phase 1.
 - A "Tried this" toggle on each seeded country (in the panel)
 - A live "X / N tried" counter visible at all times, where **N is the number of seeded countries with restaurant data** (not the 195 countries in the world). Whatever the final seeded count is (target 20-30), that's the denominator.
@@ -132,9 +132,9 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 
 ## Review-Section Refinements (from Sections 2-11)
 - `useMapData` wraps both fetches in try/catch with a friendly error state ("Couldn't load map data — check your connection and reload."), shown in place of the map. Falls back to the error boundary if anything else throws.
-- All external links (Yelp, Google) include `rel="noopener noreferrer"` and `target="_blank"`. Standard hygiene.
+- All external links (Google Maps from restaurant cards, plus any future external links) include `rel="noopener noreferrer"` and `target="_blank"`. Standard hygiene.
 - Re-clicking the same country on the map toggles the panel closed (in addition to the close button and ESC).
-- Restaurant TS type: `id`, `name`, `neighborhood` required; everything else (`address`, `rating_yelp`, `price_range`, `google_place_id`, `yelp_url`, `must_order`, etc.) optional. `RestaurantCard` renders each conditionally.
+- Restaurant TS type: `id`, `name`, `neighborhood` required; `address` and `tried` optional (with `tried` reserved for Phase 3). Phase 2 will add optional `address` (filled), `must_order`, `sources`, `menu_verified`. The card does not store a per-entry external URL — it builds a Google Maps search link on the fly from name + neighborhood + "San Francisco".
 - **Phase 1 test bootstrap (revised by eng review):** Vitest + React Testing Library installed. Two starter tests:
   - `src/components/Counter.test.tsx` — renders `"0 / 20"` (or current N) on initial mount with `tried={0}`, `total={20}`.
   - `src/App.test.tsx` — calling `toggleTried("france")` on a fresh `triedSet` adds the slug; calling again removes it; counter updates accordingly. State logic only, no DOM.

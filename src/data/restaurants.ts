@@ -5,11 +5,9 @@
 // SPOT-CHECK PASS NEEDED: replace any picks you disagree with. Some countries
 // (Argentina, Israel, Yemen) have thin SF representation — I gave a starting
 // point but you almost certainly know better picks. Card content is name +
-// neighborhood + Yelp URL only (no rating/price — per the design review,
-// staleness liability).
-//
-// Restaurants whose data was incomplete during seeding may be missing
-// `yelp_url`. That field is optional and the card omits it cleanly.
+// neighborhood only (no rating/price — staleness liability per the design
+// review). The card builds a Google Maps search link on the fly from those
+// two fields, so no per-entry URLs to maintain.
 
 import type { Country } from "./types";
 
@@ -44,14 +42,11 @@ export const countries: Country[] = [
         id: "tonys-pizza-napoletana",
         name: "Tony's Pizza Napoletana",
         neighborhood: "North Beach",
-        yelp_url:
-          "https://www.yelp.com/biz/tonys-pizza-napoletana-san-francisco",
       },
       {
         id: "cotogna",
         name: "Cotogna",
         neighborhood: "Jackson Square",
-        yelp_url: "https://www.yelp.com/biz/cotogna-san-francisco",
       },
     ],
   },
@@ -84,13 +79,11 @@ export const countries: Country[] = [
         id: "cafe-claude",
         name: "Café Claude",
         neighborhood: "Union Square",
-        yelp_url: "https://www.yelp.com/biz/cafe-claude-san-francisco",
       },
       {
         id: "petit-crenn",
         name: "Petit Crenn",
         neighborhood: "Hayes Valley",
-        yelp_url: "https://www.yelp.com/biz/petit-crenn-san-francisco",
       },
     ],
   },
@@ -123,13 +116,11 @@ export const countries: Country[] = [
         id: "bocadillos",
         name: "Bocadillos",
         neighborhood: "Jackson Square",
-        yelp_url: "https://www.yelp.com/biz/bocadillos-san-francisco",
       },
       {
         id: "coqueta",
         name: "Coqueta",
         neighborhood: "Embarcadero",
-        yelp_url: "https://www.yelp.com/biz/coqueta-san-francisco",
       },
     ],
   },
@@ -164,13 +155,11 @@ export const countries: Country[] = [
         id: "la-taqueria",
         name: "La Taqueria",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/la-taqueria-san-francisco",
       },
       {
         id: "nopalito",
         name: "Nopalito",
         neighborhood: "Inner Sunset",
-        yelp_url: "https://www.yelp.com/biz/nopalito-san-francisco-3",
       },
     ],
   },
@@ -205,14 +194,11 @@ export const countries: Country[] = [
         id: "limon-rotisserie",
         name: "Limón Rotisserie",
         neighborhood: "Mission",
-        yelp_url:
-          "https://www.yelp.com/biz/lim%C3%B3n-rotisserie-san-francisco-3",
       },
       {
         id: "pasion",
         name: "Pasión",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/pasion-san-francisco",
       },
     ],
   },
@@ -245,7 +231,6 @@ export const countries: Country[] = [
         id: "lolinda",
         name: "Lolinda",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/lolinda-san-francisco",
       },
     ],
   },
@@ -280,13 +265,11 @@ export const countries: Country[] = [
         id: "mister-jius",
         name: "Mister Jiu's",
         neighborhood: "Chinatown",
-        yelp_url: "https://www.yelp.com/biz/mister-jius-san-francisco",
       },
       {
         id: "yank-sing",
         name: "Yank Sing",
         neighborhood: "SoMa",
-        yelp_url: "https://www.yelp.com/biz/yank-sing-san-francisco-2",
       },
     ],
   },
@@ -319,13 +302,11 @@ export const countries: Country[] = [
         id: "rintaro",
         name: "Rintaro",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/rintaro-san-francisco",
       },
       {
         id: "robin",
         name: "Robin",
         neighborhood: "Hayes Valley",
-        yelp_url: "https://www.yelp.com/biz/robin-san-francisco",
       },
     ],
   },
@@ -358,13 +339,11 @@ export const countries: Country[] = [
         id: "san-ho-won",
         name: "San Ho Won",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/san-ho-won-san-francisco",
       },
       {
         id: "toyose",
         name: "Toyose",
         neighborhood: "Outer Sunset",
-        yelp_url: "https://www.yelp.com/biz/toyose-san-francisco",
       },
     ],
   },
@@ -397,13 +376,11 @@ export const countries: Country[] = [
         id: "kin-khao",
         name: "Kin Khao",
         neighborhood: "Union Square",
-        yelp_url: "https://www.yelp.com/biz/kin-khao-san-francisco",
       },
       {
         id: "lers-ros",
         name: "Lers Ros",
         neighborhood: "Hayes Valley",
-        yelp_url: "https://www.yelp.com/biz/lers-ros-thai-san-francisco",
       },
     ],
   },
@@ -436,14 +413,11 @@ export const countries: Country[] = [
         id: "turtle-tower",
         name: "Turtle Tower",
         neighborhood: "Tenderloin",
-        yelp_url:
-          "https://www.yelp.com/biz/turtle-tower-restaurant-san-francisco",
       },
       {
         id: "saigon-sandwich",
         name: "Saigon Sandwich",
         neighborhood: "Tenderloin",
-        yelp_url: "https://www.yelp.com/biz/saigon-sandwich-san-francisco",
       },
     ],
   },
@@ -476,13 +450,11 @@ export const countries: Country[] = [
         id: "dosa",
         name: "DOSA",
         neighborhood: "Fillmore",
-        yelp_url: "https://www.yelp.com/biz/dosa-on-fillmore-san-francisco",
       },
       {
         id: "besharam",
         name: "Besharam",
         neighborhood: "Dogpatch",
-        yelp_url: "https://www.yelp.com/biz/besharam-san-francisco",
       },
     ],
   },
@@ -515,13 +487,11 @@ export const countries: Country[] = [
         id: "burma-superstar",
         name: "Burma Superstar",
         neighborhood: "Inner Richmond",
-        yelp_url: "https://www.yelp.com/biz/burma-superstar-san-francisco",
       },
       {
         id: "mandalay",
         name: "Mandalay",
         neighborhood: "Inner Richmond",
-        yelp_url: "https://www.yelp.com/biz/mandalay-restaurant-san-francisco",
       },
     ],
   },
@@ -554,7 +524,6 @@ export const countries: Country[] = [
         id: "abaca",
         name: "Abacá",
         neighborhood: "Marina",
-        yelp_url: "https://www.yelp.com/biz/abac%C3%A1-san-francisco",
       },
     ],
   },
@@ -589,7 +558,6 @@ export const countries: Country[] = [
         id: "beit-rima",
         name: "Beit Rima",
         neighborhood: "Castro",
-        yelp_url: "https://www.yelp.com/biz/beit-rima-san-francisco",
       },
     ],
   },
@@ -622,7 +590,6 @@ export const countries: Country[] = [
         id: "saba",
         name: "Saba",
         neighborhood: "Tenderloin",
-        yelp_url: "https://www.yelp.com/biz/saba-san-francisco",
       },
     ],
   },
@@ -683,13 +650,11 @@ export const countries: Country[] = [
         id: "moya-restaurant",
         name: "Moya Restaurant",
         neighborhood: "Mission",
-        yelp_url: "https://www.yelp.com/biz/moya-restaurant-san-francisco",
       },
       {
         id: "axum-cafe",
         name: "Axum Cafe",
         neighborhood: "Lower Haight",
-        yelp_url: "https://www.yelp.com/biz/axum-cafe-san-francisco-3",
       },
     ],
   },
