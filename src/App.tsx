@@ -6,10 +6,13 @@ export default function App() {
   return (
     <div className="flex h-full flex-col">
       <header className="flex h-16 items-center justify-between border-b border-black/5 px-6">
-        <div className="font-display text-2xl font-semibold tracking-tight">
-          <span aria-hidden="true">🗺️ </span>
-          Taste Map SF
-        </div>
+        <a href="/" className="flex items-center" aria-label="TastemapSF home">
+          <img
+            src="/tastemapsflogo.png"
+            alt="TastemapSF"
+            className="h-12 w-auto mix-blend-multiply"
+          />
+        </a>
         <div className="flex flex-col items-end leading-none">
           <div className="font-display tabular-nums text-3xl">
             <span className="font-semibold">—</span>
