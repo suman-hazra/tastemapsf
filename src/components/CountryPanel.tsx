@@ -183,9 +183,9 @@ function SeededBody({ country }: { country: Country }) {
             </div>
             <a
               href={MAILTO}
-              className="mt-1 inline-block text-sm underline decoration-black/20 underline-offset-2 hover:decoration-black/60"
+              className="mt-2 inline-flex h-11 items-center rounded-chip border border-black/10 px-3 text-sm font-medium hover:bg-black/5"
             >
-              Send me one
+              Send me one →
             </a>
           </div>
         )}
@@ -202,9 +202,9 @@ function UnseededBody() {
       </p>
       <a
         href={MAILTO}
-        className="inline-block text-sm font-medium underline decoration-black/20 underline-offset-2 hover:decoration-black/60"
+        className="inline-flex h-11 items-center rounded-chip border border-black/10 px-3 text-sm font-medium hover:bg-black/5"
       >
-        Send me one
+        Send me one →
       </a>
     </div>
   );
