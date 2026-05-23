@@ -66,3 +66,139 @@ body {
     transform: translateY(190px) rotate(260deg) scale(1);
   }
 }
+
+.next-bite-wheel {
+  position: absolute;
+  inset: 24px;
+  border: 5px solid rgba(255, 255, 255, 0.92);
+  border-radius: 9999px;
+  background:
+    conic-gradient(
+      from -90deg,
+      #f1d47a 0deg 45deg,
+      #7cc576 45deg 90deg,
+      #a8d3e6 90deg 135deg,
+      #f47f6b 135deg 180deg,
+      #f1d47a 180deg 225deg,
+      #7cc576 225deg 270deg,
+      #a8d3e6 270deg 315deg,
+      #f47f6b 315deg 360deg
+    );
+  box-shadow:
+    0 10px 24px rgba(26, 26, 26, 0.18),
+    inset 0 0 0 10px rgba(255, 255, 255, 0.34);
+  transform: rotate(0deg);
+  transition:
+    opacity 240ms ease,
+    transform 360ms ease;
+}
+
+.next-bite-wheel::before {
+  position: absolute;
+  inset: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
+  content: "";
+}
+
+.next-bite-wheel::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, transparent 49%, rgba(255, 255, 255, 0.65) 50%, transparent 51%),
+    linear-gradient(0deg, transparent 49%, rgba(255, 255, 255, 0.65) 50%, transparent 51%),
+    linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.52) 50%, transparent 51%),
+    linear-gradient(-45deg, transparent 49%, rgba(255, 255, 255, 0.52) 50%, transparent 51%);
+  content: "";
+}
+
+.next-bite-wheel-spinning {
+  animation: next-bite-spin 1700ms cubic-bezier(0.12, 0.72, 0.18, 1) both;
+}
+
+.next-bite-wheel-revealed {
+  opacity: 0.18;
+  transform: rotate(1260deg) scale(0.72);
+}
+
+.next-bite-pointer {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-top: 24px solid #c8281e;
+  filter: drop-shadow(0 2px 2px rgba(26, 26, 26, 0.22));
+  transform: translateX(-50%);
+  transition: opacity 180ms ease;
+}
+
+.next-bite-wheel-hub {
+  position: absolute;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  border: 5px solid #ffffff;
+  border-radius: 9999px;
+  background: #092652;
+  box-shadow: 0 3px 10px rgba(26, 26, 26, 0.22);
+  transition: opacity 180ms ease;
+}
+
+.next-bite-hidden {
+  opacity: 0;
+}
+
+.next-bite-result {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  min-width: 210px;
+  min-height: 210px;
+  place-items: center;
+  border-radius: 16px;
+  opacity: 0;
+  transform: scale(0.32);
+  transition:
+    opacity 220ms ease,
+    transform 580ms cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+
+.next-bite-result-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.next-bite-flag {
+  font-size: 9rem;
+  line-height: 0.9;
+  filter: drop-shadow(0 12px 18px rgba(26, 26, 26, 0.22));
+}
+
+.next-bite-country {
+  margin-top: 12px;
+  max-width: 220px;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 6px 14px;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  box-shadow: 0 8px 18px rgba(26, 26, 26, 0.1);
+}
+
+@keyframes next-bite-spin {
+  0% {
+    transform: rotate(0deg) scale(0.94);
+  }
+  72% {
+    transform: rotate(1120deg) scale(1.03);
+  }
+  100% {
+    transform: rotate(1260deg) scale(1);
+  }
+}

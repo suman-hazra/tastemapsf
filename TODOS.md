@@ -1,4 +1,4 @@
-# TODOS — Taste Map SF
+# TODOS — Tastemap SF
 
 Captured during /plan-ceo-review on 2026-05-21. Most items below were explicitly deferred during the cherry-pick ceremony or surfaced by the outside-voice (Codex) review.
 

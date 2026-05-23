@@ -2,7 +2,7 @@
 //   • Ocean-blue background, white land, hairline gray borders
 //   • Warm hover wash on seeded countries (cursor: pointer)
 //   • Red accent stroke on the selected country
-//   • Tried countries fill with warm muted clay and get a flag marker
+//   • Tried countries fill green and get a flag marker
 //   • Country labels for seeded countries (DM Sans, gray)
 //   • Italic Newsreader ocean / sea labels float over the water
 //
@@ -323,6 +323,61 @@ export default function WorldMap({
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
+                    },
+                  }}
+                />
+              );
+            },
+          )
+        }
+      </Geographies>
+
+      {/* Draw tried country outlines above neighboring borders. Otherwise
+          shared borders can be partially overwritten by later countries in the
+          TopoJSON render order. */}
+      <Geographies geography={topology}>
+        {({ geographies }) =>
+          geographies.map(
+            (geo: {
+              rsmKey: string;
+              id?: string | number;
+              properties: { name: string };
+            }) => {
+              const slug = slugForGeoId(geo.id ?? "");
+              if (!slug || !triedSet.has(slug)) return null;
+
+              return (
+                <Geography
+                  key={`tried-outline-${geo.rsmKey}`}
+                  geography={geo}
+                  aria-hidden="true"
+                  style={{
+                    default: {
+                      fill: "transparent",
+                      stroke: c.visitedInk,
+                      strokeWidth: 0.9,
+                      strokeLinejoin: "round",
+                      vectorEffect: "non-scaling-stroke",
+                      outline: "none",
+                      pointerEvents: "none",
+                    },
+                    hover: {
+                      fill: "transparent",
+                      stroke: c.visitedInk,
+                      strokeWidth: 0.9,
+                      strokeLinejoin: "round",
+                      vectorEffect: "non-scaling-stroke",
+                      outline: "none",
+                      pointerEvents: "none",
+                    },
+                    pressed: {
+                      fill: "transparent",
+                      stroke: c.visitedInk,
+                      strokeWidth: 0.9,
+                      strokeLinejoin: "round",
+                      vectorEffect: "non-scaling-stroke",
+                      outline: "none",
+                      pointerEvents: "none",
                     },
                   }}
                 />

@@ -43,12 +43,12 @@ const TIP_EMAIL = "tastemapsf@gmail.com";
 function buildTipEmail(country: SuggestionCountry, restaurantName: string) {
   const countryLabel = [country.flag, country.name].filter(Boolean).join(" ");
   return {
-    subject: `Taste Map SF restaurant suggestion for ${country.name}`,
+    subject: `Tastemap SF restaurant suggestion for ${country.name}`,
     body: [
       `Country: ${countryLabel}`,
       `Restaurant name/details: ${restaurantName}`,
       "",
-      "Sent from Taste Map SF.",
+      "Sent from Tastemap SF.",
     ].join("\n"),
   };
 }

@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Country } from "../data/types";
+
+type BiteCountry = Pick<Country, "id" | "flag" | "name">;
 
 interface Props {
   tried: number;
   total: number;
   onClose: () => void;
-  onSuggestNext: () => void;
+  onSuggestNext: (countryId: string) => void;
   canSuggestNext: boolean;
+  untriedCountries: BiteCountry[];
 }
 
 const CONFETTI = [
@@ -19,24 +23,44 @@ const CONFETTI = [
   { left: "90%", delay: "110ms", color: "#ad5cee" },
 ] as const;
 
+const SHARE_URL_BASE = "https://www.tastemapsf.com/";
+
 export default function ScoreDialog({
   tried,
   total,
   onClose,
   onSuggestNext,
   canSuggestNext,
+  untriedCountries,
 }: Props) {
   const [shareExpanded, setShareExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [biteState, setBiteState] = useState<"idle" | "spinning" | "revealed">(
+    "idle",
+  );
+  const [nextBite, setNextBite] = useState<BiteCountry | null>(null);
+  const revealTimerRef = useRef<number | null>(null);
+  const openTimerRef = useRef<number | null>(null);
   const shareUrl = useMemo(() => {
-    const url = new URL(window.location.href);
+    const url = new URL(SHARE_URL_BASE);
     url.searchParams.set("score", String(tried));
     url.searchParams.set("total", String(total));
     return url.toString();
   }, [tried, total]);
-  const shareText = `I scored ${tried}/${total} on Taste Map SF. SF is wildly global. What's your score?`;
+  const shareText = `I scored ${tried} out of ${total} on TastemapSF!!!\n\nWhat is your score? Try it yourself here:`;
   const canNativeShare =
     typeof (navigator as Navigator & { share?: unknown }).share === "function";
+
+  useEffect(() => {
+    return () => {
+      if (revealTimerRef.current !== null) {
+        window.clearTimeout(revealTimerRef.current);
+      }
+      if (openTimerRef.current !== null) {
+        window.clearTimeout(openTimerRef.current);
+      }
+    };
+  }, []);
 
   const nativeShare = async () => {
     if (!canNativeShare) {
@@ -46,7 +70,7 @@ export default function ScoreDialog({
 
     try {
       await navigator.share({
-        title: "Taste Map SF",
+        title: "Tastemap SF",
         text: shareText,
         url: shareUrl,
       });
@@ -59,12 +83,35 @@ export default function ScoreDialog({
   const copyShareLink = async () => {
     const text = `${shareText} ${shareUrl}`;
     if (!navigator.clipboard) {
-      window.prompt("Copy your Taste Map SF score:", text);
+      window.prompt("Copy your Tastemap SF score:", text);
       return;
     }
     await navigator.clipboard.writeText(text);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  const pickNextBite = () => {
+    if (!canSuggestNext || untriedCountries.length === 0) return;
+    const country =
+      untriedCountries[Math.floor(Math.random() * untriedCountries.length)];
+    setShareExpanded(false);
+    setNextBite(country);
+    setBiteState("spinning");
+
+    if (revealTimerRef.current !== null) {
+      window.clearTimeout(revealTimerRef.current);
+    }
+    if (openTimerRef.current !== null) {
+      window.clearTimeout(openTimerRef.current);
+    }
+
+    revealTimerRef.current = window.setTimeout(() => {
+      setBiteState("revealed");
+      openTimerRef.current = window.setTimeout(() => {
+        onSuggestNext(country.id);
+      }, 1300);
+    }, 1700);
   };
 
   return (
@@ -120,7 +167,7 @@ export default function ScoreDialog({
             id="score-title"
             className="mt-3 font-display text-2xl font-semibold"
           >
-            Your Taste Map score
+            Your Tastemap score
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             <span className="inline-block bg-white/70 px-2 py-1 text-ink">
@@ -139,13 +186,59 @@ export default function ScoreDialog({
             </button>
             <button
               type="button"
-              onClick={onSuggestNext}
-              disabled={!canSuggestNext}
+              onClick={pickNextBite}
+              disabled={!canSuggestNext || biteState === "spinning"}
               className="h-11 whitespace-nowrap rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas disabled:cursor-default disabled:border-black/5 disabled:bg-white/70 disabled:text-ink-soft"
             >
-              Pick My Next Bite
+              {biteState === "spinning" ? "Picking..." : "Pick My Next Bite"}
             </button>
           </div>
+          {nextBite && (
+            <div className="mt-5 grid place-items-center">
+              <div className="relative grid h-56 w-56 place-items-center">
+                <div
+                  className={
+                    biteState === "revealed"
+                      ? "next-bite-pointer next-bite-hidden"
+                      : "next-bite-pointer"
+                  }
+                  aria-hidden="true"
+                />
+                <div
+                  className={
+                    biteState === "spinning"
+                      ? "next-bite-wheel next-bite-wheel-spinning"
+                      : biteState === "revealed"
+                        ? "next-bite-wheel next-bite-wheel-revealed"
+                      : "next-bite-wheel"
+                  }
+                  aria-hidden="true"
+                />
+                <div
+                  className={
+                    biteState === "revealed"
+                      ? "next-bite-wheel-hub next-bite-hidden"
+                      : "next-bite-wheel-hub"
+                  }
+                  aria-hidden="true"
+                />
+                <div
+                  className={
+                    biteState === "revealed"
+                      ? "next-bite-result next-bite-result-visible"
+                      : "next-bite-result"
+                  }
+                >
+                  <div className="next-bite-flag" aria-hidden="true">
+                    {nextBite.flag}
+                  </div>
+                  <div className="next-bite-country font-display font-semibold">
+                    {nextBite.name}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <button
             type="button"
             onClick={() => setShareExpanded((expanded) => !expanded)}

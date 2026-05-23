@@ -10,6 +10,7 @@
 
 import { useEffect, useState } from "react";
 import Counter from "./components/Counter";
+import CountryListMenu from "./components/CountryListMenu";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FinishButton from "./components/FinishButton";
@@ -67,6 +68,8 @@ export default function App() {
   const [unseededFlag, setUnseededFlag] = useState<string | null>(null);
   const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showCountryList, setShowCountryList] = useState(false);
   const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
     readSharedScore(),
   );
@@ -127,6 +130,8 @@ export default function App() {
   const openScoreDialog = () => {
     setTriedPromptSlug(null);
     setSharedScore(null);
+    setShowMenu(false);
+    setShowCountryList(false);
     setShowScoreDialog(true);
   };
 
@@ -142,29 +147,37 @@ export default function App() {
     setTriedPromptSlug(null);
   };
 
+  const closeTriedPrompt = () => {
+    setTriedPromptSlug(null);
+    setSelectedSlug(null);
+    setUnseededName(null);
+    setUnseededFlag(null);
+  };
+
   const answerTriedPrompt = (tried: boolean) => {
     if (!triedPromptSlug) return;
+    const answeredSlug = triedPromptSlug;
+    setCountryTried(answeredSlug, tried);
+    closeTriedPrompt();
+  };
+
+  const setCountryTried = (countryId: string, tried: boolean) => {
     setTriedSet((prev) => {
       const next = new Set(prev);
       if (tried) {
-        next.add(triedPromptSlug);
+        next.add(countryId);
       } else {
-        next.delete(triedPromptSlug);
+        next.delete(countryId);
       }
       return next;
     });
-    setTriedPromptSlug(null);
   };
 
-  const suggestNextCountry = () => {
+  const suggestNextCountry = (countryId: string) => {
     if (mapData.status !== "ready") return;
-    const untriedCountries = mapData.countries.filter(
-      (country) => !triedSet.has(country.id),
-    );
-    if (untriedCountries.length === 0) return;
+    const nextCountry = mapData.countryBySlug.get(countryId);
+    if (!nextCountry) return;
 
-    const nextCountry =
-      untriedCountries[Math.floor(Math.random() * untriedCountries.length)];
     setShowScoreDialog(false);
     setSharedScore(null);
     setUnseededName(null);
@@ -193,6 +206,16 @@ export default function App() {
     : unseededName
       ? { displayName: unseededName, flag: unseededFlag ?? undefined }
       : null;
+  const untriedCountries =
+    mapData.status === "ready"
+      ? mapData.countries
+          .filter((country) => !triedSet.has(country.id))
+          .map((country) => ({
+            id: country.id,
+            flag: country.flag,
+            name: country.name,
+          }))
+      : [];
 
   return (
     <ErrorBoundary>
@@ -226,6 +249,47 @@ export default function App() {
                 style={{ filter: "url(#logo-chroma-white)" }}
               />
             </a>
+            <button
+              type="button"
+              aria-label="Open menu"
+              onClick={() => setShowMenu((open) => !open)}
+              className="pointer-events-auto grid h-12 w-12 place-items-center rounded-chip bg-[#092652] text-white shadow-md transition-colors hover:bg-[#12335f]"
+            >
+              <svg
+                aria-hidden="true"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5 7H19M5 12H19M5 17H19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            {showMenu && (
+              <div className="pointer-events-auto absolute right-5 top-[72px] min-w-44 border border-black/10 bg-panel p-2 shadow-lg sm:right-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowCountryList(true);
+                    setSelectedSlug(null);
+                    setUnseededName(null);
+                    setUnseededFlag(null);
+                    setTriedPromptSlug(null);
+                  }}
+                  className="h-11 w-full rounded-chip px-3 text-left text-sm font-semibold text-ink transition-colors hover:bg-canvas"
+                >
+                  View list
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="pointer-events-none fixed left-1/2 top-4 z-20 -translate-x-1/2">
             <div className="pointer-events-auto px-3 py-2">
               <Counter tried={triedCount} total={total} />
             </div>
@@ -278,14 +342,25 @@ export default function App() {
               <TriedPromptDialog
                 country={triedPromptCountry}
                 onAnswer={answerTriedPrompt}
+                onClose={closeTriedPrompt}
               />
+              {showCountryList && (
+                <CountryListMenu
+                  countries={mapData.countries}
+                  triedSet={triedSet}
+                  onSetTried={setCountryTried}
+                  onFinish={openScoreDialog}
+                  onClose={() => setShowCountryList(false)}
+                />
+              )}
               {(showScoreDialog || sharedScore) && (
                 <ScoreDialog
                   tried={sharedScore?.tried ?? triedCount}
                   total={sharedScore?.total ?? mapData.total}
                   onClose={closeScoreDialog}
                   onSuggestNext={suggestNextCountry}
-                  canSuggestNext={triedCount < mapData.total}
+                  canSuggestNext={!sharedScore && untriedCountries.length > 0}
+                  untriedCountries={sharedScore ? [] : untriedCountries}
                 />
               )}
               {showWelcome && <WelcomeDialog onDismiss={dismissWelcome} />}

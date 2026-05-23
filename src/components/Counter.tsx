@@ -40,7 +40,7 @@ export default function Counter({ tried, total }: Props) {
   const numberColor = c.logoNavy;
 
   return (
-    <div className="flex flex-col items-end leading-none">
+    <div className="flex flex-col items-center leading-none">
       <div className="font-display tabular-nums">
         <span
           className="inline-block text-5xl font-semibold transition-all duration-300 ease-out"

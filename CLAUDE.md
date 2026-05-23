@@ -1,4 +1,4 @@
-# Taste Map SF
+# Tastemap SF
 
 > A world map explorer for San Francisco's global cuisine — click a country, discover its restaurants, and know exactly what to order.
 
@@ -6,7 +6,7 @@
 
 ## The Idea
 
-San Francisco is one of the few cities in the world where you can eat cuisine from almost every country. But most people only end up cycling through the same familiar options. Taste Map SF is a visual, interactive tool that makes the full breadth of SF's food scene tangible — laid out on a world map, one country at a time.
+San Francisco is one of the few cities in the world where you can eat cuisine from almost every country. But most people only end up cycling through the same familiar options. Tastemap SF is a visual, interactive tool that makes the full breadth of SF's food scene tangible — laid out on a world map, one country at a time.
 
 The core experience: navigate a world map, click on any country, and instantly see the best SF restaurants serving that cuisine alongside the dishes you should order if you've never tried it before.
 

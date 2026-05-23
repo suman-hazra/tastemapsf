@@ -4,15 +4,25 @@ import type { Country } from "../data/types";
 interface Props {
   country: Country | null;
   onAnswer: (tried: boolean) => void;
+  onClose: () => void;
 }
 
-export default function TriedPromptDialog({ country, onAnswer }: Props) {
+export default function TriedPromptDialog({
+  country,
+  onAnswer,
+  onClose,
+}: Props) {
   const yesButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!country) return;
     yesButtonRef.current?.focus();
-  }, [country]);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [country, onClose]);
 
   if (!country) return null;
 
@@ -22,8 +32,23 @@ export default function TriedPromptDialog({ country, onAnswer }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="tried-prompt-title"
-        className="pointer-events-auto w-full max-w-sm border border-black/10 bg-panel px-5 py-5 text-center shadow-xl"
+        className="pointer-events-auto relative w-full max-w-sm border border-black/10 bg-panel px-5 py-5 text-center shadow-xl"
       >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close tried prompt"
+          className="absolute right-2 top-2 grid h-11 w-11 place-items-center rounded-full text-ink-soft hover:bg-black/5"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M5 5L15 15M15 5L5 15"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
         <div className="text-3xl" aria-hidden="true">
           {country.flag}
         </div>
@@ -34,7 +59,7 @@ export default function TriedPromptDialog({ country, onAnswer }: Props) {
           Tried {country.name}?
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-          Mark this cuisine on your Taste Map.
+          Mark this cuisine on your Tastemap.
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">

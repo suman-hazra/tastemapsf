@@ -30,25 +30,25 @@ export const colors = {
 // Passport-style map palette (Michelin / Google Maps inspired).
 // Four country states, each a distinct fill:
 //   • unseeded   — cool pale stone, recedes against the ocean
-//   • seeded     — warm parchment, invites exploration
+//   • seeded     — warm yellow, invites exploration
 //   • selected   — honey wash, "you're looking at this one"
-//   • tried      — clay, the passport stamp
-// Progression: cool → warm cream → warm honey → warm clay.
+//   • tried      — green, the completed state
+// Progression: cool → warm yellow → warm honey → green.
 export const map = {
   logoNavy: "#092652",
   bg: "#a8d3e6",          // vibrant ocean blue
 
   unseededLand: "#e3e8ec", // cool pale stone — not in our list
   unseededLine: "#b0bac3", // darker so boundaries inside the unseeded mass read
-  land: "#fbf3e5",         // warm parchment — seeded country
+  land: "#f1d47a",         // warm yellow — seeded country
   landLine: "#9aa6b0",     // medium gray-blue — reads against the warm cream fill
-  landHover: "#f5ead2",    // slight warming on hover
+  landHover: "#e9c766",    // slightly deeper yellow on hover
   selectedLand: "#e8c89a", // honey wash — selected
   label: "#7d8a93",
   labelHover: "#0e0e0c",
 
-  visited: "#bda58e",      // warm muted clay — tried
-  visitedInk: "#8a6f57",   // tried country border
+  visited: "#7CC576",      // green — tried
+  visitedInk: "#2f8f45",   // tried country border
 
   accent: "#c8281e",       // pin / selected stroke
   accentInk: "#7a1612",    // pin border

@@ -1,6 +1,6 @@
 # Restaurant data — external editing workflow
 
-This folder is the **source of truth** for Taste Map SF's country and restaurant data.
+This folder is the **source of truth** for Tastemap SF's country and restaurant data.
 
 The app reads `src/data/restaurants.ts`, but that file is **auto-generated** from the two CSVs here. Edit the CSVs, run `npm run build:data`, and the app's data is rebuilt. Don't edit `src/data/restaurants.ts` directly — your changes will be overwritten.
 
@@ -81,7 +81,7 @@ The CSV format is meant to be pasted directly into Claude / ChatGPT / Gemini / e
 ### Prompt — expand the country list
 
 ```
-I'm building Taste Map SF — a web app where users click a country on a world
+I'm building Tastemap SF — a web app where users click a country on a world
 map and see the best San Francisco restaurants for that cuisine. Data lives
 in two CSVs.
 
@@ -112,7 +112,7 @@ dishes each. Output strict CSV rows ready to paste into countries.csv.
 ### Prompt — propose restaurants for a cuisine
 
 ```
-I'm adding restaurants for [CUISINE] cuisine to Taste Map SF (San Francisco).
+I'm adding restaurants for [CUISINE] cuisine to Tastemap SF (San Francisco).
 Schema:
 
 restaurants.csv columns:
@@ -134,7 +134,7 @@ Output strict CSV rows only. No commentary.
 ### Prompt — verify a batch is still open
 
 ```
-Here are restaurants from my Taste Map SF data. For each, tell me whether it's
+Here are restaurants from my Tastemap SF data. For each, tell me whether it's
 currently operating in San Francisco as of [TODAY'S DATE]. Check Google Maps
 and a quick search. Output one row per restaurant in the form:
 
