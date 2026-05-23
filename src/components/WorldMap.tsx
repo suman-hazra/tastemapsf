@@ -11,11 +11,10 @@
 // inside the map area. ZoomableGroup's translateExtent clamps panning to
 // those bounds — the user can't pan into blank ocean past the world's edges.
 //
-// Zoom/pan: react-simple-maps' ZoomableGroup, controlled by parent state so
-// the +/−/RESET widget can drive it. Country strokes use vector-effect to
-// stay 1px regardless of zoom.
+// Zoom/pan: react-simple-maps' ZoomableGroup handles wheel-zoom and drag-pan
+// natively. Country strokes use vector-effect to stay 1px regardless of zoom.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -27,8 +26,7 @@ import { map as c } from "../styles/tokens";
 import { slugForGeoId } from "../data/countryIdMap";
 import Avatar from "./Avatar";
 import FlagMarker from "./FlagMarker";
-import PanControls from "./PanControls";
-import ZoomControls from "./ZoomControls";
+import SanFranciscoMarker from "./SanFranciscoMarker";
 
 interface Props {
   topology: object;
@@ -60,11 +58,11 @@ const MAP_HEIGHT = 500;
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 10;
 
-// Starting view: framed around the countries we actually have SF restaurant
-// data for. This keeps the first screen dense instead of opening on a mostly
-// oceanic slice of the globe.
-const HOME_CENTER: [number, number] = [32, 18];
-const HOME_ZOOM = 1.9;
+// Starting view: framed wide enough to include SF on the left and the
+// seeded countries in Europe/Asia, so the "home city" marker is visible
+// on first load alongside the destinations.
+const HOME_CENTER: [number, number] = [0, 22];
+const HOME_ZOOM = 1.15;
 
 // Geographic bounds for the visible viewport. As the user pans, we clamp the
 // center so the viewport's edges never wander far past these limits — that's
@@ -192,6 +190,7 @@ export default function WorldMap({
     coordinates: [number, number];
     zoom: number;
   }>({ coordinates: HOME_CENTER, zoom: HOME_ZOOM });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!selectedCentroid || !selectedSlug) return;
@@ -209,36 +208,33 @@ export default function WorldMap({
     });
   }, [selectedCentroid, selectedSlug]);
 
+  // Wheel-zoom handler attached non-passively so we can preventDefault on
+  // ctrl+wheel (Mac trackpad pinch). Without this the browser does an OS
+  // pinch-zoom that pushes fixed overlays off the visual viewport. Plain
+  // wheel scroll over the map also zooms.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const factor = Math.exp(-e.deltaY * 0.005);
+      setPosition((p) => {
+        const zoom = clamp(p.zoom * factor, MIN_ZOOM, MAX_ZOOM);
+        return {
+          coordinates: clampCenter(p.coordinates[0], p.coordinates[1], zoom),
+          zoom,
+        };
+      });
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
   const handleMouseLeave = () => setCursorPos(null);
-
-  const zoomTo = (factor: number) =>
-    setPosition((p) => {
-      const zoom = clamp(p.zoom * factor, MIN_ZOOM, MAX_ZOOM);
-      return {
-        coordinates: clampCenter(p.coordinates[0], p.coordinates[1], zoom),
-        zoom,
-      };
-    });
-  const resetZoom = () =>
-    setPosition({ coordinates: HOME_CENTER, zoom: HOME_ZOOM });
-
-  // Pan in degrees of lng/lat, scaled inversely by zoom so each button click
-  // moves roughly the same fraction of the visible viewport at any zoom level.
-  const PAN_STEP_LNG = 60;
-  const PAN_STEP_LAT = 30;
-  const panBy = (dLng: number, dLat: number) =>
-    setPosition((p) => ({
-      ...p,
-      coordinates: clampCenter(
-        p.coordinates[0] + dLng / p.zoom,
-        p.coordinates[1] + dLat / p.zoom,
-        p.zoom,
-      ),
-    }));
 
   // One copy of the map's contents: country shapes, ocean labels, country
   // labels, pins, centroid avatar. Called three times (once per wrap copy).
@@ -472,11 +468,20 @@ export default function WorldMap({
           <Avatar height={CURSOR_AVATAR_HEIGHT / position.zoom} />
         </Marker>
       )}
+
+      {/* San Francisco — the app's home city. */}
+      <Marker coordinates={[-122.4194, 37.7749]}>
+        <SanFranciscoMarker />
+      </Marker>
     </>
   );
 
   return (
-    <div className="relative h-full w-full" style={{ background: c.bg }}>
+    <div
+      ref={containerRef}
+      className="relative h-full w-full"
+      style={{ background: c.bg }}
+    >
       <ComposableMap
         projection="geoNaturalEarth1"
         projectionConfig={{ scale: 170 }}
@@ -563,23 +568,6 @@ export default function WorldMap({
         />
       )}
 
-      <PanControls
-        onPanUp={() => panBy(0, PAN_STEP_LAT)}
-        onPanDown={() => panBy(0, -PAN_STEP_LAT)}
-        onPanLeft={() => panBy(-PAN_STEP_LNG, 0)}
-        onPanRight={() => panBy(PAN_STEP_LNG, 0)}
-      />
-
-      <ZoomControls
-        canReset={
-          Math.abs(position.zoom - HOME_ZOOM) > 0.05 ||
-          Math.abs(position.coordinates[0] - HOME_CENTER[0]) > 0.5 ||
-          Math.abs(position.coordinates[1] - HOME_CENTER[1]) > 0.5
-        }
-        onZoomIn={() => zoomTo(1.5)}
-        onZoomOut={() => zoomTo(1 / 1.5)}
-        onReset={resetZoom}
-      />
     </div>
   );
 }

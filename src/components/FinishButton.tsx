@@ -7,7 +7,7 @@ export default function FinishButton({ onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="absolute bottom-6 left-1/2 z-20 flex h-14 -translate-x-1/2 items-center gap-3 rounded-chip border border-black/10 bg-panel px-6 text-base font-semibold text-ink shadow-lg transition-colors hover:bg-canvas"
+      className="fixed bottom-6 left-1/2 z-20 flex h-14 -translate-x-1/2 items-center gap-3 rounded-chip border border-black/10 bg-panel px-6 text-base font-semibold text-ink shadow-lg transition-colors hover:bg-canvas"
     >
       <FlagIcon />
       <span>Finish</span>

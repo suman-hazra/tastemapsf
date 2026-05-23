@@ -7,7 +7,7 @@
 //                          (mutually exclusive with selectedSlug)
 //   state.triedSet       — slugs the user has marked "tried"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Counter from "./components/Counter";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -15,12 +15,23 @@ import FinishButton from "./components/FinishButton";
 import LoadingState from "./components/LoadingState";
 import ScoreDialog from "./components/ScoreDialog";
 import TriedPromptDialog from "./components/TriedPromptDialog";
+import WelcomeDialog from "./components/WelcomeDialog";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
 
 interface SharedScore {
   tried: number;
   total: number;
+}
+
+const WELCOME_STORAGE_KEY = "tastemapsf:welcome-seen";
+
+function readWelcomeSeen(): boolean {
+  try {
+    return window.localStorage.getItem(WELCOME_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 function readSharedScore(): SharedScore | null {
@@ -33,6 +44,22 @@ function readSharedScore(): SharedScore | null {
 }
 
 export default function App() {
+  // Block the browser's OS-level pinch-zoom so fixed overlays (logo,
+  // counter, Finish) can't slide off the visual viewport. Map zoom via
+  // wheel/pinch over the SVG is unaffected — d3-zoom handles those.
+  useEffect(() => {
+    const blockPinch = (e: WheelEvent) => {
+      if (e.ctrlKey) e.preventDefault();
+    };
+    const blockGesture = (e: Event) => e.preventDefault();
+    document.addEventListener("wheel", blockPinch, { passive: false });
+    document.addEventListener("gesturestart", blockGesture);
+    return () => {
+      document.removeEventListener("wheel", blockPinch);
+      document.removeEventListener("gesturestart", blockGesture);
+    };
+  }, []);
+
   const mapData = useMapData();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [unseededName, setUnseededName] = useState<string | null>(null);
@@ -42,6 +69,20 @@ export default function App() {
     readSharedScore(),
   );
   const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
+  // Skip the welcome dialog when the user arrived via a shared score link —
+  // the score dialog is the primary thing they came to see.
+  const [showWelcome, setShowWelcome] = useState(
+    () => !readWelcomeSeen() && readSharedScore() === null,
+  );
+
+  const dismissWelcome = () => {
+    try {
+      window.localStorage.setItem(WELCOME_STORAGE_KEY, "1");
+    } catch {
+      // Ignore storage errors — at worst the dialog reappears next visit.
+    }
+    setShowWelcome(false);
+  };
 
   // Click handler from WorldMap. Toggle semantic: re-clicking the currently
   // open country closes the panel. Clicking an unseeded country opens the
@@ -146,7 +187,7 @@ export default function App() {
     <ErrorBoundary>
       <div className="h-full">
         <main className="relative h-full overflow-hidden">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between px-5 py-4 sm:px-6">
+          <div className="pointer-events-none fixed inset-x-0 top-0 z-20 flex items-start justify-between px-5 py-4 sm:px-6">
             <a
               href="/"
               className="pointer-events-auto flex items-center"
@@ -236,6 +277,7 @@ export default function App() {
                   canSuggestNext={triedCount < mapData.total}
                 />
               )}
+              {showWelcome && <WelcomeDialog onDismiss={dismissWelcome} />}
             </>
           )}
         </main>
