@@ -1,32 +1,25 @@
-// 16px static dark-grey silhouette. Per /plan-design-review:
-//   - single inline SVG path, no animation
-//   - hidden when no country is selected (App.tsx controls visibility)
-//   - teleports to selected country centroid (via react-simple-maps Marker)
-//
-// Renders centered on its origin point: viewBox is -8 to 8 so (0,0) is the
-// figure's "feet" position. Marker translates the whole group to the
-// projected centroid coordinate.
-
-import { colors } from "../styles/tokens";
+// Character avatar rendered from /public/avatar.svg.
+// Positioned with feet at the marker origin so it stands on the selected
+// country's centroid.
 
 interface Props {
-  size?: number;
+  height?: number;
 }
 
-export default function Avatar({ size = 16 }: Props) {
+// Source SVG aspect ratio (width / height) from /public/avatar.svg viewBox.
+const ASPECT = 88.5 / 209.45;
+
+export default function Avatar({ height = 48 }: Props) {
+  const width = height * ASPECT;
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="-8 -16 16 16"
-      fill={colors.avatar}
+    <image
+      href="/avatar.svg"
+      width={width}
+      height={height}
+      x={-width / 2}
+      y={-height}
       style={{ pointerEvents: "none" }}
       aria-hidden="true"
-    >
-      {/* Head */}
-      <circle cx="0" cy="-11.5" r="2.2" />
-      {/* Body + legs as a single rounded path */}
-      <path d="M -2.8 -8.5 Q -3.2 -7 -2.5 -5.5 L -2.5 -0.5 Q -2.5 0 -2 0 L -0.5 0 L -0.5 -4 L 0.5 -4 L 0.5 0 L 2 0 Q 2.5 0 2.5 -0.5 L 2.5 -5.5 Q 3.2 -7 2.8 -8.5 Z" />
-    </svg>
+    />
   );
 }
