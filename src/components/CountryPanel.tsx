@@ -56,7 +56,7 @@ export default function CountryPanel({
       role="dialog"
       aria-modal="false"
       aria-labelledby="panel-title"
-      className="absolute inset-y-0 right-0 z-10 flex w-full max-w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-lg md:max-w-[40%] lg:max-w-[400px]"
+      className="absolute inset-y-0 right-0 z-30 flex w-full max-w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-lg md:max-w-[40%] lg:max-w-[400px]"
     >
       {/* Header */}
       <header className="flex items-start justify-between border-b border-black/5 px-5 py-4">

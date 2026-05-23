@@ -144,19 +144,41 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="flex h-full flex-col">
-        <header className="flex h-24 items-center justify-between border-b border-black/5 px-5 sm:px-6">
-          <a href="/" className="flex items-center" aria-label="TastemapSF home">
-            <img
-              src="/tastemapsflogo2.png"
-              alt="TastemapSF"
-              className="h-20 w-auto mix-blend-multiply"
-            />
-          </a>
-          <Counter tried={triedCount} total={total} />
-        </header>
+      <div className="h-full">
+        <main className="relative h-full overflow-hidden">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between px-5 py-4 sm:px-6">
+            <a
+              href="/"
+              className="pointer-events-auto flex items-center"
+              aria-label="TastemapSF home"
+            >
+              <svg width="0" height="0" className="absolute" aria-hidden="true">
+                <filter id="logo-chroma-white" colorInterpolationFilters="sRGB">
+                  <feColorMatrix
+                    type="matrix"
+                    values="1 0 0 0 0
+                            0 1 0 0 0
+                            0 0 1 0 0
+                            -1 -1 -1 0 2.4"
+                  />
+                  <feComponentTransfer>
+                    <feFuncA type="discrete" tableValues="0 1" />
+                  </feComponentTransfer>
+                  <feComposite in2="SourceGraphic" operator="in" />
+                </filter>
+              </svg>
+              <img
+                src="/tastemapsflogo2.png"
+                alt="TastemapSF"
+                className="h-20 w-auto"
+                style={{ filter: "url(#logo-chroma-white)" }}
+              />
+            </a>
+            <div className="pointer-events-auto px-3 py-2">
+              <Counter tried={triedCount} total={total} />
+            </div>
+          </div>
 
-        <main className="relative flex-1 overflow-hidden">
           {mapData.status === "loading" && <LoadingState />}
 
           {mapData.status === "error" && (

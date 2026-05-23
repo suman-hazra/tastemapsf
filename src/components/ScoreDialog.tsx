@@ -81,6 +81,22 @@ export default function ScoreDialog({
           backgroundSize: "cover",
         }}
       >
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close score dialog"
+          className="absolute right-2 top-2 z-10 grid h-11 w-11 place-items-center rounded-full text-ink-soft hover:bg-black/5"
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M5 5L15 15M15 5L5 15"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           {CONFETTI.map((piece, index) => (
             <span
