@@ -82,7 +82,7 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 ## Project Notes
 
 - Progress is intentionally not persisted yet.
-- The Share CTA is present in the score dialog but disabled until the sharing flow is designed.
+- Legal, privacy, and attribution content is available in the hamburger menu and mirrored in `LEGAL.md`.
 - Some marker positions use visual overrides where raw geometry centroids look wrong at this scale.
 - The `feedback/` folder is ignored and should stay local.
 
@@ -113,3 +113,5 @@ Please keep entries to restaurants that are currently open and genuinely represe
 ## License
 
 MIT
+
+See `LICENSE` and `LEGAL.md`.

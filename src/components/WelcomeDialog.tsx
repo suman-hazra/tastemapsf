@@ -53,6 +53,16 @@ export default function WelcomeDialog({ onDismiss }: Props) {
         >
           Let&rsquo;s go
         </button>
+        <p className="mt-3 text-xs leading-relaxed text-ink-soft">
+          <span
+            aria-hidden="true"
+            className="mr-1 inline-grid h-4 w-4 place-items-center rounded-full border border-black/20 text-[10px] font-semibold leading-none"
+          >
+            i
+          </span>{" "}
+          Prefer a checklist instead? Open the menu and choose{" "}
+          <span className="font-semibold">View list</span>.
+        </p>
       </section>
     </div>
   );

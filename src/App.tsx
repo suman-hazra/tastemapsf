@@ -14,6 +14,7 @@ import CountryListMenu from "./components/CountryListMenu";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FinishButton from "./components/FinishButton";
+import LegalDialog from "./components/LegalDialog";
 import LoadingState from "./components/LoadingState";
 import ScoreDialog from "./components/ScoreDialog";
 import TriedPromptDialog from "./components/TriedPromptDialog";
@@ -70,6 +71,7 @@ export default function App() {
   const [showScoreDialog, setShowScoreDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
+  const [showLegalDialog, setShowLegalDialog] = useState(false);
   const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
     readSharedScore(),
   );
@@ -132,6 +134,7 @@ export default function App() {
     setSharedScore(null);
     setShowMenu(false);
     setShowCountryList(false);
+    setShowLegalDialog(false);
     setShowScoreDialog(true);
   };
 
@@ -171,6 +174,16 @@ export default function App() {
       }
       return next;
     });
+  };
+
+  const openLegalDialog = () => {
+    setShowMenu(false);
+    setShowCountryList(false);
+    setSelectedSlug(null);
+    setUnseededName(null);
+    setUnseededFlag(null);
+    setTriedPromptSlug(null);
+    setShowLegalDialog(true);
   };
 
   const suggestNextCountry = (countryId: string) => {
@@ -286,6 +299,13 @@ export default function App() {
                 >
                   View list
                 </button>
+                <button
+                  type="button"
+                  onClick={openLegalDialog}
+                  className="h-11 w-full rounded-chip px-3 text-left text-sm font-semibold text-ink transition-colors hover:bg-canvas"
+                >
+                  Legal & credits
+                </button>
               </div>
             )}
           </div>
@@ -352,6 +372,9 @@ export default function App() {
                   onFinish={openScoreDialog}
                   onClose={() => setShowCountryList(false)}
                 />
+              )}
+              {showLegalDialog && (
+                <LegalDialog onClose={() => setShowLegalDialog(false)} />
               )}
               {(showScoreDialog || sharedScore) && (
                 <ScoreDialog
