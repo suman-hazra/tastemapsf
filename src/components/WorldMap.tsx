@@ -23,7 +23,7 @@ import {
   ZoomableGroup,
 } from "react-simple-maps";
 import { map as c } from "../styles/tokens";
-import { slugForGeoId } from "../data/countryIdMap";
+import { flagForGeoId, slugForGeoId } from "../data/countryIdMap";
 import Avatar from "./Avatar";
 import FlagMarker from "./FlagMarker";
 import SanFranciscoMarker from "./SanFranciscoMarker";
@@ -43,11 +43,15 @@ interface Props {
   flagForSlug: (slug: string) => string | undefined;
   /**
    * Called on country click. If the country is in our seed (has a slug),
-   * `slug` is set and `unseededName` is null. If the clicked country is not
-   * seeded, `slug` is null and `unseededName` is the country's display name
-   * (so the panel can show the "No data yet — got a tip?" state).
+   * `slug` is set and unseeded fields are null. If the clicked country is not
+   * seeded, `slug` is null and unseeded fields describe the country for the
+   * empty panel state.
    */
-  onSelect: (slug: string | null, unseededName: string | null) => void;
+  onSelect: (
+    slug: string | null,
+    unseededName: string | null,
+    unseededFlag: string | null,
+  ) => void;
 }
 
 // SVG viewBox sized to the world's projected width at scale 170:
@@ -281,9 +285,14 @@ export default function WorldMap({
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
-                  onClick={() =>
-                    onSelect(slug ?? null, slug ? null : geo.properties.name)
-                  }
+                  onClick={() => {
+                    const geoId = geo.id ?? "";
+                    onSelect(
+                      slug ?? null,
+                      slug ? null : geo.properties.name,
+                      slug ? null : (flagForGeoId(geoId) ?? null),
+                    );
+                  }}
                   onMouseEnter={() => isSeeded && setHovered(slug)}
                   onMouseLeave={() => setHovered(null)}
                   aria-label={geo.properties.name}

@@ -1,10 +1,9 @@
 // Slide-in side panel. Three render modes based on what the user clicked:
 //
 //   1. SEEDED + has restaurants  → cuisine summary + dishes + restaurant list
-//   2. SEEDED + 0 restaurants    → cuisine summary + dishes + "Restaurants
-//                                  coming soon — got a pick?" mailto
-//   3. UNSEEDED                  → name + flag + "No restaurants seeded yet
-//                                  — got a tip?" mailto.
+//   2. SEEDED + 0 restaurants    → cuisine summary + dishes + suggestion CTA
+//   3. UNSEEDED                  → name + flag + short apologetic empty state
+//                                  + suggestion CTA.
 //
 // Affordances per /plan-design-review:
 //   - close button (X) in header
@@ -17,24 +16,74 @@
 //   - Tablet 768-1023 : 40% viewport width
 //   - Mobile <768px   : full-width / full-height
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import type { Country } from "../data/types";
 import DishBadge from "./DishBadge";
 import RestaurantCard from "./RestaurantCard";
 
+interface UnseededCountry {
+  displayName: string;
+  flag?: string;
+}
+
+interface SuggestionCountry {
+  name: string;
+  flag?: string;
+}
+
 interface Props {
   /** The seeded country to show, OR an unseeded country's display name. */
-  country: Country | { displayName: string } | null;
+  country: Country | UnseededCountry | null;
   onClose: () => void;
 }
 
-const MAILTO = "mailto:sumanhazra10@gmail.com?subject=Tastemap%20SF%20%E2%80%94%20restaurant%20tip";
+const TIP_EMAIL = "tastemapsf@gmail.com";
+
+function buildTipEmail(country: SuggestionCountry, restaurantName: string) {
+  const countryLabel = [country.flag, country.name].filter(Boolean).join(" ");
+  return {
+    subject: `Taste Map SF restaurant suggestion for ${country.name}`,
+    body: [
+      `Country: ${countryLabel}`,
+      `Restaurant name/details: ${restaurantName}`,
+      "",
+      "Sent from Taste Map SF.",
+    ].join("\n"),
+  };
+}
+
+function buildTipMailto(country: SuggestionCountry, restaurantName: string) {
+  const email = buildTipEmail(country, restaurantName);
+  const params = new URLSearchParams({
+    subject: email.subject,
+    body: email.body,
+  });
+  return `mailto:${TIP_EMAIL}?${params.toString()}`;
+}
+
+function buildGmailComposeUrl(
+  country: SuggestionCountry,
+  restaurantName: string,
+) {
+  const email = buildTipEmail(country, restaurantName);
+  const params = new URLSearchParams({
+    view: "cm",
+    fs: "1",
+    to: TIP_EMAIL,
+    su: email.subject,
+    body: email.body,
+  });
+  return `https://mail.google.com/mail/?${params.toString()}`;
+}
 
 export default function CountryPanel({
   country,
   onClose,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [suggestionCountry, setSuggestionCountry] =
+    useState<SuggestionCountry | null>(null);
 
   // ESC key closes. DOM-order tab focus starts at the close button.
   useEffect(() => {
@@ -63,7 +112,7 @@ export default function CountryPanel({
         <div className="min-w-0 flex-1 pr-3">
           <div className="font-display text-2xl font-semibold leading-tight">
             <span aria-hidden="true" className="mr-2">
-              {isUnseeded ? "" : country.flag}
+              {country.flag}
             </span>
             <span id="panel-title">
               {isUnseeded ? country.displayName : country.name}
@@ -91,16 +140,34 @@ export default function CountryPanel({
       {/* Body */}
       <div className="flex-1 overflow-y-auto px-5 py-5">
         {isUnseeded ? (
-          <UnseededBody />
+          <UnseededBody
+            country={{
+              name: country.displayName,
+              flag: country.flag,
+            }}
+            onSuggest={setSuggestionCountry}
+          />
         ) : (
-          <SeededBody country={country} />
+          <SeededBody country={country} onSuggest={setSuggestionCountry} />
         )}
       </div>
+      {suggestionCountry && (
+        <SuggestionDialog
+          country={suggestionCountry}
+          onClose={() => setSuggestionCountry(null)}
+        />
+      )}
     </aside>
   );
 }
 
-function SeededBody({ country }: { country: Country }) {
+function SeededBody({
+  country,
+  onSuggest,
+}: {
+  country: Country;
+  onSuggest: (country: SuggestionCountry) => void;
+}) {
   const hasRestaurants = country.restaurants.length > 0;
 
   return (
@@ -133,14 +200,18 @@ function SeededBody({ country }: { country: Country }) {
         ) : (
           <div className="mt-2 rounded-chip border border-black/5 bg-canvas p-3 text-sm">
             <div className="font-medium">
-              Restaurants coming soon — got a pick?
+              Sorry, we could not find restaurants for {country.name} in San
+              Francisco yet.
             </div>
-            <a
-              href={MAILTO}
+            <button
+              type="button"
+              onClick={() =>
+                onSuggest({ name: country.name, flag: country.flag })
+              }
               className="mt-2 inline-flex h-11 items-center rounded-chip border border-black/10 px-3 text-sm font-medium hover:bg-black/5"
             >
               Send me one →
-            </a>
+            </button>
           </div>
         )}
       </section>
@@ -148,18 +219,137 @@ function SeededBody({ country }: { country: Country }) {
   );
 }
 
-function UnseededBody() {
+function UnseededBody({
+  country,
+  onSuggest,
+}: {
+  country: SuggestionCountry;
+  onSuggest: (country: SuggestionCountry) => void;
+}) {
   return (
     <div className="space-y-3">
       <p className="text-sm leading-relaxed">
-        No restaurants seeded yet — got a tip?
+        Sorry, we could not find restaurants for {country.name} in San
+        Francisco yet.
       </p>
-      <a
-        href={MAILTO}
+      <button
+        type="button"
+        onClick={() => onSuggest(country)}
         className="inline-flex h-11 items-center rounded-chip border border-black/10 px-3 text-sm font-medium hover:bg-black/5"
       >
         Send me one →
-      </a>
+      </button>
+    </div>
+  );
+}
+
+function SuggestionDialog({
+  country,
+  onClose,
+}: {
+  country: SuggestionCountry;
+  onClose: () => void;
+}) {
+  const [restaurantName, setRestaurantName] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const submitSuggestion = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedName = restaurantName.trim();
+    if (!trimmedName) return;
+    setSubmitted(true);
+    const opened = window.open(
+      buildGmailComposeUrl(country, trimmedName),
+      "_blank",
+      "noopener,noreferrer",
+    );
+    if (!opened) {
+      window.location.href = buildTipMailto(country, trimmedName);
+    }
+  };
+
+  return (
+    <div className="absolute inset-0 z-40 grid place-items-center bg-black/20 px-4">
+      <form
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="suggestion-title"
+        onSubmit={submitSuggestion}
+        className="w-full max-w-sm border border-black/10 bg-panel p-5 shadow-xl"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2
+              id="suggestion-title"
+              className="font-display text-xl font-semibold leading-tight"
+            >
+              Send me one
+            </h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              {[country.flag, country.name].filter(Boolean).join(" ")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close suggestion dialog"
+            className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full text-ink-soft hover:bg-black/5"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path
+                d="M5 5L15 15M15 5L5 15"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <label
+          className="mt-4 block text-sm font-medium"
+          htmlFor="restaurant-tip"
+        >
+          Restaurant name/details
+        </label>
+        <input
+          ref={inputRef}
+          id="restaurant-tip"
+          value={restaurantName}
+          onChange={(event) => {
+            setRestaurantName(event.target.value);
+            setSubmitted(false);
+          }}
+          required
+          className="mt-2 h-11 w-full rounded-chip border border-black/10 bg-white px-3 text-sm outline-none focus:border-black/30"
+        />
+        {submitted && (
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+            Your email draft should open in a new tab. Please hit send there.
+          </p>
+        )}
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-11 rounded-chip border border-black/10 px-4 text-sm font-semibold hover:bg-black/5"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="h-11 rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold hover:bg-canvas"
+          >
+            Send
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

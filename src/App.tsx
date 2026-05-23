@@ -5,6 +5,7 @@
 //                          (null = no panel, or unseeded country was clicked)
 //   state.unseededName   — display name when an unseeded country was clicked
 //                          (mutually exclusive with selectedSlug)
+//   state.unseededFlag   — flag emoji for the selected unseeded country
 //   state.triedSet       — slugs the user has marked "tried"
 
 import { useEffect, useState } from "react";
@@ -63,6 +64,7 @@ export default function App() {
   const mapData = useMapData();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [unseededName, setUnseededName] = useState<string | null>(null);
+  const [unseededFlag, setUnseededFlag] = useState<string | null>(null);
   const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
   const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
@@ -90,9 +92,11 @@ export default function App() {
   const handleSelect = (
     slug: string | null,
     unseededDisplayName: string | null,
+    unseededDisplayFlag: string | null,
   ) => {
     if (slug) {
       setUnseededName(null);
+      setUnseededFlag(null);
       if (selectedSlug === slug) {
         setSelectedSlug(null);
         setTriedPromptSlug(null);
@@ -105,13 +109,18 @@ export default function App() {
     if (unseededDisplayName) {
       setSelectedSlug(null);
       setTriedPromptSlug(null);
-      setUnseededName((prev) =>
-        prev === unseededDisplayName ? null : unseededDisplayName,
-      );
+      if (unseededName === unseededDisplayName) {
+        setUnseededName(null);
+        setUnseededFlag(null);
+      } else {
+        setUnseededName(unseededDisplayName);
+        setUnseededFlag(unseededDisplayFlag);
+      }
       return;
     }
     setSelectedSlug(null);
     setUnseededName(null);
+    setUnseededFlag(null);
     setTriedPromptSlug(null);
   };
 
@@ -129,6 +138,7 @@ export default function App() {
   const closePanel = () => {
     setSelectedSlug(null);
     setUnseededName(null);
+    setUnseededFlag(null);
     setTriedPromptSlug(null);
   };
 
@@ -158,6 +168,7 @@ export default function App() {
     setShowScoreDialog(false);
     setSharedScore(null);
     setUnseededName(null);
+    setUnseededFlag(null);
     setTriedPromptSlug(null);
     setSelectedSlug(nextCountry.id);
   };
@@ -180,7 +191,7 @@ export default function App() {
   const panelCountry = selectedCountry
     ? selectedCountry
     : unseededName
-      ? { displayName: unseededName }
+      ? { displayName: unseededName, flag: unseededFlag ?? undefined }
       : null;
 
   return (
@@ -255,8 +266,8 @@ export default function App() {
                 flagForSlug={(slug) =>
                   mapData.countryBySlug.get(slug)?.flag
                 }
-                onSelect={(slug, displayName) =>
-                  handleSelect(slug, displayName)
+                onSelect={(slug, displayName, displayFlag) =>
+                  handleSelect(slug, displayName, displayFlag)
                 }
               />
               <FinishButton onClick={openScoreDialog} />
