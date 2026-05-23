@@ -236,8 +236,8 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-[100dvh]">
-        <main className="relative min-h-[100dvh] overflow-hidden">
+      <div className="h-[100dvh]">
+        <main className="relative h-[100dvh] overflow-hidden">
           <div className="pointer-events-none fixed inset-x-0 top-0 z-20 flex items-start justify-between px-3 py-3 sm:px-6 sm:py-4">
             <a
               href="/"
