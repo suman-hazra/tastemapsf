@@ -18,12 +18,29 @@ import TriedPromptDialog from "./components/TriedPromptDialog";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
 
+interface SharedScore {
+  tried: number;
+  total: number;
+}
+
+function readSharedScore(): SharedScore | null {
+  const params = new URLSearchParams(window.location.search);
+  const tried = Number(params.get("score"));
+  const total = Number(params.get("total"));
+  if (!Number.isInteger(tried) || !Number.isInteger(total)) return null;
+  if (tried < 0 || total <= 0 || tried > total) return null;
+  return { tried, total };
+}
+
 export default function App() {
   const mapData = useMapData();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [unseededName, setUnseededName] = useState<string | null>(null);
   const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
+  const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
+    readSharedScore(),
+  );
   const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
 
   // Click handler from WorldMap. Toggle semantic: re-clicking the currently
@@ -59,7 +76,13 @@ export default function App() {
 
   const openScoreDialog = () => {
     setTriedPromptSlug(null);
+    setSharedScore(null);
     setShowScoreDialog(true);
+  };
+
+  const closeScoreDialog = () => {
+    setShowScoreDialog(false);
+    setSharedScore(null);
   };
 
   const closePanel = () => {
@@ -92,6 +115,7 @@ export default function App() {
     const nextCountry =
       untriedCountries[Math.floor(Math.random() * untriedCountries.length)];
     setShowScoreDialog(false);
+    setSharedScore(null);
     setUnseededName(null);
     setTriedPromptSlug(null);
     setSelectedSlug(nextCountry.id);
@@ -188,11 +212,11 @@ export default function App() {
                 country={triedPromptCountry}
                 onAnswer={answerTriedPrompt}
               />
-              {showScoreDialog && (
+              {(showScoreDialog || sharedScore) && (
                 <ScoreDialog
-                  tried={triedCount}
-                  total={mapData.total}
-                  onClose={() => setShowScoreDialog(false)}
+                  tried={sharedScore?.tried ?? triedCount}
+                  total={sharedScore?.total ?? mapData.total}
+                  onClose={closeScoreDialog}
                   onSuggestNext={suggestNextCountry}
                   canSuggestNext={triedCount < mapData.total}
                 />

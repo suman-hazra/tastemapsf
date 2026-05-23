@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+
 interface Props {
   tried: number;
   total: number;
@@ -24,6 +26,47 @@ export default function ScoreDialog({
   onSuggestNext,
   canSuggestNext,
 }: Props) {
+  const [shareExpanded, setShareExpanded] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const shareUrl = useMemo(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("score", String(tried));
+    url.searchParams.set("total", String(total));
+    return url.toString();
+  }, [tried, total]);
+  const shareText = `I scored ${tried}/${total} on Taste Map SF. SF is wildly global. What's your score?`;
+  const canNativeShare =
+    typeof (navigator as Navigator & { share?: unknown }).share === "function";
+
+  const nativeShare = async () => {
+    if (!canNativeShare) {
+      setShareExpanded(true);
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: "Taste Map SF",
+        text: shareText,
+        url: shareUrl,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      setShareExpanded(true);
+    }
+  };
+
+  const copyShareLink = async () => {
+    const text = `${shareText} ${shareUrl}`;
+    if (!navigator.clipboard) {
+      window.prompt("Copy your Taste Map SF score:", text);
+      return;
+    }
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
   return (
     <div className="absolute inset-0 z-40 grid place-items-center bg-black/20 px-4">
       <section
@@ -31,6 +74,12 @@ export default function ScoreDialog({
         aria-modal="true"
         aria-labelledby="score-title"
         className="relative w-full max-w-lg overflow-hidden border border-black/10 bg-panel px-6 py-6 text-center shadow-xl"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.34), rgba(255,255,255,0.34)), url('/dolores.jpg')",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
       >
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           {CONFETTI.map((piece, index) => (
@@ -58,15 +107,17 @@ export default function ScoreDialog({
             Your Taste Map score
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-            San Francisco has room for every appetite. You have tasted part of
-            the map, and there is always another cuisine, neighborhood, and
-            table to try next.
+            <span className="inline-block bg-white/70 px-2 py-1 text-ink">
+              San Francisco has room for every appetite. You have tasted part
+              of the map, and there is always another cuisine, neighborhood,
+              and table to try next.
+            </span>
           </p>
           <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <button
               type="button"
               onClick={onClose}
-              className="h-11 rounded-chip border border-black/10 px-4 text-sm font-semibold transition-colors hover:bg-canvas"
+              className="h-11 rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas"
             >
               Back to map
             </button>
@@ -74,18 +125,58 @@ export default function ScoreDialog({
               type="button"
               onClick={onSuggestNext}
               disabled={!canSuggestNext}
-              className="h-11 whitespace-nowrap rounded-chip border border-black/10 bg-ink px-4 text-sm font-semibold text-white transition-colors hover:bg-black disabled:cursor-default disabled:border-black/5 disabled:bg-black/10 disabled:text-ink-soft"
+              className="h-11 whitespace-nowrap rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas disabled:cursor-default disabled:border-black/5 disabled:bg-white/70 disabled:text-ink-soft"
             >
               Pick My Next Bite
             </button>
           </div>
           <button
             type="button"
-            disabled
-            className="mt-3 h-11 w-full rounded-chip border border-black/10 px-4 text-sm font-semibold text-ink-soft"
+            onClick={() => setShareExpanded((expanded) => !expanded)}
+            className="mt-3 h-11 w-full rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas"
           >
             Share your score
           </button>
+          {shareExpanded && (
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {canNativeShare && (
+                <button
+                  type="button"
+                  onClick={nativeShare}
+                  className="h-10 rounded-chip border border-black/10 bg-white px-3 text-sm font-semibold transition-colors hover:bg-canvas"
+                >
+                  More
+                </button>
+              )}
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                  shareText,
+                )}&url=${encodeURIComponent(shareUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="grid h-10 place-items-center rounded-chip border border-black/10 bg-white text-sm font-semibold transition-colors hover:bg-canvas"
+              >
+                X
+              </a>
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                  shareUrl,
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="grid h-10 place-items-center rounded-chip border border-black/10 bg-white text-sm font-semibold transition-colors hover:bg-canvas"
+              >
+                Facebook
+              </a>
+              <button
+                type="button"
+                onClick={copyShareLink}
+                className="h-10 rounded-chip border border-black/10 bg-white px-3 text-sm font-semibold transition-colors hover:bg-canvas"
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+          )}
         </div>
       </section>
     </div>
