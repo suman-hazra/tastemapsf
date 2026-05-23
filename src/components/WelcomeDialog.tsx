@@ -22,9 +22,14 @@ export default function WelcomeDialog({ onDismiss }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="welcome-title"
-        className="w-full max-w-lg border border-black/10 bg-panel px-7 py-8 text-center shadow-xl"
+        className="w-full max-w-md border border-black/10 bg-panel px-4 py-6 text-center shadow-xl sm:max-w-lg sm:px-7 sm:py-8"
       >
-        <blockquote className="font-display text-xl leading-snug text-ink sm:text-2xl">
+        <blockquote
+          className="text-lg leading-snug text-ink sm:text-2xl"
+          style={{
+            fontFamily: "'EB Garamond', Garamond, Georgia, serif",
+          }}
+        >
           <span aria-hidden="true" className="mr-1 text-ink-soft">
             &ldquo;
           </span>
@@ -36,11 +41,16 @@ export default function WelcomeDialog({ onDismiss }: Props) {
             &rdquo;
           </span>
         </blockquote>
-        <div className="mt-3 text-sm font-medium tracking-wide text-ink-soft">
+        <div
+          className="mt-3 text-xs font-medium tracking-wide text-ink-soft sm:text-sm"
+          style={{
+            fontFamily: "'Manrope', 'Avenir Next', system-ui, sans-serif",
+          }}
+        >
           — Anthony Bourdain
         </div>
 
-        <p className="mt-6 text-sm leading-relaxed text-ink">
+        <p className="mt-5 text-sm leading-relaxed text-ink sm:mt-6">
           SF serves the world on a plate. Click a country to see where to eat
           its cuisine in the city, and mark the ones you&rsquo;ve tried.
         </p>
@@ -49,7 +59,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
           ref={ctaRef}
           type="button"
           onClick={onDismiss}
-          className="mt-7 h-12 rounded-chip border border-black/10 bg-ink px-6 text-sm font-semibold text-panel transition-colors hover:bg-black"
+          className="mt-6 h-12 w-full rounded-chip border border-black/10 bg-ink px-6 text-sm font-semibold text-panel transition-colors hover:bg-black sm:mt-7 sm:w-auto"
         >
           Let&rsquo;s go
         </button>

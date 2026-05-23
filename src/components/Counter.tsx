@@ -43,7 +43,7 @@ export default function Counter({ tried, total }: Props) {
     <div className="flex flex-col items-center leading-none">
       <div className="font-display tabular-nums">
         <span
-          className="inline-block text-5xl font-semibold transition-all duration-300 ease-out"
+          className="inline-block text-4xl font-semibold transition-all duration-300 ease-out sm:text-5xl"
           style={{
             color: numberColor,
             transform: pulse ? "scale(1.12)" : "scale(1)",
@@ -52,7 +52,7 @@ export default function Counter({ tried, total }: Props) {
           {isLoading ? "—" : tried}
         </span>
         <span
-          className="ml-2 text-xl"
+          className="ml-1.5 text-lg sm:ml-2 sm:text-xl"
           style={{ color: c.logoNavy, opacity: 0.62 }}
         >
           / {isLoading ? "—" : total}

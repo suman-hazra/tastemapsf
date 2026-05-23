@@ -49,17 +49,17 @@ export default function CountryListMenu({
       role="dialog"
       aria-modal="true"
       aria-labelledby="country-list-title"
-      className="absolute inset-y-0 right-0 z-40 flex w-full max-w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-xl md:max-w-[430px]"
+      className="absolute inset-y-0 right-0 z-40 flex w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-xl md:max-w-[430px]"
     >
-      <header className="flex items-start justify-between border-b border-black/5 px-5 py-4">
+      <header className="flex items-start justify-between border-b border-black/5 px-4 py-3 sm:px-5 sm:py-4">
         <div>
           <h2
             id="country-list-title"
-            className="font-display text-2xl font-semibold leading-tight"
+            className="font-display text-xl font-semibold leading-tight sm:text-2xl"
           >
             View list
           </h2>
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="mt-1 text-xs text-ink-soft sm:text-sm">
             Mark the countries you have tried.
           </p>
         </div>
@@ -81,7 +81,7 @@ export default function CountryListMenu({
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="flex-1 overflow-y-auto px-3 py-3 sm:px-4">
         <div className="space-y-5">
           {continentGroups.map((group) => (
             <section key={group.continent}>
@@ -94,12 +94,12 @@ export default function CountryListMenu({
                   return (
                     <li
                       key={country.id}
-                      className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3"
+                      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-3"
                     >
-                      <span className="text-2xl" aria-hidden="true">
+                      <span className="text-xl sm:text-2xl" aria-hidden="true">
                         {country.flag}
                       </span>
-                      <span className="min-w-0 text-sm font-semibold">
+                      <span className="min-w-0 text-sm font-semibold leading-tight">
                         {country.name}
                       </span>
                       <div className="grid grid-cols-2 overflow-hidden rounded-chip border border-black/10 bg-white">
@@ -137,7 +137,7 @@ export default function CountryListMenu({
         </div>
       </div>
 
-      <footer className="border-t border-black/5 bg-panel px-5 py-4">
+      <footer className="border-t border-black/5 bg-panel px-4 py-3 sm:px-5 sm:py-4">
         <button
           type="button"
           onClick={onFinish}

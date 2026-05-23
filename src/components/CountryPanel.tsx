@@ -105,12 +105,12 @@ export default function CountryPanel({
       role="dialog"
       aria-modal="false"
       aria-labelledby="panel-title"
-      className="absolute inset-y-0 right-0 z-30 flex w-full max-w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-lg md:max-w-[40%] lg:max-w-[400px]"
+      className="absolute inset-y-0 right-0 z-30 flex w-full flex-col overflow-hidden border-l border-black/5 bg-panel shadow-lg md:max-w-[40%] lg:max-w-[400px]"
     >
       {/* Header */}
-      <header className="flex items-start justify-between border-b border-black/5 px-5 py-4">
+      <header className="flex items-start justify-between border-b border-black/5 px-4 py-3 sm:px-5 sm:py-4">
         <div className="min-w-0 flex-1 pr-3">
-          <div className="font-display text-2xl font-semibold leading-tight">
+          <div className="font-display text-xl font-semibold leading-tight sm:text-2xl">
             <span aria-hidden="true" className="mr-2">
               {country.flag}
             </span>
@@ -138,7 +138,7 @@ export default function CountryPanel({
       </header>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 py-5">
+      <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5 sm:py-5">
         {isUnseeded ? (
           <UnseededBody
             country={{
@@ -280,17 +280,17 @@ function SuggestionDialog({
         aria-modal="true"
         aria-labelledby="suggestion-title"
         onSubmit={submitSuggestion}
-        className="w-full max-w-sm border border-black/10 bg-panel p-5 shadow-xl"
+        className="w-full max-w-sm border border-black/10 bg-panel p-4 shadow-xl sm:p-5"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2
               id="suggestion-title"
-              className="font-display text-xl font-semibold leading-tight"
+              className="font-display text-lg font-semibold leading-tight sm:text-xl"
             >
               Send me one
             </h2>
-            <p className="mt-1 text-sm text-ink-soft">
+            <p className="mt-1 text-xs text-ink-soft sm:text-sm">
               {[country.flag, country.name].filter(Boolean).join(" ")}
             </p>
           </div>
@@ -312,7 +312,7 @@ function SuggestionDialog({
         </div>
 
         <label
-          className="mt-4 block text-sm font-medium"
+          className="mt-4 block text-xs font-medium sm:text-sm"
           htmlFor="restaurant-tip"
         >
           Restaurant name/details
@@ -334,7 +334,7 @@ function SuggestionDialog({
           </p>
         )}
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:gap-3">
           <button
             type="button"
             onClick={onClose}

@@ -32,7 +32,7 @@ export default function TriedPromptDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="tried-prompt-title"
-        className="pointer-events-auto relative w-full max-w-sm border border-black/10 bg-panel px-5 py-5 text-center shadow-xl"
+        className="pointer-events-auto relative w-full max-w-xs border border-black/10 bg-panel px-4 py-4 text-center shadow-xl sm:max-w-sm sm:px-5 sm:py-5"
       >
         <button
           type="button"
@@ -49,25 +49,25 @@ export default function TriedPromptDialog({
             />
           </svg>
         </button>
-        <div className="text-3xl" aria-hidden="true">
+        <div className="text-2xl sm:text-3xl" aria-hidden="true">
           {country.flag}
         </div>
         <h2
           id="tried-prompt-title"
-          className="mt-2 font-display text-2xl font-semibold leading-tight"
+          className="mt-2 font-display text-xl font-semibold leading-tight sm:text-2xl"
         >
           Tried {country.name}?
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+        <p className="mt-2 text-xs leading-relaxed text-ink-soft sm:text-sm">
           Mark this cuisine on your Tastemap.
         </p>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:gap-3">
           <button
             ref={yesButtonRef}
             type="button"
             onClick={() => onAnswer(true)}
-            className="flex h-14 items-center justify-center gap-2 rounded-chip border border-tried bg-tried/15 text-sm font-semibold text-ink transition-colors hover:bg-tried/25"
+            className="flex h-12 items-center justify-center gap-2 rounded-chip border border-tried bg-tried/15 text-sm font-semibold text-ink transition-colors hover:bg-tried/25 sm:h-14"
           >
             <CheckIcon />
             <span>Yes</span>
@@ -75,7 +75,7 @@ export default function TriedPromptDialog({
           <button
             type="button"
             onClick={() => onAnswer(false)}
-            className="flex h-14 items-center justify-center gap-2 rounded-chip border border-[#c9463a]/35 bg-[#c9463a]/10 text-sm font-semibold text-ink transition-colors hover:bg-[#c9463a]/18"
+            className="flex h-12 items-center justify-center gap-2 rounded-chip border border-[#c9463a]/35 bg-[#c9463a]/10 text-sm font-semibold text-ink transition-colors hover:bg-[#c9463a]/18 sm:h-14"
           >
             <CrossIcon />
             <span>No</span>

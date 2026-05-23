@@ -77,10 +77,14 @@ export default function App() {
   );
   const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
   // Skip the welcome dialog when the user arrived via a shared score link —
-  // the score dialog is the primary thing they came to see.
-  const [showWelcome, setShowWelcome] = useState(
-    () => !readWelcomeSeen() && readSharedScore() === null,
-  );
+  // the score dialog is the primary thing they came to see. In dev, ignore
+  // the dismissal flag so the dialog reappears on every reload while
+  // iterating on it.
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (readSharedScore() !== null) return false;
+    if (import.meta.env.DEV) return true;
+    return !readWelcomeSeen();
+  });
 
   const dismissWelcome = () => {
     try {
@@ -232,9 +236,9 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <div className="h-full">
-        <main className="relative h-full overflow-hidden">
-          <div className="pointer-events-none fixed inset-x-0 top-0 z-20 flex items-start justify-between px-5 py-4 sm:px-6">
+      <div className="min-h-[100dvh]">
+        <main className="relative min-h-[100dvh] overflow-hidden">
+          <div className="pointer-events-none fixed inset-x-0 top-0 z-20 flex items-start justify-between px-3 py-3 sm:px-6 sm:py-4">
             <a
               href="/"
               className="pointer-events-auto flex items-center"
@@ -258,7 +262,7 @@ export default function App() {
               <img
                 src="/tastemapsflogo2.png"
                 alt="TastemapSF"
-                className="h-20 w-auto"
+                className="h-14 w-auto sm:h-20"
                 style={{ filter: "url(#logo-chroma-white)" }}
               />
             </a>
@@ -266,7 +270,7 @@ export default function App() {
               type="button"
               aria-label="Open menu"
               onClick={() => setShowMenu((open) => !open)}
-              className="pointer-events-auto grid h-12 w-12 place-items-center rounded-chip bg-[#092652] text-white shadow-md transition-colors hover:bg-[#12335f]"
+              className="pointer-events-auto grid h-11 w-11 place-items-center rounded-chip bg-[#092652] text-white shadow-md transition-colors hover:bg-[#12335f] sm:h-12 sm:w-12"
             >
               <svg
                 aria-hidden="true"
@@ -284,7 +288,7 @@ export default function App() {
               </svg>
             </button>
             {showMenu && (
-              <div className="pointer-events-auto absolute right-5 top-[72px] min-w-44 border border-black/10 bg-panel p-2 shadow-lg sm:right-6">
+              <div className="pointer-events-auto absolute right-3 top-[58px] min-w-44 border border-black/10 bg-panel p-2 shadow-lg sm:right-6 sm:top-[72px]">
                 <button
                   type="button"
                   onClick={() => {
@@ -310,7 +314,7 @@ export default function App() {
             )}
           </div>
           <div className="pointer-events-none fixed left-1/2 top-4 z-20 -translate-x-1/2">
-            <div className="pointer-events-auto px-3 py-2">
+            <div className="pointer-events-auto px-2 py-1.5 sm:px-3 sm:py-2">
               <Counter tried={triedCount} total={total} />
             </div>
           </div>

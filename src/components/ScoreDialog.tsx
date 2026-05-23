@@ -120,7 +120,7 @@ export default function ScoreDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="score-title"
-        className="relative w-full max-w-lg overflow-hidden border border-black/10 bg-panel px-6 py-6 text-center shadow-xl"
+        className="relative w-full max-w-md overflow-hidden border border-black/10 bg-panel px-4 py-5 text-center shadow-xl sm:max-w-lg sm:px-6 sm:py-6"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.34), rgba(255,255,255,0.34)), url('/dolores.jpg')",
@@ -159,13 +159,15 @@ export default function ScoreDialog({
         </div>
 
         <div className="relative">
-          <div className="font-display text-6xl font-semibold tabular-nums">
+          <div className="font-display text-5xl font-semibold tabular-nums sm:text-6xl">
             {tried}
-            <span className="ml-2 text-2xl text-ink-soft">/ {total}</span>
+            <span className="ml-2 text-xl text-ink-soft sm:text-2xl">
+              / {total}
+            </span>
           </div>
           <h2
             id="score-title"
-            className="mt-3 font-display text-2xl font-semibold"
+            className="mt-3 font-display text-xl font-semibold sm:text-2xl"
           >
             Your Tastemap score
           </h2>
@@ -195,7 +197,7 @@ export default function ScoreDialog({
           </div>
           {nextBite && (
             <div className="mt-5 grid place-items-center">
-              <div className="relative grid h-56 w-56 place-items-center">
+              <div className="relative grid h-44 w-44 place-items-center sm:h-56 sm:w-56">
                 <div
                   className={
                     biteState === "revealed"

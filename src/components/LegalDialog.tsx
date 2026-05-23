@@ -55,7 +55,7 @@ export default function LegalDialog({ onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="legal-dialog-title"
-        className="relative max-h-[84vh] w-full max-w-lg overflow-y-auto border border-black/10 bg-panel px-6 py-6 shadow-xl"
+        className="relative max-h-[88dvh] w-full max-w-md overflow-y-auto border border-black/10 bg-panel px-4 py-4 shadow-xl sm:max-w-lg sm:px-6 sm:py-6"
       >
         <button
           ref={closeButtonRef}
@@ -76,14 +76,14 @@ export default function LegalDialog({ onClose }: Props) {
 
         <h2
           id="legal-dialog-title"
-          className="pr-10 font-display text-2xl font-semibold"
+          className="pr-10 font-display text-xl font-semibold sm:text-2xl"
         >
           Legal & credits
         </h2>
-        <div className="mt-5 space-y-6 text-sm leading-relaxed text-ink-soft">
+        <div className="mt-4 space-y-5 text-sm leading-relaxed text-ink-soft sm:mt-5 sm:space-y-6">
           {SECTIONS.map((section) => (
             <section key={section.title}>
-              <h3 className="border-b border-black/5 pb-2 font-display text-sm font-semibold uppercase tracking-wide text-ink">
+              <h3 className="border-b border-black/5 pb-2 font-display text-xs font-semibold uppercase tracking-wide text-ink sm:text-sm">
                 {section.title}
               </h3>
               <div className="mt-3 space-y-3">
