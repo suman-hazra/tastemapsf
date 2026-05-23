@@ -142,25 +142,18 @@ export default function App() {
       ? { displayName: unseededName }
       : null;
 
-  const hint =
-    total === null
-      ? "Loading map…"
-      : selectedSlug || unseededName
-        ? " "
-        : "Click a country to start";
-
   return (
     <ErrorBoundary>
       <div className="flex h-full flex-col">
-        <header className="flex h-20 items-center justify-between border-b border-black/5 px-5 sm:px-6">
+        <header className="flex h-24 items-center justify-between border-b border-black/5 px-5 sm:px-6">
           <a href="/" className="flex items-center" aria-label="TastemapSF home">
             <img
-              src="/tastemapsflogo.png"
+              src="/tastemapsflogo2.png"
               alt="TastemapSF"
-              className="h-16 w-auto mix-blend-multiply"
+              className="h-20 w-auto mix-blend-multiply"
             />
           </a>
-          <Counter tried={triedCount} total={total} hint={hint} />
+          <Counter tried={triedCount} total={total} />
         </header>
 
         <main className="relative flex-1 overflow-hidden">

@@ -14,38 +14,26 @@ import Counter from "./Counter";
 
 describe("Counter", () => {
   it("renders em-dash placeholders when total is null (loading)", () => {
-    render(<Counter tried={0} total={null} hint="Loading map…" />);
+    render(<Counter tried={0} total={null} />);
 
     // The number slot and denominator both show em-dashes during loading
-    expect(screen.getByText("Loading map…")).toBeInTheDocument();
     // The em-dash appears at least twice (once for tried number, once after /)
     const emDashes = screen.getAllByText(/—/);
     expect(emDashes.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders 0 / 20 on initial mount with tried=0, total=20", () => {
-    render(
-      <Counter
-        tried={0}
-        total={20}
-        hint="Click a country to start"
-      />,
-    );
+    render(<Counter tried={0} total={20} />);
 
     expect(screen.getByText("0")).toBeInTheDocument();
     expect(screen.getByText(/\/ 20/)).toBeInTheDocument();
-    expect(
-      screen.getByText("Click a country to start"),
-    ).toBeInTheDocument();
   });
 
   it("reflects an updated tried count when re-rendered", () => {
-    const { rerender } = render(
-      <Counter tried={0} total={20} hint="" />,
-    );
+    const { rerender } = render(<Counter tried={0} total={20} />);
     expect(screen.getByText("0")).toBeInTheDocument();
 
-    rerender(<Counter tried={3} total={20} hint="" />);
+    rerender(<Counter tried={3} total={20} />);
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 });

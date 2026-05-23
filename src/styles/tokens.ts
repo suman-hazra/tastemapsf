@@ -35,6 +35,7 @@ export const colors = {
 //   • tried      — clay, the passport stamp
 // Progression: cool → warm cream → warm honey → warm clay.
 export const map = {
+  logoNavy: "#092652",
   bg: "#a8d3e6",          // vibrant ocean blue
 
   unseededLand: "#e3e8ec", // cool pale stone — not in our list

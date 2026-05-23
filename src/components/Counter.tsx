@@ -10,20 +10,18 @@
 // changes again before the previous pulse finishes.
 
 import { useEffect, useRef, useState } from "react";
-import { colors, counterColorForTriedCount } from "../styles/tokens";
+import { map as c } from "../styles/tokens";
 
 interface Props {
   /** Current count of tried countries. */
   tried: number;
   /** Total seeded countries (denominator). Null = data still loading. */
   total: number | null;
-  /** Hint text shown beneath the number ("Click a country to start" etc). */
-  hint: string;
 }
 
 const PULSE_MS = 400;
 
-export default function Counter({ tried, total, hint }: Props) {
+export default function Counter({ tried, total }: Props) {
   const [pulse, setPulse] = useState(false);
   const prevTried = useRef(tried);
 
@@ -39,10 +37,7 @@ export default function Counter({ tried, total, hint }: Props) {
   }, [tried]);
 
   const isLoading = total === null;
-  const milestoneColor = isLoading
-    ? colors.inkSoft
-    : counterColorForTriedCount(tried);
-  const numberColor = pulse ? colors.tried : milestoneColor;
+  const numberColor = c.logoNavy;
 
   return (
     <div className="flex flex-col items-end leading-none">
@@ -56,16 +51,12 @@ export default function Counter({ tried, total, hint }: Props) {
         >
           {isLoading ? "—" : tried}
         </span>
-        <span className="ml-2 text-xl text-ink-soft">
+        <span
+          className="ml-2 text-xl"
+          style={{ color: c.logoNavy, opacity: 0.62 }}
+        >
           / {isLoading ? "—" : total}
         </span>
-      </div>
-      <div
-        className="mt-2 text-sm text-ink-soft"
-        // Reserve space so the layout doesn't shift when the hint is blank.
-        style={{ minHeight: "1.25rem" }}
-      >
-        {hint}
       </div>
     </div>
   );
