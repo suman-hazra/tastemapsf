@@ -58,6 +58,13 @@ export type MapData = MapDataLoading | MapDataReady | MapDataError;
 
 const TOPOJSON_URL = "/countries-110m.json";
 
+// Visual marker anchors. d3.geoCentroid is mathematically correct, but for
+// simplified or multi-part country geometries it can land somewhere that
+// looks wrong at this map scale.
+const MARKER_COORDINATE_OVERRIDES: Record<string, [number, number]> = {
+  france: [2.2, 46.2],
+};
+
 export function useMapData(): MapData {
   const [state, setState] = useState<MapData>({ status: "loading" });
 
@@ -96,7 +103,8 @@ export function useMapData(): MapData {
           for (const f of features) {
             const slug = slugForGeoId(String(f.id ?? ""));
             if (slug) {
-              const [lng, lat] = geoCentroid(f);
+              const override = MARKER_COORDINATE_OVERRIDES[slug];
+              const [lng, lat] = override ?? geoCentroid(f);
               centroidBySlug.set(slug, [lng, lat]);
             }
           }

@@ -82,12 +82,12 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="flex h-full flex-col">
-        <header className="flex h-24 items-center justify-between border-b border-black/5 px-6">
+        <header className="flex h-20 items-center justify-between border-b border-black/5 px-5 sm:px-6">
           <a href="/" className="flex items-center" aria-label="TastemapSF home">
             <img
               src="/tastemapsflogo.png"
               alt="TastemapSF"
-              className="h-20 w-auto mix-blend-multiply"
+              className="h-16 w-auto mix-blend-multiply"
             />
           </a>
           <Counter tried={triedCount} total={total} hint={hint} />
@@ -121,6 +121,14 @@ export default function App() {
                 triedSet={triedSet}
                 selectedSlug={selectedSlug}
                 selectedCentroid={selectedCentroid}
+                seededSlugs={mapData.countries.map((country) => country.id)}
+                centroidForSlug={mapData.centroidForSlug}
+                nameForSlug={(slug) =>
+                  mapData.countryBySlug.get(slug)?.name
+                }
+                flagForSlug={(slug) =>
+                  mapData.countryBySlug.get(slug)?.flag
+                }
                 onSelect={(slug, displayName) =>
                   handleSelect(slug, displayName)
                 }

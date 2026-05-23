@@ -3,6 +3,9 @@
 @theme {
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-map-serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-map-sans: "DM Sans", system-ui, sans-serif;
+  --font-map-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   /* Surfaces */
   --color-canvas: #faf7f2;
