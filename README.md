@@ -1,111 +1,114 @@
-# 🗺️ Taste Map SF
+# Taste Map SF
 
-**Explore San Francisco's global cuisine, one country at a time.**
+Explore San Francisco's global cuisine, one country at a time.
 
-San Francisco is one of the few cities in the world where you can eat cuisine from nearly every country. Taste Map SF puts that on a map — literally. Navigate a world map, click a country, and instantly discover the best SF restaurants serving that cuisine along with exactly what to order.
+Taste Map SF is a static React app that turns SF's restaurant diversity into a world map. Click a country to learn what the cuisine is about, what to order first, and where to try it in San Francisco. Mark cuisines you have tried, see your score, and get a suggestion for what to eat next.
 
-![Taste Map SF — world map with side panel](./docs/screenshot-placeholder.png)
-
----
+![Taste Map SF social preview](./public/og.png)
 
 ## Features
 
-- **Interactive world map** — every country is clickable
-- **Traveling avatar** — a small figure that teleports to whichever country you select
-- **Slide-in country panel** — restaurants, signature dishes, and what to order for each cuisine
-- **Google Maps deep-links** — every restaurant card opens directly in Google Maps
-- **Hand-curated data** — Phase 1 picks sourced from Eater 38, Michelin Bib Gourmand, and r/sanfrancisco
-- **No backend required** — all data is bundled with the app
-
----
+- **Interactive world map**: seeded countries are highlighted, unseeded countries still open a tip state.
+- **Country side panel**: cuisine summary, signature dishes, and SF restaurant cards.
+- **Tried prompt**: selecting a seeded country opens a centered Yes/No dialog for marking your passport.
+- **Visual progress**: tried countries are shaded and marked with their country flag.
+- **Finish flow**: bottom-center Finish CTA opens a score dialog with confetti and a `Pick My Next Bite` recommendation.
+- **Recommendation CTA**: picks an untried seeded country and opens its side panel.
+- **Hover-only country labels**: keeps dense map regions readable.
+- **Map controls**: compact pan pad, zoom controls, bounded panning, and a denser default viewport.
+- **Google Maps links**: restaurant cards build search links from restaurant name, neighborhood, and San Francisco.
+- **No backend required**: state is in-memory; closing the tab resets progress.
 
 ## Tech Stack
 
-- **React + TypeScript** (Vite) — UI framework
-- **react-simple-maps** over D3-geo — SVG world map with TopoJSON
-- **Tailwind CSS** — styling
-- **Vitest + React Testing Library** — tests
-- **Static TypeScript data** — restaurants live in `src/data/restaurants.ts`
-
----
+- **React + TypeScript** with Vite
+- **react-simple-maps** over D3 / TopoJSON
+- **Tailwind CSS v4**
+- **Vitest + React Testing Library**
+- **CSV-authored data** generated into TypeScript
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- npm
 
-### Install & Run
+### Install And Run
 
 ```bash
-git clone https://github.com/your-username/taste-map-sf.git
-cd taste-map-sf
+git clone https://github.com/suman-hazra/tastemapsf.git
+cd tastemapsf
 npm install
 npm run dev
 ```
 
-The app will be running at `http://localhost:5173`.
+The app runs at `http://localhost:5173`.
 
-### Build for Production
+### Build And Test
 
 ```bash
 npm run build
+npm test -- --run
 ```
 
----
+## Data Workflow
 
-## Data
+The source of truth is in `data/`:
 
-All restaurant data lives in `src/data/restaurants.ts` as a typed TypeScript constant — TypeScript catches missing fields and typos at compile time. Each restaurant entry is minimal:
+- `data/countries.csv`: country metadata, cuisine summaries, flags, and signature dishes.
+- `data/restaurants.csv`: restaurant rows joined by `country_id`.
+- `data/build.mjs`: generates `src/data/restaurants.ts`.
 
-```ts
-{
-  id: "cafe-claude",
-  name: "Café Claude",
-  neighborhood: "Union Square",
-  // address?: optional, surfaced in Phase 2
-  // tried?:   optional, reserved for Phase 3 food passport
-}
+Do not edit `src/data/restaurants.ts` directly. It is generated.
+
+```bash
+npm run build:data
+npm run build
 ```
 
-Only `id`, `name`, and `neighborhood` are required. The restaurant card builds a Google Maps search link on the fly from `name + neighborhood + "San Francisco"`, so there's no per-entry URL field to keep current.
+When adding a country, also make sure its TopoJSON ISO code is mapped in `src/data/countryIdMap.ts`; otherwise the map cannot connect the geography to the app's country slug.
 
-Phase 2 will enrich each record with `address`, `must_order` dishes (cross-referenced against actual menus), and `sources` (provenance: Yelp / Google / Reddit).
+## Current UX
 
-### Building the Dataset
+1. Open the map.
+2. Click a highlighted country.
+3. The side panel opens with the cuisine summary, dishes, and restaurants.
+4. A centered prompt asks whether you have tried that cuisine.
+5. Answering Yes adds a flag marker to the country and increments the score.
+6. Click Finish to see your score.
+7. Use `Pick My Next Bite` to jump to an untried cuisine.
 
-Phase 1 data is hand-curated. Edit `src/data/restaurants.ts` directly — there is no automated build pipeline yet.
+## Project Notes
 
-A Phase 2 effort will add `scripts/build-data/` to pull from the Yelp Fusion API, Google Places, and Reddit, with a merge + manual review pass that emits a new `restaurants.ts`. API keys will be needed at that point; none are required for Phase 1.
-
----
+- Progress is intentionally not persisted yet.
+- The Share CTA is present in the score dialog but disabled until the sharing flow is designed.
+- Some marker positions use visual overrides where raw geometry centroids look wrong at this scale.
+- The `feedback/` folder is ignored and should stay local.
 
 ## Roadmap
 
-- [x] Project spec & data schema
-- [x] World map with clickable countries
-- [x] Avatar + teleport mechanic
-- [x] Side panel with restaurant cards
-- [x] Seed data for ~18 cuisines (hand-curated)
-- [ ] Data pipeline (Yelp + Google + Reddit) — Phase 2
-- [ ] Restaurant addresses for every entry — Phase 2
-- [ ] Menu cross-reference for must-order dishes — Phase 2
-- [ ] Food passport — personal "tried this" tracking — Phase 3
-
----
+- [x] Clickable world map
+- [x] Country side panel with restaurants and dishes
+- [x] Tried tracking with map flags
+- [x] Finish score dialog
+- [x] Next-cuisine recommendation
+- [x] CSV-driven data workflow
+- [ ] Shareable score card / share flow
+- [ ] Persisted progress
+- [ ] More countries and restaurant verification
+- [ ] Richer mobile UX
 
 ## Contributing
 
-Found a great restaurant that's missing? Spotted an error? Contributions are welcome.
+Found a great restaurant or spotted stale data?
 
-1. Fork the repo
-2. Edit `src/data/restaurants.ts` directly, or open an issue with the restaurant details
-3. Submit a pull request
+1. Update `data/countries.csv` or `data/restaurants.csv`.
+2. Run `npm run build:data`.
+3. Run `npm run build`.
+4. Open a pull request.
 
 Please keep entries to restaurants that are currently open and genuinely represent the cuisine well.
-
----
 
 ## License
 

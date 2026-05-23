@@ -11,15 +11,19 @@ import { useState } from "react";
 import Counter from "./components/Counter";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
+import FinishButton from "./components/FinishButton";
 import LoadingState from "./components/LoadingState";
+import ScoreDialog from "./components/ScoreDialog";
+import TriedPromptDialog from "./components/TriedPromptDialog";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
-import { toggleSlug } from "./utils/toggleSlug";
 
 export default function App() {
   const mapData = useMapData();
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [unseededName, setUnseededName] = useState<string | null>(null);
+  const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
+  const [showScoreDialog, setShowScoreDialog] = useState(false);
   const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
 
   // Click handler from WorldMap. Toggle semantic: re-clicking the currently
@@ -31,11 +35,18 @@ export default function App() {
   ) => {
     if (slug) {
       setUnseededName(null);
-      setSelectedSlug((prev) => (prev === slug ? null : slug));
+      if (selectedSlug === slug) {
+        setSelectedSlug(null);
+        setTriedPromptSlug(null);
+        return;
+      }
+      setSelectedSlug(slug);
+      setTriedPromptSlug(slug);
       return;
     }
     if (unseededDisplayName) {
       setSelectedSlug(null);
+      setTriedPromptSlug(null);
       setUnseededName((prev) =>
         prev === unseededDisplayName ? null : unseededDisplayName,
       );
@@ -43,16 +54,47 @@ export default function App() {
     }
     setSelectedSlug(null);
     setUnseededName(null);
+    setTriedPromptSlug(null);
+  };
+
+  const openScoreDialog = () => {
+    setTriedPromptSlug(null);
+    setShowScoreDialog(true);
   };
 
   const closePanel = () => {
     setSelectedSlug(null);
     setUnseededName(null);
+    setTriedPromptSlug(null);
   };
 
-  const toggleTried = () => {
-    if (!selectedSlug) return;
-    setTriedSet((prev) => toggleSlug(prev, selectedSlug));
+  const answerTriedPrompt = (tried: boolean) => {
+    if (!triedPromptSlug) return;
+    setTriedSet((prev) => {
+      const next = new Set(prev);
+      if (tried) {
+        next.add(triedPromptSlug);
+      } else {
+        next.delete(triedPromptSlug);
+      }
+      return next;
+    });
+    setTriedPromptSlug(null);
+  };
+
+  const suggestNextCountry = () => {
+    if (mapData.status !== "ready") return;
+    const untriedCountries = mapData.countries.filter(
+      (country) => !triedSet.has(country.id),
+    );
+    if (untriedCountries.length === 0) return;
+
+    const nextCountry =
+      untriedCountries[Math.floor(Math.random() * untriedCountries.length)];
+    setShowScoreDialog(false);
+    setUnseededName(null);
+    setTriedPromptSlug(null);
+    setSelectedSlug(nextCountry.id);
   };
 
   const triedCount = triedSet.size;
@@ -64,6 +106,10 @@ export default function App() {
   const selectedCentroid =
     mapData.status === "ready" && selectedSlug
       ? (mapData.centroidForSlug(selectedSlug) ?? null)
+      : null;
+  const triedPromptCountry =
+    mapData.status === "ready" && triedPromptSlug
+      ? (mapData.countryBySlug.get(triedPromptSlug) ?? null)
       : null;
 
   const panelCountry = selectedCountry
@@ -133,12 +179,24 @@ export default function App() {
                   handleSelect(slug, displayName)
                 }
               />
+              <FinishButton onClick={openScoreDialog} />
               <CountryPanel
                 country={panelCountry}
-                tried={selectedSlug ? triedSet.has(selectedSlug) : false}
-                onToggleTried={toggleTried}
                 onClose={closePanel}
               />
+              <TriedPromptDialog
+                country={triedPromptCountry}
+                onAnswer={answerTriedPrompt}
+              />
+              {showScoreDialog && (
+                <ScoreDialog
+                  tried={triedCount}
+                  total={mapData.total}
+                  onClose={() => setShowScoreDialog(false)}
+                  onSuggestNext={suggestNextCountry}
+                  canSuggestNext={triedCount < mapData.total}
+                />
+              )}
             </>
           )}
         </main>

@@ -272,8 +272,7 @@ export default function WorldMap({
                 stroke = c.visitedInk;
               } else if (isSelected) {
                 fill = c.selectedLand;
-                stroke = c.accent;
-                strokeWidth = 1.8;
+                stroke = c.chromeText;
               } else if (isHovered) {
                 fill = c.landHover;
                 stroke = c.landLine;
@@ -327,6 +326,62 @@ export default function WorldMap({
           )
         }
       </Geographies>
+
+      {/* Draw the selected country's full outline last. Shared land borders can
+          otherwise be visually overwritten by neighboring country strokes. */}
+      {selectedSlug && (
+        <Geographies geography={topology}>
+          {({ geographies }) =>
+            geographies.map(
+              (geo: {
+                rsmKey: string;
+                id?: string | number;
+                properties: { name: string };
+              }) => {
+                const slug = slugForGeoId(geo.id ?? "");
+                if (slug !== selectedSlug) return null;
+
+                return (
+                  <Geography
+                    key={`selected-outline-${geo.rsmKey}`}
+                    geography={geo}
+                    aria-hidden="true"
+                    style={{
+                      default: {
+                        fill: "transparent",
+                        stroke: c.chromeText,
+                        strokeWidth: 0.9,
+                        strokeLinejoin: "round",
+                        vectorEffect: "non-scaling-stroke",
+                        outline: "none",
+                        pointerEvents: "none",
+                      },
+                      hover: {
+                        fill: "transparent",
+                        stroke: c.chromeText,
+                        strokeWidth: 0.9,
+                        strokeLinejoin: "round",
+                        vectorEffect: "non-scaling-stroke",
+                        outline: "none",
+                        pointerEvents: "none",
+                      },
+                      pressed: {
+                        fill: "transparent",
+                        stroke: c.chromeText,
+                        strokeWidth: 0.9,
+                        strokeLinejoin: "round",
+                        vectorEffect: "non-scaling-stroke",
+                        outline: "none",
+                        pointerEvents: "none",
+                      },
+                    }}
+                  />
+                );
+              },
+            )
+          }
+        </Geographies>
+      )}
 
       {/* Major ocean labels only. Smaller sea labels tend to collide with
           nearby land at this zoom level, so we omit them. */}
@@ -414,7 +469,7 @@ export default function WorldMap({
           on the last-selected country when the panel is open. */}
       {cursorPos === null && selectedCentroid && selectedSlug && (
         <Marker coordinates={selectedCentroid}>
-          <Avatar />
+          <Avatar height={CURSOR_AVATAR_HEIGHT / position.zoom} />
         </Marker>
       )}
     </>

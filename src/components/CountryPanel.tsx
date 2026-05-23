@@ -1,12 +1,10 @@
 // Slide-in side panel. Three render modes based on what the user clicked:
 //
 //   1. SEEDED + has restaurants  → cuisine summary + dishes + restaurant list
-//                                  + tried-toggle
 //   2. SEEDED + 0 restaurants    → cuisine summary + dishes + "Restaurants
-//                                  coming soon — got a pick?" mailto +
-//                                  tried-toggle
+//                                  coming soon — got a pick?" mailto
 //   3. UNSEEDED                  → name + flag + "No restaurants seeded yet
-//                                  — got a tip?" mailto. No tried-toggle.
+//                                  — got a tip?" mailto.
 //
 // Affordances per /plan-design-review:
 //   - close button (X) in header
@@ -27,8 +25,6 @@ import RestaurantCard from "./RestaurantCard";
 interface Props {
   /** The seeded country to show, OR an unseeded country's display name. */
   country: Country | { displayName: string } | null;
-  tried: boolean;
-  onToggleTried: () => void;
   onClose: () => void;
 }
 
@@ -36,8 +32,6 @@ const MAILTO = "mailto:sumanhazra10@gmail.com?subject=Tastemap%20SF%20%E2%80%94%
 
 export default function CountryPanel({
   country,
-  tried,
-  onToggleTried,
   onClose,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -102,46 +96,6 @@ export default function CountryPanel({
           <SeededBody country={country} />
         )}
       </div>
-
-      {/* Footer: tried-toggle (only for seeded countries) */}
-      {!isUnseeded && (
-        <footer className="border-t border-black/5 px-5 py-3">
-          <button
-            type="button"
-            onClick={onToggleTried}
-            aria-pressed={tried}
-            className={`flex h-11 w-full items-center justify-between rounded-chip border px-3 text-sm font-medium transition-colors ${
-              tried
-                ? "border-tried bg-tried/15 text-ink"
-                : "border-black/10 hover:bg-black/5"
-            }`}
-          >
-            <span>
-              {tried
-                ? `You've tried ${country.name}`
-                : `Tried ${country.name}?`}
-            </span>
-            <span
-              aria-hidden="true"
-              className={`grid h-6 w-6 place-items-center rounded-full border ${
-                tried ? "border-tried bg-tried text-white" : "border-black/15"
-              }`}
-            >
-              {tried && (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path
-                    d="M3 7L6 10L11 4"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-            </span>
-          </button>
-        </footer>
-      )}
     </aside>
   );
 }
