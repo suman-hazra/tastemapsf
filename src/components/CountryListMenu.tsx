@@ -1,5 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Country } from "../data/types";
+import DishBadge from "./DishBadge";
+import RestaurantCard from "./RestaurantCard";
 
 interface Props {
   countries: Country[];
@@ -33,6 +35,9 @@ export default function CountryListMenu({
   onClose,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [expandedCountryId, setExpandedCountryId] = useState<string | null>(
+    null,
+  );
   const continentGroups = groupCountriesByContinent(countries);
 
   useEffect(() => {
@@ -91,43 +96,86 @@ export default function CountryListMenu({
               <ul className="divide-y divide-black/5">
                 {group.countries.map((country) => {
                   const hasTried = triedSet.has(country.id);
+                  const isExpanded = expandedCountryId === country.id;
                   return (
                     <li
                       key={country.id}
-                      className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-3 sm:gap-3"
+                      className="py-3"
                     >
-                      <span className="text-xl sm:text-2xl" aria-hidden="true">
-                        {country.flag}
-                      </span>
-                      <span className="min-w-0 text-sm font-semibold leading-tight">
-                        {country.name}
-                      </span>
-                      <div className="grid grid-cols-2 overflow-hidden rounded-chip border border-black/10 bg-white">
-                        <button
-                          type="button"
-                          onClick={() => onSetTried(country.id, true)}
-                          aria-pressed={hasTried}
-                          className={`h-9 px-3 text-sm font-semibold transition-colors ${
-                            hasTried
-                              ? "bg-tried/20 text-ink"
-                              : "text-ink-soft hover:bg-canvas"
-                          }`}
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3">
+                        <span
+                          className="text-xl sm:text-2xl"
+                          aria-hidden="true"
                         >
-                          Yes
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => onSetTried(country.id, false)}
-                          aria-pressed={!hasTried}
-                          className={`h-9 border-l border-black/10 px-3 text-sm font-semibold transition-colors ${
-                            !hasTried
-                              ? "bg-[#c9463a]/10 text-ink"
-                              : "text-ink-soft hover:bg-canvas"
-                          }`}
-                        >
-                          No
-                        </button>
+                          {country.flag}
+                        </span>
+                        <span className="min-w-0 text-sm font-semibold leading-tight">
+                          {country.name}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <div className="grid grid-cols-2 overflow-hidden rounded-chip border border-black/10 bg-white">
+                            <button
+                              type="button"
+                              onClick={() => onSetTried(country.id, true)}
+                              aria-pressed={hasTried}
+                              className={`h-9 px-3 text-sm font-semibold transition-colors ${
+                                hasTried
+                                  ? "bg-tried/20 text-ink"
+                                  : "text-ink-soft hover:bg-canvas"
+                              }`}
+                            >
+                              Yes
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onSetTried(country.id, false)}
+                              aria-pressed={!hasTried}
+                              className={`h-9 border-l border-black/10 px-3 text-sm font-semibold transition-colors ${
+                                !hasTried
+                                  ? "bg-[#c9463a]/10 text-ink"
+                                  : "text-ink-soft hover:bg-canvas"
+                              }`}
+                            >
+                              No
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedCountryId(isExpanded ? null : country.id)
+                            }
+                            aria-expanded={isExpanded}
+                            aria-controls={`country-list-details-${country.id}`}
+                            aria-label={`${isExpanded ? "Collapse" : "Expand"} ${country.name}`}
+                            className="grid h-9 w-9 place-items-center rounded-full text-ink-soft transition-colors hover:bg-black/5 hover:text-ink"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                            >
+                              <path
+                                d={
+                                  isExpanded
+                                    ? "M3.5 8H12.5"
+                                    : "M8 3.5V12.5M3.5 8H12.5"
+                                }
+                                stroke="currentColor"
+                                strokeWidth="1.6"
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
+                      {isExpanded && (
+                        <CountryListDetails
+                          country={country}
+                          onCollapse={() => setExpandedCountryId(null)}
+                        />
+                      )}
                     </li>
                   );
                 })}
@@ -147,5 +195,71 @@ export default function CountryListMenu({
         </button>
       </footer>
     </aside>
+  );
+}
+
+function CountryListDetails({
+  country,
+  onCollapse,
+}: {
+  country: Country;
+  onCollapse: () => void;
+}) {
+  return (
+    <div
+      id={`country-list-details-${country.id}`}
+      className="mt-3 rounded-chip border border-black/5 bg-canvas p-3"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm leading-relaxed text-ink-soft">
+          {country.cuisine_summary}
+        </p>
+        <button
+          type="button"
+          onClick={onCollapse}
+          aria-label={`Collapse ${country.name}`}
+          className="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-ink-soft transition-colors hover:bg-black/5 hover:text-ink"
+        >
+          <svg
+            aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M3.5 8H12.5"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <section className="mt-4">
+        <h4 className="font-display text-xs font-semibold uppercase tracking-wide text-ink-soft">
+          Order these first
+        </h4>
+        <ul className="mt-2 space-y-2">
+          {country.signature_dishes.map((dish) => (
+            <DishBadge key={dish.name} dish={dish} />
+          ))}
+        </ul>
+      </section>
+
+      {country.restaurants.length > 0 && (
+        <section className="mt-4">
+          <h4 className="font-display text-xs font-semibold uppercase tracking-wide text-ink-soft">
+            Where to eat in SF
+          </h4>
+          <ul className="mt-2 space-y-2">
+            {country.restaurants.map((restaurant) => (
+              <RestaurantCard key={restaurant.id} restaurant={restaurant} />
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   );
 }
