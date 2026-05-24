@@ -1,5 +1,5 @@
 // Single-source data hook for the map: fetches the world TopoJSON, exposes
-// the curated country list, and gates rendering on the async fetch (not on
+// the generated country data, and gates rendering on the async fetch (not on
 // the synchronous restaurants.ts import — that's available at first render).
 //
 // Status state machine:
@@ -10,8 +10,9 @@
 // console.error if any slug/ISO drift is detected. Skipped in production
 // builds entirely (zero runtime cost).
 //
-// Centroids are pre-computed for all seeded countries so the Avatar can
-// teleport to a country's center without re-parsing geometry on every click.
+// Centroids are pre-computed for all countries in the generated dataset so
+// the Avatar can teleport to a country's center without re-parsing geometry
+// on every click.
 
 import { useEffect, useState } from "react";
 import { geoCentroid } from "d3-geo";
@@ -34,14 +35,19 @@ export type MapDataStatus = "loading" | "ready" | "error";
 export interface MapDataReady {
   status: "ready";
   topology: Topology;
+  /** Countries with at least one SF restaurant. Used for map color/count/list. */
   countries: Country[];
-  /** Indexed lookup: slug → Country. Built once. */
+  /** All generated countries, including countries without SF restaurants. */
+  allCountries: Country[];
+  /** Indexed active lookup: slug → restaurant-backed Country. */
   countryBySlug: ReadonlyMap<string, Country>;
-  /** Resolves a TopoJSON geography.id to a Country (or undefined for unseeded). */
+  /** Indexed full lookup: slug → Country with cuisine/dish data. */
+  allCountryBySlug: ReadonlyMap<string, Country>;
+  /** Resolves a TopoJSON geography.id to a restaurant-backed Country. */
   countryForGeoId: (geoId: string | number) => Country | undefined;
-  /** Returns [lng, lat] centroid for a seeded country slug, undefined otherwise. */
+  /** Returns [lng, lat] centroid for a mapped country slug, undefined otherwise. */
   centroidForSlug: (slug: string) => [number, number] | undefined;
-  /** Total number of seeded countries. Used as the counter denominator. */
+  /** Total number of countries with SF restaurants. Used as counter denominator. */
   total: number;
 }
 
@@ -85,9 +91,15 @@ export function useMapData(): MapData {
 
         if (cancelled) return;
 
-        const countryBySlug = new Map(countries.map((c) => [c.id, c]));
+        const countriesWithRestaurants = countries.filter(
+          (country) => country.restaurants.length > 0,
+        );
+        const countryBySlug = new Map(
+          countriesWithRestaurants.map((c) => [c.id, c]),
+        );
+        const allCountryBySlug = new Map(countries.map((c) => [c.id, c]));
 
-        // Pre-compute centroids for all seeded countries. Avatar uses these
+        // Pre-compute centroids for all mapped countries. Avatar uses these
         // for instant placement without re-parsing topology on each click.
         const centroidBySlug = new Map<string, [number, number]>();
         const countriesObject = topology.objects.countries as
@@ -113,14 +125,16 @@ export function useMapData(): MapData {
         setState({
           status: "ready",
           topology,
-          countries,
+          countries: countriesWithRestaurants,
+          allCountries: countries,
           countryBySlug,
+          allCountryBySlug,
           countryForGeoId: (geoId) => {
             const slug = slugForGeoId(geoId);
             return slug ? countryBySlug.get(slug) : undefined;
           },
           centroidForSlug: (slug) => centroidBySlug.get(slug),
-          total: countries.length,
+          total: countriesWithRestaurants.length,
         });
       } catch (err) {
         if (cancelled) return;

@@ -14,7 +14,7 @@
 // Zoom/pan: react-simple-maps' ZoomableGroup handles wheel-zoom and drag-pan
 // natively. Country strokes use vector-effect to stay 1px regardless of zoom.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ComposableMap,
   Geographies,
@@ -25,7 +25,6 @@ import {
 import { geoNaturalEarth1 } from "d3-geo";
 import { map as c } from "../styles/tokens";
 import { flagForGeoId, slugForGeoId } from "../data/countryIdMap";
-import FlagMarker from "./FlagMarker";
 import SanFranciscoMarker from "./SanFranciscoMarker";
 
 interface Props {
@@ -33,19 +32,20 @@ interface Props {
   triedSet: ReadonlySet<string>;
   selectedSlug: string | null;
   selectedCentroid: [number, number] | null;
-  /** All seeded country slugs in display order. Used to render labels. */
+  /** Country slugs with SF restaurants. Used for color/count/tried state. */
   seededSlugs: readonly string[];
+  /** Country slugs with cuisine/dish data. Used for hover/click panels. */
+  knownSlugs: readonly string[];
   /** Resolve a slug to its centroid for pin/label placement. */
   centroidForSlug: (slug: string) => [number, number] | undefined;
-  /** Display name lookup for seeded countries. */
+  /** Display name lookup for known countries. */
   nameForSlug: (slug: string) => string | undefined;
-  /** Flag emoji lookup for seeded countries. */
+  /** Flag emoji lookup for known countries. */
   flagForSlug: (slug: string) => string | undefined;
   /**
-   * Called on country click. If the country is in our seed (has a slug),
-   * `slug` is set and unseeded fields are null. If the clicked country is not
-   * seeded, `slug` is null and unseeded fields describe the country for the
-   * empty panel state.
+   * Called on country click. If the country has cuisine/dish data, `slug` is
+   * set and unseeded fields are null. Otherwise, `slug` is null and unseeded
+   * fields describe the country for the empty panel state.
    */
   onSelect: (
     slug: string | null,
@@ -85,6 +85,10 @@ const PAN_BOUNDS = {
 const HALF_LNG_AT_Z1 = 180;
 const HALF_LAT_AT_Z1 = 75;
 const SELECTED_ZOOM = 3.2;
+const FLAG_MARKER_MIN_ZOOM = 2.4;
+const FLAG_MARKER_SIZE = 24;
+const FLAG_MARKER_GAP = 4;
+const NEARBY_COUNTRY_RADIUS = 34;
 
 // Cursor avatar size. Aspect comes from /public/avatar.svg viewBox (88.5 × 209.45).
 const CURSOR_AVATAR_HEIGHT = 56;
@@ -181,6 +185,81 @@ function projectCentroidToContainer(
   return { x: offsetX + svgX * scale, y: offsetY + svgY * scale };
 }
 
+function boxesOverlap(
+  a: { x: number; y: number; width: number; height: number },
+  b: { x: number; y: number; width: number; height: number },
+) {
+  return !(
+    a.x + a.width + FLAG_MARKER_GAP < b.x ||
+    b.x + b.width + FLAG_MARKER_GAP < a.x ||
+    a.y + a.height + FLAG_MARKER_GAP < b.y ||
+    b.y + b.height + FLAG_MARKER_GAP < a.y
+  );
+}
+
+function flagOffsetCandidates(): Array<{ x: number; y: number }> {
+  const candidates = [{ x: 0, y: 0 }];
+  for (const radius of [18, 32, 46, 60]) {
+    candidates.push(
+      { x: 0, y: -radius },
+      { x: radius, y: 0 },
+      { x: 0, y: radius },
+      { x: -radius, y: 0 },
+      { x: radius, y: -radius },
+      { x: radius, y: radius },
+      { x: -radius, y: radius },
+      { x: -radius, y: -radius },
+    );
+  }
+  return candidates;
+}
+
+function placeFlagMarkers(
+  markers: Array<{
+    slug: string;
+    flag: string;
+    anchor: { x: number; y: number };
+  }>,
+  container: { width: number; height: number },
+) {
+  const candidates = flagOffsetCandidates();
+  const occupied: Array<{ x: number; y: number; width: number; height: number }> =
+    [];
+
+  return markers
+    .sort((a, b) => a.anchor.y - b.anchor.y || a.anchor.x - b.anchor.x)
+    .map((marker) => {
+      let chosen = candidates[candidates.length - 1];
+
+      for (const candidate of candidates) {
+        const box = {
+          x: marker.anchor.x + candidate.x - FLAG_MARKER_SIZE / 2,
+          y: marker.anchor.y + candidate.y - FLAG_MARKER_SIZE / 2,
+          width: FLAG_MARKER_SIZE,
+          height: FLAG_MARKER_SIZE,
+        };
+        const fitsContainer =
+          box.x >= 0 &&
+          box.y >= 0 &&
+          box.x + box.width <= container.width &&
+          box.y + box.height <= container.height;
+        if (fitsContainer && !occupied.some((box2) => boxesOverlap(box, box2))) {
+          chosen = candidate;
+          occupied.push(box);
+          break;
+        }
+      }
+
+      return {
+        ...marker,
+        x: marker.anchor.x + chosen.x,
+        y: marker.anchor.y + chosen.y,
+        offsetX: chosen.x,
+        offsetY: chosen.y,
+      };
+    });
+}
+
 // Clamp the pan center so the viewport's edges stay within PAN_BOUNDS.
 // (translateExtent on ZoomableGroup is unreliable here — d3-zoom mixes
 // viewBox units with the SVG's CSS pixel size, so we enforce the limits
@@ -210,6 +289,7 @@ export default function WorldMap({
   selectedSlug,
   selectedCentroid,
   seededSlugs,
+  knownSlugs,
   centroidForSlug,
   nameForSlug,
   flagForSlug,
@@ -228,6 +308,13 @@ export default function WorldMap({
     width: number;
     height: number;
   } | null>(null);
+  const [nearbyPicker, setNearbyPicker] = useState<{
+    x: number;
+    y: number;
+    countries: Array<{ slug: string; name: string; flag?: string }>;
+  } | null>(null);
+  const seededSlugSet = useMemo(() => new Set(seededSlugs), [seededSlugs]);
+  const knownSlugSet = useMemo(() => new Set(knownSlugs), [knownSlugs]);
 
   // Track container size so we can project lat/lng to CSS pixels (for the
   // HTML-img centroid avatar — keeps it the same size as the cursor avatar
@@ -268,6 +355,7 @@ export default function WorldMap({
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      setNearbyPicker(null);
       const factor = Math.exp(-e.deltaY * 0.005);
       setPosition((p) => {
         const zoom = clamp(p.zoom * factor, MIN_ZOOM, MAX_ZOOM);
@@ -287,6 +375,74 @@ export default function WorldMap({
   };
   const handleMouseLeave = () => setCursorPos(null);
 
+  const nearbyCountriesForSlug = (slug: string) => {
+    if (!containerSize) return [];
+    const coord = centroidForSlug(slug);
+    if (!coord) return [];
+    const anchor = projectCentroidToContainer(
+      coord,
+      position.coordinates,
+      position.zoom,
+      containerSize,
+    );
+    if (!anchor) return [];
+
+    return knownSlugs
+      .flatMap((candidateSlug) => {
+        const candidateCoord = centroidForSlug(candidateSlug);
+        const name = nameForSlug(candidateSlug);
+        if (!candidateCoord || !name) return [];
+        const pt = projectCentroidToContainer(
+          candidateCoord,
+          position.coordinates,
+          position.zoom,
+          containerSize,
+        );
+        if (!pt) return [];
+        const distance = Math.hypot(pt.x - anchor.x, pt.y - anchor.y);
+        if (distance > NEARBY_COUNTRY_RADIUS) return [];
+        return [
+          {
+            slug: candidateSlug,
+            name,
+            flag: flagForSlug(candidateSlug),
+            distance,
+          },
+        ];
+      })
+      .sort((a, b) => a.distance - b.distance || a.name.localeCompare(b.name))
+      .map(({ slug, name, flag }) => ({ slug, name, flag }));
+  };
+
+  const flagMarkers = useMemo(() => {
+    if (!containerSize || position.zoom < FLAG_MARKER_MIN_ZOOM) return [];
+
+    const markers = Array.from(triedSet).flatMap((slug) => {
+      if (!seededSlugSet.has(slug)) return [];
+      const coord = centroidForSlug(slug);
+      const flag = flagForSlug(slug);
+      if (!coord || !flag) return [];
+      const anchor = projectCentroidToContainer(
+        coord,
+        position.coordinates,
+        position.zoom,
+        containerSize,
+      );
+      if (!anchor) return [];
+      return [{ slug, flag, anchor }];
+    });
+
+    return placeFlagMarkers(markers, containerSize);
+  }, [
+    centroidForSlug,
+    containerSize,
+    flagForSlug,
+    position.coordinates,
+    position.zoom,
+    seededSlugSet,
+    triedSet,
+  ]);
+
   // One copy of the map's contents: country shapes, ocean labels, country
   // labels, pins, centroid avatar. Called three times (once per wrap copy).
   const renderWorldContent = () => (
@@ -300,18 +456,20 @@ export default function WorldMap({
               properties: { name: string };
             }) => {
               const slug = slugForGeoId(geo.id ?? "");
-              const isSeeded = slug !== undefined;
-              const isTried = isSeeded && triedSet.has(slug);
-              const isSelected = isSeeded && slug === selectedSlug;
-              const isHovered = isSeeded && slug === hovered;
+              const isKnown = slug !== undefined && knownSlugSet.has(slug);
+              const hasRestaurants =
+                slug !== undefined && seededSlugSet.has(slug);
+              const isTried = hasRestaurants && triedSet.has(slug);
+              const isSelected = isKnown && slug === selectedSlug;
+              const isHovered = isKnown && slug === hovered;
 
               // Four fills, in order of "engagement" with the country:
-              //   unseeded < seeded < selected < tried
+              //   no restaurants < restaurants < selected/hovered < tried
               let fill: string;
               let stroke: string;
               let strokeWidth = 0.9;
 
-              if (!isSeeded) {
+              if (!hasRestaurants) {
                 fill = c.unseededLand;
                 stroke = c.unseededLine;
               } else if (isTried) {
@@ -332,15 +490,29 @@ export default function WorldMap({
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
-                  onClick={() => {
+                  onClick={(event) => {
                     const geoId = geo.id ?? "";
+                    if (isKnown) {
+                      const nearby = nearbyCountriesForSlug(slug);
+                      if (nearby.length > 1 && containerRef.current) {
+                        const rect =
+                          containerRef.current.getBoundingClientRect();
+                        setNearbyPicker({
+                          x: event.clientX - rect.left,
+                          y: event.clientY - rect.top,
+                          countries: nearby,
+                        });
+                        return;
+                      }
+                    }
+                    setNearbyPicker(null);
                     onSelect(
-                      slug ?? null,
-                      slug ? null : geo.properties.name,
-                      slug ? null : (flagForGeoId(geoId) ?? null),
+                      isKnown ? slug : null,
+                      isKnown ? null : geo.properties.name,
+                      isKnown ? null : (flagForGeoId(geoId) ?? null),
                     );
                   }}
-                  onMouseEnter={() => isSeeded && setHovered(slug)}
+                  onMouseEnter={() => isKnown && setHovered(slug)}
                   onMouseLeave={() => setHovered(null)}
                   aria-label={geo.properties.name}
                   style={{
@@ -351,7 +523,7 @@ export default function WorldMap({
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
-                      cursor: isSeeded ? "pointer" : "inherit",
+                      cursor: isKnown ? "pointer" : "inherit",
                       transition: "fill 220ms cubic-bezier(.2,.7,.3,1)",
                     },
                     hover: {
@@ -361,7 +533,7 @@ export default function WorldMap({
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
-                      cursor: isSeeded ? "pointer" : "inherit",
+                      cursor: isKnown ? "pointer" : "inherit",
                     },
                     pressed: {
                       fill,
@@ -391,7 +563,9 @@ export default function WorldMap({
               properties: { name: string };
             }) => {
               const slug = slugForGeoId(geo.id ?? "");
-              if (!slug || !triedSet.has(slug)) return null;
+              if (!slug || !seededSlugSet.has(slug) || !triedSet.has(slug)) {
+                return null;
+              }
 
               return (
                 <Geography
@@ -446,7 +620,13 @@ export default function WorldMap({
                 properties: { name: string };
               }) => {
                 const slug = slugForGeoId(geo.id ?? "");
-                if (slug !== selectedSlug) return null;
+                if (
+                  slug !== selectedSlug ||
+                  !slug ||
+                  !knownSlugSet.has(slug)
+                ) {
+                  return null;
+                }
 
                 return (
                   <Geography
@@ -531,7 +711,7 @@ export default function WorldMap({
 
       {/* Country labels appear only on hover to keep neighboring names from
           colliding in dense regions. */}
-      {seededSlugs.map((slug) => {
+      {knownSlugs.map((slug) => {
         if (slug !== hovered) return null;
         const coord = centroidForSlug(slug);
         if (!coord) return null;
@@ -554,19 +734,6 @@ export default function WorldMap({
             >
               {name}
             </text>
-          </Marker>
-        );
-      })}
-
-      {/* Flags on tried countries */}
-      {Array.from(triedSet).map((slug) => {
-        const coord = centroidForSlug(slug);
-        const flag = flagForSlug(slug);
-        if (!coord) return null;
-        if (!flag) return null;
-        return (
-          <Marker key={`flag-${slug}`} coordinates={coord}>
-            <FlagMarker flag={flag} />
           </Marker>
         );
       })}
@@ -635,19 +802,94 @@ export default function WorldMap({
             [MAP_WIDTH, MAP_HEIGHT],
           ]}
           onMoveEnd={(pos) =>
-            setPosition({
-              coordinates: clampCenter(
-                pos.coordinates[0],
-                pos.coordinates[1],
-                pos.zoom,
-              ),
-              zoom: pos.zoom,
-            })
+            {
+              setNearbyPicker(null);
+              setPosition({
+                coordinates: clampCenter(
+                  pos.coordinates[0],
+                  pos.coordinates[1],
+                  pos.zoom,
+                ),
+                zoom: pos.zoom,
+              });
+            }
           }
         >
           {renderWorldContent()}
         </ZoomableGroup>
       </ComposableMap>
+
+      {flagMarkers.length > 0 && (
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ zIndex: 2 }}
+        >
+          {flagMarkers.map((marker) => {
+            if (marker.offsetX === 0 && marker.offsetY === 0) return null;
+            return (
+              <line
+                key={`flag-line-${marker.slug}`}
+                x1={marker.anchor.x}
+                y1={marker.anchor.y}
+                x2={marker.x}
+                y2={marker.y}
+                stroke={c.visitedInk}
+                strokeWidth={1}
+                strokeLinecap="round"
+                opacity={0.45}
+              />
+            );
+          })}
+        </svg>
+      )}
+
+      {flagMarkers.map((marker) => (
+        <span
+          key={`flag-${marker.slug}`}
+          aria-hidden="true"
+          className="pointer-events-none absolute grid place-items-center rounded-full bg-white/85 shadow-sm ring-1 ring-black/10"
+          style={{
+            left: marker.x - FLAG_MARKER_SIZE / 2,
+            top: marker.y - FLAG_MARKER_SIZE / 2,
+            width: FLAG_MARKER_SIZE,
+            height: FLAG_MARKER_SIZE,
+            fontFamily:
+              "Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif",
+            fontSize: 16,
+            lineHeight: 1,
+            zIndex: 3,
+          }}
+        >
+          {marker.flag}
+        </span>
+      ))}
+
+      {nearbyPicker && (
+        <div
+          className="absolute min-w-40 overflow-hidden border border-black/10 bg-panel shadow-lg"
+          style={{
+            left: Math.min(nearbyPicker.x + 10, (containerSize?.width ?? 0) - 180),
+            top: Math.min(nearbyPicker.y + 10, (containerSize?.height ?? 0) - 56),
+            zIndex: 5,
+          }}
+        >
+          {nearbyPicker.countries.map((country) => (
+            <button
+              key={country.slug}
+              type="button"
+              onClick={() => {
+                setNearbyPicker(null);
+                onSelect(country.slug, null, null);
+              }}
+              className="flex h-11 w-full items-center gap-2 px-3 text-left text-sm font-semibold text-ink hover:bg-canvas"
+            >
+              <span aria-hidden="true">{country.flag}</span>
+              <span>{country.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Cursor avatar — the traveler IS the pointer on the map. Feet land
           at the cursor; pointer-events disabled so it never blocks clicks. */}
@@ -665,7 +907,7 @@ export default function WorldMap({
             height: CURSOR_AVATAR_HEIGHT,
             pointerEvents: "none",
             userSelect: "none",
-            zIndex: 2,
+            zIndex: 4,
           }}
         />
       )}
@@ -700,7 +942,7 @@ export default function WorldMap({
                 height: CURSOR_AVATAR_HEIGHT,
                 pointerEvents: "none",
                 userSelect: "none",
-                zIndex: 2,
+                zIndex: 4,
               }}
             />
           );

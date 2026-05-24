@@ -112,7 +112,15 @@ export default function App() {
         return;
       }
       setSelectedSlug(slug);
-      setTriedPromptSlug(slug);
+      const selectedCountry =
+        mapData.status === "ready"
+          ? mapData.allCountryBySlug.get(slug)
+          : undefined;
+      setTriedPromptSlug(
+        selectedCountry && selectedCountry.restaurants.length > 0
+          ? slug
+          : null,
+      );
       return;
     }
     if (unseededDisplayName) {
@@ -207,7 +215,7 @@ export default function App() {
   const total = mapData.status === "ready" ? mapData.total : null;
   const selectedCountry =
     mapData.status === "ready" && selectedSlug
-      ? (mapData.countryBySlug.get(selectedSlug) ?? null)
+      ? (mapData.allCountryBySlug.get(selectedSlug) ?? null)
       : null;
   const selectedCentroid =
     mapData.status === "ready" && selectedSlug
@@ -347,12 +355,13 @@ export default function App() {
                 selectedSlug={selectedSlug}
                 selectedCentroid={selectedCentroid}
                 seededSlugs={mapData.countries.map((country) => country.id)}
+                knownSlugs={mapData.allCountries.map((country) => country.id)}
                 centroidForSlug={mapData.centroidForSlug}
                 nameForSlug={(slug) =>
-                  mapData.countryBySlug.get(slug)?.name
+                  mapData.allCountryBySlug.get(slug)?.name
                 }
                 flagForSlug={(slug) =>
-                  mapData.countryBySlug.get(slug)?.flag
+                  mapData.allCountryBySlug.get(slug)?.flag
                 }
                 onSelect={(slug, displayName, displayFlag) =>
                   handleSelect(slug, displayName, displayFlag)
