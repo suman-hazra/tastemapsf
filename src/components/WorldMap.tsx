@@ -22,9 +22,9 @@ import {
   Marker,
   ZoomableGroup,
 } from "react-simple-maps";
+import { geoNaturalEarth1 } from "d3-geo";
 import { map as c } from "../styles/tokens";
 import { flagForGeoId, slugForGeoId } from "../data/countryIdMap";
-import Avatar from "./Avatar";
 import FlagMarker from "./FlagMarker";
 import SanFranciscoMarker from "./SanFranciscoMarker";
 
@@ -152,6 +152,35 @@ function clamp(n: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, n));
 }
 
+// Mirrors react-simple-maps' projection setup (geoNaturalEarth1 at scale 170,
+// translated to MAP_WIDTH/2, MAP_HEIGHT/2). Used to position the HTML-img
+// centroid avatar in container CSS pixels.
+const BASE_PROJECTION = geoNaturalEarth1()
+  .scale(170)
+  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2]);
+
+// Project a lng/lat to container CSS pixels, accounting for ZoomableGroup's
+// current transform and the SVG's xMidYMid meet scaling inside the container.
+function projectCentroidToContainer(
+  centroid: [number, number],
+  center: [number, number],
+  zoom: number,
+  container: { width: number; height: number },
+): { x: number; y: number } | null {
+  const base = BASE_PROJECTION(centroid);
+  const baseCenter = BASE_PROJECTION(center);
+  if (!base || !baseCenter) return null;
+  const svgX = MAP_WIDTH / 2 + (base[0] - baseCenter[0]) * zoom;
+  const svgY = MAP_HEIGHT / 2 + (base[1] - baseCenter[1]) * zoom;
+  const scale = Math.min(
+    container.width / MAP_WIDTH,
+    container.height / MAP_HEIGHT,
+  );
+  const offsetX = (container.width - MAP_WIDTH * scale) / 2;
+  const offsetY = (container.height - MAP_HEIGHT * scale) / 2;
+  return { x: offsetX + svgX * scale, y: offsetY + svgY * scale };
+}
+
 // Clamp the pan center so the viewport's edges stay within PAN_BOUNDS.
 // (translateExtent on ZoomableGroup is unreliable here — d3-zoom mixes
 // viewBox units with the SVG's CSS pixel size, so we enforce the limits
@@ -195,6 +224,24 @@ export default function WorldMap({
     zoom: number;
   }>({ coordinates: HOME_CENTER, zoom: HOME_ZOOM });
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  // Track container size so we can project lat/lng to CSS pixels (for the
+  // HTML-img centroid avatar — keeps it the same size as the cursor avatar
+  // regardless of map zoom).
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () =>
+      setContainerSize({ width: el.clientWidth, height: el.clientHeight });
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!selectedCentroid || !selectedSlug) return;
@@ -524,15 +571,6 @@ export default function WorldMap({
         );
       })}
 
-      {/* Centroid avatar — only visible when the cursor avatar isn't
-          active (mouse off the map). Keeps the "you were here" marker
-          on the last-selected country when the panel is open. */}
-      {cursorPos === null && selectedCentroid && selectedSlug && (
-        <Marker coordinates={selectedCentroid}>
-          <Avatar height={CURSOR_AVATAR_HEIGHT / position.zoom} />
-        </Marker>
-      )}
-
       {/* San Francisco — the app's home city. */}
       <Marker coordinates={[-122.4194, 37.7749]}>
         <SanFranciscoMarker />
@@ -632,6 +670,41 @@ export default function WorldMap({
         />
       )}
 
+      {/* Centroid avatar — "you were here" marker on the selected country
+          when the cursor isn't on the map. Rendered as an HTML img (not an
+          SVG element) so its CSS-pixel size matches the cursor avatar
+          exactly, regardless of zoom or viewport size. */}
+      {cursorPos === null &&
+        selectedCentroid &&
+        selectedSlug &&
+        containerSize &&
+        (() => {
+          const pt = projectCentroidToContainer(
+            selectedCentroid,
+            position.coordinates,
+            position.zoom,
+            containerSize,
+          );
+          if (!pt) return null;
+          return (
+            <img
+              src="/avatar.svg"
+              alt=""
+              aria-hidden="true"
+              draggable={false}
+              style={{
+                position: "absolute",
+                left: pt.x - CURSOR_AVATAR_WIDTH / 2,
+                top: pt.y - CURSOR_AVATAR_HEIGHT,
+                width: CURSOR_AVATAR_WIDTH,
+                height: CURSOR_AVATAR_HEIGHT,
+                pointerEvents: "none",
+                userSelect: "none",
+                zIndex: 2,
+              }}
+            />
+          );
+        })()}
     </div>
   );
 }

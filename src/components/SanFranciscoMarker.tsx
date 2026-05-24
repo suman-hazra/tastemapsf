@@ -17,7 +17,7 @@ export default function SanFranciscoMarker() {
         x={0}
         y={10}
         textAnchor="middle"
-        fontFamily="var(--font-map-sans)"
+        fontFamily="Helvetica, Arial, sans-serif"
         fontSize="7"
         fontWeight={700}
         fill={INK}

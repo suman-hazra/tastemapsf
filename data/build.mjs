@@ -73,14 +73,31 @@ function rowsToObjects(rows) {
   });
 }
 
+function validateColumnCounts(filename, rows, errors) {
+  const [header, ...body] = rows;
+  const expected = header.length;
+  body.forEach((row, index) => {
+    if (row.length !== expected) {
+      errors.push(
+        `${filename}: row ${index + 2} has ${row.length} fields; expected ${expected}`,
+      );
+    }
+  });
+}
+
 const countriesCsv = fs.readFileSync(COUNTRIES_CSV, "utf8");
 const restaurantsCsv = fs.readFileSync(RESTAURANTS_CSV, "utf8");
 
-const countryRows = rowsToObjects(parseCSV(countriesCsv));
-const restaurantRows = rowsToObjects(parseCSV(restaurantsCsv));
+const countryCsvRows = parseCSV(countriesCsv);
+const restaurantCsvRows = parseCSV(restaurantsCsv);
 
 // Validate.
 const errors = [];
+validateColumnCounts("countries.csv", countryCsvRows, errors);
+validateColumnCounts("restaurants.csv", restaurantCsvRows, errors);
+
+const countryRows = rowsToObjects(countryCsvRows);
+const restaurantRows = rowsToObjects(restaurantCsvRows);
 
 const countryIds = new Set();
 for (const c of countryRows) {
@@ -95,6 +112,7 @@ for (const c of countryRows) {
 
 const restaurantsByCountry = new Map();
 let skippedClosed = 0;
+let skippedPlaceholders = 0;
 for (const r of restaurantRows) {
   if (!r.country_id) {
     errors.push(`restaurants.csv: row missing country_id — ${JSON.stringify(r)}`);
@@ -108,6 +126,12 @@ for (const r of restaurantRows) {
   }
   if (r.status === "closed") {
     skippedClosed++;
+    continue;
+  }
+  // Placeholder row: country is acknowledged but no SF restaurant exists yet.
+  // id+name+neighborhood all blank means "checked, none found" — not an error.
+  if (!r.id && !r.name && !r.neighborhood) {
+    skippedPlaceholders++;
     continue;
   }
   if (!r.id || !r.name || !r.neighborhood) {
@@ -222,5 +246,5 @@ const totalRestaurants = [...restaurantsByCountry.values()].reduce(
 console.log(`Wrote ${path.relative(repoRoot, OUTPUT_TS)}`);
 console.log(`  ${countryRows.length} countries`);
 console.log(
-  `  ${totalRestaurants} restaurants (skipped ${skippedClosed} marked closed)`,
+  `  ${totalRestaurants} restaurants (skipped ${skippedClosed} closed, ${skippedPlaceholders} placeholders)`,
 );
