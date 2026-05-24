@@ -26,6 +26,9 @@ const CONFETTI = [
 const SHARE_URL_BASE = "https://www.tastemapsf.com/";
 
 function scoreMessage(tried: number, total: number): string {
+  if (tried === 0) {
+    return "Your map is still untouched. Perfect excuse to start with one great meal in San Francisco.";
+  }
   const pct = total > 0 ? tried / total : 0;
   if (pct >= 1) {
     return "You did it. Every available country on the map is stamped.";

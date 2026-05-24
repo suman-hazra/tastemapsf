@@ -10,7 +10,7 @@ export const countries: Country[] = [
     name: "Albania",
     continent: "Europe",
     flag: "🇦🇱",
-    cuisine_summary: "Albanian food is Mediterranean meets Balkans — grilled meats, olive-oil-drenched vegetables, and thick yogurt that appears at nearly every meal. Simple ingredients, unhurried cooking.",
+    cuisine_summary: "Albanian cuisine is where the Mediterranean and the Balkans quietly negotiate — olive-oil-drenched vegetables, slow-grilled meats, and thick salted yogurt that appears at nearly every meal. Tavë kosi, the national dish, is a baked lamb and rice custard set in tangy yogurt and eggs — rich, custardy, deeply satisfying. Byrek (flaky filo filled with spinach, white cheese, or spiced meat) turns up at every bakery. The cooking is unpretentious and ingredient-honest, with centuries of Ottoman and Byzantine history underneath.",
     signature_dishes: [
       { name: "Tavë kosi", description: "Baked lamb and rice set in a tangy yogurt-egg custard. Albania's national dish — rich, custardy, and deeply satisfying." },
       { name: "Byrek", description: "Flaky filo pastry filled with spinach and white cheese, or spiced meat. Found in every bakery, eaten at any hour." },
@@ -23,7 +23,7 @@ export const countries: Country[] = [
     name: "Andorra",
     continent: "Europe",
     flag: "🇦🇩",
-    cuisine_summary: "Andorran cuisine is mountain Catalan — hearty stews, cured mountain meats, and dishes built to fuel life at altitude. French and Spanish influences converge in this tiny Pyrenean nation.",
+    cuisine_summary: "Andorran cuisine is Pyrenean mountain food — hearty enough to fuel a day of altitude and physical labor. It shares its soul with Catalan cooking: trinxat (mashed cabbage and potato fried with bacon into a golden cake), escudella (a slow winter stew of pork, sausage, and root vegetables), and cured mountain meats aged in cold air. French and Spanish influences converge naturally in this tiny nation — the wine is Catalan, the cheese is French, and the cooking is entirely its own.",
     signature_dishes: [
       { name: "Escudella", description: "Thick winter stew of pork, sausage, pasta, and root vegetables. The Andorran Sunday lunch when the mountains are cold." },
       { name: "Trinxat", description: "Mashed cabbage and potato formed into a cake and fried with bacon. Simple, warming, and pure Pyrenean comfort." },
@@ -189,7 +189,7 @@ export const countries: Country[] = [
     name: "France",
     continent: "Europe",
     flag: "🇫🇷",
-    cuisine_summary: "Classic French cooking is patient and buttery — long lunches with crusty bread, sauces that took an afternoon, and dessert you crack with a spoon.",
+    cuisine_summary: "French cuisine is the foundation on which most of Western professional cooking was built — the brigade system, the mother sauces, the philosophy that cooking is an art worth a lifetime of discipline. Regionally it is vast: Brittany's butter and buckwheat crêpes, Provence's olive oil and tomatoes, Lyon's offal and quenelles (the city Bocuse called the world's greatest food capital), Alsace's choucroute and Riesling-braised pork, Bordeaux's wine-country simplicity. The baguette, the bistro, the tasting menu — all French inventions. Haute cuisine and the corner boulangerie are equally serious. France doesn't just have a cuisine; it has a philosophy of eating that shaped the entire world's table.",
     signature_dishes: [
       { name: "Steak frites", description: "Grilled steak with crispy fries — the bistro lunch staple. Order it medium-rare." },
       { name: "Croque monsieur", description: "Open-faced ham and gruyère sandwich, finished under the broiler with béchamel." },
@@ -282,7 +282,7 @@ export const countries: Country[] = [
     name: "Italy",
     continent: "Europe",
     flag: "🇮🇹",
-    cuisine_summary: "Italian food is regional and ingredient-driven — long, slow Sundays of fresh pasta, wood-fired pizzas, and tomato sauces that taste like the tomato.",
+    cuisine_summary: "Italian immigrants from Genoa and southern Italy began flooding into North Beach in the 1870s, drawn by the Bay and the fishing trade. By 1900, Columbus Avenue was wall-to-wall Italian restaurants. Molinari & Sons deli has been hand-curing salami on Columbus since 1896. Liguria Bakery has baked focaccia the same way since 1911. Caffè Trieste, opened in 1956, was the West Coast's first espresso bar. North Beach — SF's Little Italy — remains one of the most intact Italian-American neighborhoods in the country, where a 150-year culinary tradition still shows up in the bread, the coffee, and the pasta.",
     signature_dishes: [
       { name: "Cacio e pepe", description: "Pasta tossed with pecorino and black pepper — three ingredients, all about technique." },
       { name: "Pizza margherita", description: "Tomato, mozzarella, basil on a charred, chewy crust. The standard everything else gets measured against." },
@@ -463,7 +463,7 @@ export const countries: Country[] = [
     name: "Russia",
     continent: "Europe",
     flag: "🇷🇺",
-    cuisine_summary: "Russian food is vast and varied as the country — borscht, pelmeni dumplings from Siberia, cured fish and black bread from the north, and a tradition of preserving and fermenting that kept people alive through long winters.",
+    cuisine_summary: "Russian cuisine is as vast and climatically extreme as the country itself — a tradition built on survival, preservation, and unexpected elegance. Borscht (beet and cabbage soup) warms millions from Moscow to Vladivostok. Pelmeni — Siberian meat dumplings eaten with sour cream — are the cold-weather comfort food of an entire civilization. Blini with caviar and smoked fish represent the aristocratic table; black bread and pickled vegetables represent the peasant one. The pickling, fermenting, and curing traditions — born of necessity through brutal winters — produced some of the world's most complex preserved foods. Vodka is less a drink than a social institution.",
     signature_dishes: [
       { name: "Borscht", description: "Deep red beet and beef soup with cabbage, carrot, and potato, served with a generous spoonful of sour cream and black bread on the side. Russia's most iconic soup." },
       { name: "Pelmeni", description: "Small meat dumplings boiled and served with sour cream or butter and dill. Siberia's great contribution — made in batches of hundreds and frozen for winter use." },
@@ -518,7 +518,7 @@ export const countries: Country[] = [
     name: "Spain",
     continent: "Europe",
     flag: "🇪🇸",
-    cuisine_summary: "Spanish food is small plates and long evenings — sherry-paired tapas, cured ham sliced paper-thin, and rice cooked in a wide pan over fire.",
+    cuisine_summary: "Spanish cuisine is one of the world's most regionally diverse and historically significant. The Basque Country alone — with pintxos bars lining every street and more Michelin stars per capita than anywhere on earth — could anchor a world food culture on its own. Catalonia gave the world Ferran Adrià and elBulli, the restaurant that launched molecular gastronomy and changed how every serious chef thinks about cooking. Andalusia invented tapas culture; Valencia invented paella cooked over orange wood in wide shallow pans; the meseta gave Spain jamón ibérico — acorn-fed, 36-month-cured pork leg that many consider the finest cured meat on earth. Spanish food is slow lunches, long evenings, and a deep belief that eating well is not a luxury but a daily right.",
     signature_dishes: [
       { name: "Patatas bravas", description: "Fried potatoes with smoky tomato sauce and garlic aioli. Bar food, perfected." },
       { name: "Jamón ibérico", description: "Dry-cured ham from acorn-fed pigs, sliced thin enough to melt on your tongue." },
@@ -692,7 +692,7 @@ export const countries: Country[] = [
     name: "Dominica",
     continent: "North America",
     flag: "🇩🇲",
-    cuisine_summary: "Dominican (Dominica) food is the 'Nature Isle' on a plate — Creole cooking rooted in African and French heritage, with mountain produce, fresh river fish, and the island's own endemic ingredients.",
+    cuisine_summary: "Dominican (Dominica) food is Creole cooking rooted in African and French heritage, shaped by one of the Caribbean's most untouched natural landscapes. Mountain chicken (the giant frog crapaud), freshwater crayfish, and dasheen (taro) are local staples found nowhere else in quite the same form. Callaloo soup, fish broth, and provisions (root vegetables) are everyday anchors. The 'Nature Isle' grows most of what it eats — spices, cocoa, bananas, and citrus from volcanic soil that produces some of the Caribbean's most intensely flavored produce.",
     signature_dishes: [
       { name: "Callaloo soup", description: "Dasheen (taro) leaves blended into a thick, dark green soup with coconut milk and okra. The Caribbean island staple — rich, earthy, deeply nourishing." },
       { name: "Pelau", description: "Rice cooked with pigeon peas, coconut milk, and chicken or pork. One-pot Caribbean cooking at its most comforting." },
@@ -718,7 +718,7 @@ export const countries: Country[] = [
     name: "El Salvador",
     continent: "North America",
     flag: "🇸🇻",
-    cuisine_summary: "Salvadoran food is masa and pupusas — thick handmade corn cakes stuffed with cheese, beans, or pork. Simple, immediate, and the most-eaten food in the country by a considerable margin.",
+    cuisine_summary: "Salvadoran food is built around masa — and its greatest expression is the pupusa: a thick handmade corn cake stuffed with cheese, chicharrón, or loroco flower, pressed flat and griddled, then buried under curtido (fermented cabbage slaw) and tomato salsa. Beyond pupusas: yuca frita with chicharrón, sopa de pata (cow's foot soup), and tamales wrapped in banana leaf for Sunday mornings. The cuisine is unpretentious, immediate, and made for sharing — El Salvador's most beloved dishes all began as street food.",
     signature_dishes: [
       { name: "Pupusas", description: "Thick handmade corn tortillas stuffed with cheese, refried beans, or chicharrón, cooked on a dry griddle. El Salvador's national dish, eaten at breakfast, lunch, and dinner." },
       { name: "Curtido", description: "Lightly fermented cabbage slaw with carrot, onion, and oregano. The required and essential accompaniment to every pupusa — crunchy, sour, non-negotiable." },
@@ -779,7 +779,7 @@ export const countries: Country[] = [
     name: "Honduras",
     continent: "North America",
     flag: "🇭🇳",
-    cuisine_summary: "Honduran food is Central American staple cooking — baleadas (the great national street food) made from thick flour tortillas, and seafood from both the Caribbean and Pacific coasts that often gets overlooked.",
+    cuisine_summary: "Honduran cuisine is Central American cooking with its own confident identity. The baleada is the great national street food — a thick flour tortilla folded over refried beans, crema, and salty cheese, eaten at any hour. Sopa de caracol (conch soup with coconut milk and yuca) is the Caribbean coast's signature dish, complex and warming. Tapado (a seafood and plantain stew) reflects the Garífuna community's African and Caribbean heritage. From the Pacific to the Caribbean, Honduras has two coastlines and a rich interior of corn, beans, and tropical fruit — a cuisine that rewards more attention than it typically receives.",
     signature_dishes: [
       { name: "Baleada", description: "Thick flour tortilla filled with refried beans, crumbled white cheese, and cream. Honduras's defining street food — simple, filling, eaten morning to night." },
       { name: "Sopa de caracol", description: "Conch soup with coconut milk, yuca, and plantain. The Caribbean coast's signature dish — rich, subtly sweet, and deeply satisfying." },
@@ -811,7 +811,7 @@ export const countries: Country[] = [
     name: "Mexico",
     continent: "North America",
     flag: "🇲🇽",
-    cuisine_summary: "Mexican food in SF is more regional than the burrito stereotype — tacos al pastor off a vertical spit, mole that took two days, and salsas with real heat.",
+    cuisine_summary: "Mexican food is woven into San Francisco's DNA. The Mission District has been a Latino heartland since the 1950s, and it gave the world one of its most iconic food inventions: the Mission-style burrito, born at Taquería La Cumbre in 1967. La Palma Mexicatessen has been pressing fresh masa by hand on 24th Street since 1953. Today the Mission is lined with taquerías, panaderías, and restaurants serving regional Mexican cuisine from Oaxaca, Jalisco, and beyond — a living neighborhood built on tortillas, mole, and generations of immigrant labor.",
     signature_dishes: [
       { name: "Carnitas tacos", description: "Slow-cooked pork shoulder, crisped and piled into corn tortillas with onion and cilantro." },
       { name: "Pozole rojo", description: "Hominy stew with pork in a chile broth — garnish-your-own with cabbage, radish, lime." },
@@ -885,7 +885,7 @@ export const countries: Country[] = [
     name: "United States",
     continent: "North America",
     flag: "🇺🇸",
-    cuisine_summary: "American food is regional and vast — Texas brisket smoked for 12 hours, New England clam chowder, Louisiana gumbo, and a burger culture that the country exported to every corner of the earth. The diversity is the cuisine.",
+    cuisine_summary: "San Francisco and the Bay Area didn't just participate in American food culture — they rewrote it. When Alice Waters opened Chez Panisse in Berkeley in 1971, she launched the California cuisine movement: cook only what's local, seasonal, and sustainably grown. That radical idea gave birth to the farm-to-table movement, the organic food revival, and the farmers' market renaissance now standard across the country. In SF itself, Zuni Café (1979) and Greens (1979) carried that torch. California cuisine also absorbed the city's multicultural reality — Chinese, Japanese, Mexican, and Vietnamese influences folded into a distinctly Californian synthesis. The result elevated American food to a global level, and it started right here.",
     signature_dishes: [
       { name: "BBQ brisket", description: "Beef brisket rubbed in salt and pepper and smoked over post oak for 12-18 hours until the bark is black and the interior melts. Central Texas's great contribution — patience as technique." },
       { name: "Clam chowder", description: "Creamy New England soup of clams, potato, and salt pork. Boston's signature — best served in a sourdough bread bowl in San Francisco, which is not Boston but somehow makes it work." },
@@ -905,7 +905,7 @@ export const countries: Country[] = [
     name: "Argentina",
     continent: "South America",
     flag: "🇦🇷",
-    cuisine_summary: "Argentine cooking is wood smoke and beef — grilled meats with chimichurri, baked savory hand pies, and a wine country sensibility on the side.",
+    cuisine_summary: "Argentine cuisine is the art of the asado — open-fire grilling elevated to a social ritual. Entire cuts of beef, pork ribs, and blood sausage go over slow wood-burning coals, dressed only in chimichurri. Away from the grill: empanadas baked in stone ovens, milanesa (breaded and fried cutlets) eaten at any hour, and locro (a corn-and-bean stew) in the winter. The Mendoza wine valleys produce Malbec that belongs on any world list. Argentina feeds itself with an Italian immigrant's love of food and a gaucho's pride in the flame.",
     signature_dishes: [
       { name: "Empanadas", description: "Hand pies stuffed with seasoned beef, chicken, or cheese. Baked, not fried — the everyday Argentine snack." },
       { name: "Asado", description: "Mixed grill of beef cuts, sausages, and offal. The Sunday family ritual." },
@@ -954,7 +954,7 @@ export const countries: Country[] = [
     name: "Chile",
     continent: "South America",
     flag: "🇨🇱",
-    cuisine_summary: "Chilean food is a long coastline on a plate — fresh seafood, corn-based casseroles, and empanadas from stone ovens. The wine from the valleys is as important as what's on the plate.",
+    cuisine_summary: "Chilean cuisine runs the length of one of the world's most geographically extreme countries — 4,300 kilometers of Pacific coastline, Atacama desert, Patagonian steppe, and Andean mountain. The sea defines the table: congrio (king crab), piure (sea squirt), and locos (abalone) are national obsessions. Inland: pastel de choclo (a corn-and-meat casserole), cazuela (slow broth with vegetables and beef), and empanadas from clay ovens. The Maipo and Casablanca valleys produce world-class Carménère and Sauvignon Blanc. Chilean food is not loud — it lets extraordinary raw ingredients speak quietly.",
     signature_dishes: [
       { name: "Pastel de choclo", description: "Ground beef, chicken, olives, hard-boiled egg, and raisins topped with a sweet corn crust and baked in a clay bowl. Chile's great comfort dish." },
       { name: "Cazuela", description: "Clear broth with beef or chicken, potato, corn on the cob, squash, and rice. The everyday Chilean soup — clean, nourishing, unpretentious." },
@@ -1024,7 +1024,7 @@ export const countries: Country[] = [
     name: "Peru",
     continent: "South America",
     flag: "🇵🇪",
-    cuisine_summary: "Peruvian food fuses indigenous, Spanish, Chinese, and Japanese influences — bright citrus-cured ceviche, stir-fried beef over fries, and creamy chicken stews.",
+    cuisine_summary: "Peruvian cuisine is arguably the most exciting in the world right now — and it has been building toward this moment for centuries. Ceviche, cured in tiger's milk (lime, chile, and fish juices), is the national icon: bright, acidic, and consumed at cevicherías by the millions. Lomo saltado merges Chinese stir-fry technique with Andean beef and potatoes — a legacy of the 19th-century Chinese immigrant community (the Chifa tradition). Causa, anticuchos, ají de gallina, and the 3,000 varieties of native potato tell a story of Indigenous Andean cuisine that fed civilizations before the Spanish arrived. Lima is now home to multiple restaurants on the World's 50 Best list, led by Central, Maido, and Astrid y Gastón. Peru didn't just find its culinary voice — it became one of the loudest on the planet.",
     signature_dishes: [
       { name: "Lomo saltado", description: "Beef stir-fried with onions, tomato, and soy sauce — served over rice with fries. The Peru-China crossover hit." },
       { name: "Ceviche", description: "Raw white fish cured in lime, chile, and red onion. Cold, bright, addictive." },
@@ -1084,7 +1084,7 @@ export const countries: Country[] = [
     name: "Afghanistan",
     continent: "Asia",
     flag: "🇦🇫",
-    cuisine_summary: "Afghan food is hearty and fragrant — slow-cooked rice perfumed with cardamom and saffron, tender lamb kebabs, and flatbreads pulled from clay ovens. Central Asian tradition meets Persian subtlety.",
+    cuisine_summary: "Afghan cuisine is one of Central Asia's most refined — long-grain rice perfumed with saffron, cardamom, and dried fruit; lamb marinated in yogurt and grilled over charcoal; and flatbreads baked directly on clay oven walls. Persian delicacy meets Silk Road spice. Kabuli pulao, the national dish, is a study in patience: slow-cooked rice layered with caramelized carrots, raisins, and tender lamb. It is food built for hospitality and ceremony.",
     signature_dishes: [
       { name: "Kabuli pulao", description: "The national dish. Basmati rice cooked with lamb, topped with caramelized carrots and raisins. Fragrant, rich, and made for a crowd." },
       { name: "Mantu", description: "Steamed dumplings filled with spiced ground beef and onion, draped in yogurt and a garlicky tomato sauce." },
@@ -1182,7 +1182,7 @@ export const countries: Country[] = [
     name: "Burma (Myanmar)",
     continent: "Asia",
     flag: "🇲🇲",
-    cuisine_summary: "Burmese food sits at the crossroads of India, China, and Thailand — tea-leaf salads tossed at the table, coconut chicken noodle soup, and lots of crunchy fried bits.",
+    cuisine_summary: "Burmese cuisine sits at the cultural crossroads of India, China, and Southeast Asia — yet tastes like none of them. Lahpet thohk (fermented tea-leaf salad) is unlike anything else on earth: tossed tableside with peanuts, fried garlic, dried shrimp, and tomatoes. Mohinga, the national breakfast, is a catfish-and-lemongrass noodle soup eaten by millions every morning. Ohn-no khao swe (coconut chicken noodles) is comfort food of the highest order. The cuisine rewards curiosity — every dish has layers that reveal themselves slowly.",
     signature_dishes: [
       { name: "Tea leaf salad (lahpet thoke)", description: "Fermented tea leaves tossed tableside with crunchy lentils, peanuts, sesame, cabbage, and lime. The dish to order first." },
       { name: "Mohinga", description: "Catfish-and-rice-noodle soup with lemongrass. The Burmese breakfast, eaten all day." },
@@ -1217,7 +1217,7 @@ export const countries: Country[] = [
     name: "China",
     continent: "Asia",
     flag: "🇨🇳",
-    cuisine_summary: "Chinese food in SF spans regions and eras — dim sum carts in Chinatown, soup dumplings folded with 18 pleats, and Sichuan numbing-hot chiles that buzz the lips.",
+    cuisine_summary: "San Francisco's Chinatown — established in 1848 — is the oldest in North America and the birthplace of American-Chinese food as we know it. Dishes like chop suey and egg foo yung were invented here and spread across the country. Cecilia Chiang's Mandarin Restaurant introduced authentic regional Chinese cuisine to American diners in 1961. Today, SF's Chinese food scene spans Cantonese dim sum in Chinatown, hand-pulled Sichuan noodles in the Richmond, and some of the country's finest Hong Kong-style seafood — a 175-year culinary legacy still very much alive.",
     signature_dishes: [
       { name: "Xiaolongbao", description: "Shanghai soup dumplings — bite the side, sip the broth, then eat the rest. Don't burn yourself." },
       { name: "Mapo tofu", description: "Silken tofu in a numbing chile-bean sauce with ground pork. Sichuan's calling card." },
@@ -1251,7 +1251,7 @@ export const countries: Country[] = [
     name: "India",
     continent: "Asia",
     flag: "🇮🇳",
-    cuisine_summary: "Indian food is regional spice and technique — North Indian tandoor-charred breads and creamy curries, South Indian dosas crisp as paper, and biryani layered with saffron rice.",
+    cuisine_summary: "Indian cuisine is one of the world's most vast and varied — not a single cuisine at all, but a mosaic of regional traditions as different from each other as French is from Greek. The north is tandoor-charred bread, slow-cooked kormas, and buttery dal; the south is crispy fermented dosa, coconut-based curries, and tamarind-soured rice; the west is Goan pork vindaloo from the Portuguese era and Gujarati vegetarian cooking of extraordinary refinement; the east is mustard-oil fish from Bengal and dumplings from the Himalayan borderlands. Spice blends, cooking fats, and staple grains shift every few hundred kilometers. India has been shaping global food — through the spice trade alone — for over two thousand years.",
     signature_dishes: [
       { name: "Chicken tikka masala", description: "Yogurt-marinated chicken in a tomato-cream sauce. Brit-Indian classic, weeknight favorite." },
       { name: "Masala dosa", description: "Thin, crispy rice-and-lentil crepe wrapped around spiced potato. Eat with sambar and coconut chutney." },
@@ -1315,7 +1315,7 @@ export const countries: Country[] = [
     name: "Japan",
     continent: "Asia",
     flag: "🇯🇵",
-    cuisine_summary: "Japanese food in SF is more than sushi — pork-bone ramen that took 12 hours, izakaya plates and beer with friends, and quietly precise omakase counters.",
+    cuisine_summary: "San Francisco's Japantown (Nihonmachi) dates to 1906 and is one of only three remaining historic Japantowns in the United States. At its peak before World War II, it resembled Tokyo's Ginza district. The community rebuilt after the trauma of wartime internment and kept its food culture intact — ramen shops, izakayas, mochi makers, and sushi bars have anchored the Western Addition for decades. Today Japantown draws diners citywide and hosts two Michelin-starred restaurants, making it one of the most culinarily serious Japanese enclaves outside Japan.",
     signature_dishes: [
       { name: "Sushi & sashimi", description: "Vinegared rice or pure fish, sliced by someone who's been doing it 20 years. Trust the chef." },
       { name: "Tonkotsu ramen", description: "Pork bone broth simmered until milky, with chashu pork, soft egg, and chewy noodles." },
@@ -1363,7 +1363,7 @@ export const countries: Country[] = [
     name: "Korea",
     continent: "Asia",
     flag: "🇰🇷",
-    cuisine_summary: "Korean food is fermented depth and tabletop fire — banchan side dishes that arrive before you order, soups that cure colds, and meat you grill yourself.",
+    cuisine_summary: "Korean cuisine is one of the world's most complete — built on fermentation, fire, and communal abundance. Kimchi (fermented vegetables, hundreds of varieties) is not a side dish; it is a pillar of the culture. Banchan — the small plates that fill the table before the main arrives — reflect a philosophy of balance and contrast: cold and hot, sour and savory, crunchy and soft. Tabletop grilling (samgyeopsal, galbi) turns dinner into a social ritual. Sundubu jjigae, doenjang jjigae, and samgyetang are soups with the weight of centuries behind them. Korean food has gone from niche to globally dominant in a single generation — and it earned every bit of the attention.",
     signature_dishes: [
       { name: "Korean BBQ", description: "Grill cuts like galbi (short rib) and samgyeopsal (pork belly) at your table; wrap in lettuce with rice and ssamjang." },
       { name: "Bibimbap", description: "Rice bowl topped with sautéed vegetables, a fried egg, and gochujang — stir hard before eating." },
@@ -1529,7 +1529,7 @@ export const countries: Country[] = [
     name: "Philippines",
     continent: "Asia",
     flag: "🇵🇭",
-    cuisine_summary: "Filipino food is bold and proudly sour — vinegar-braised meats, garlicky rice, and pork that fights with a fork. Plus halo-halo (lit. \"mix-mix\") for dessert.",
+    cuisine_summary: "SoMa Pilipinas — officially recognized as SF's Filipino Cultural Heritage District in 2016 — honors over 120 years of Filipino presence in the city. Filipino merchant marines put down roots at South Park in 1921, and the community has been in SoMa ever since. For most of that time, Filipino food was SF's best-kept secret — adobo, kare-kare, and lechon fed the community quietly while the rest of the city looked elsewhere. That's changing fast: a new generation of Filipino chefs is bringing lumpia, sisig, and ube to the mainstream, making SoMa one of the city's most exciting food destinations.",
     signature_dishes: [
       { name: "Adobo", description: "Chicken or pork braised in vinegar, soy, garlic, and bay. Every family has their version." },
       { name: "Sisig", description: "Sizzling chopped pork (jowl + ear, classically) with onion, chile, and citrus. Eat with rice and a cold beer." },
@@ -1646,7 +1646,7 @@ export const countries: Country[] = [
     name: "Thailand",
     continent: "Asia",
     flag: "🇹🇭",
-    cuisine_summary: "Thai food balances four flavors at once — sweet, sour, salty, spicy. Curries built on pounded paste, stir-fried noodles with a smoky wok char, and herb-heavy salads.",
+    cuisine_summary: "Thai cuisine is one of the world's most harmonically complex — every dish balances sweet, sour, salty, spicy, and umami simultaneously, not sequentially. The cuisine is deeply regional: the north has khao soi (coconut curry noodles) and mild, herb-forward stews; the northeast (Isan) has larb (meat salad with toasted rice powder) and papaya salad with fierce heat; the south has the most ferocious curries, blackened by roasted coconut and dried chiles. Pad thai, massaman curry, and tom yum goong are known globally — but the depth of Thai street food culture, from grilled satay to mango sticky rice, is what earns it a place among the world's great culinary traditions. The mortar and pestle is the soul of the kitchen.",
     signature_dishes: [
       { name: "Pad see ew", description: "Wide rice noodles stir-fried with Chinese broccoli, egg, and dark soy. Less sweet than pad thai, more wok smoke." },
       { name: "Tom kha gai", description: "Coconut soup with chicken, galangal, lemongrass, and chile. Comforting and bright at the same time." },
@@ -1678,7 +1678,7 @@ export const countries: Country[] = [
     name: "Turkey",
     continent: "Asia",
     flag: "🇹🇷",
-    cuisine_summary: "Turkish food sits at the crossroads of Europe and the Middle East — döner and kebabs that conquered the world, a mezze culture of cold dishes eaten before the grill, and a pastry tradition (baklava, börek) that spread across empires.",
+    cuisine_summary: "Turkish cuisine is the heir to Ottoman court cooking — one of the most sophisticated culinary traditions in history, feeding an empire that stretched across three continents. The mezze table arrives first: hummus, baba ganoush, stuffed grape leaves, cheese-filled pastries, and cold vegetable dishes in olive oil. Then the grill: köfte, shish kebab, and the döner that traveled the world and became a global street food. Börek (layered filo with cheese or meat), lahmacun (flatbread with spiced lamb), and pide are the everyday staples. Baklava, Turkish delight, and künefe represent a pastry tradition that spread from Istanbul across the entire former empire. Turkish tea — steeped dark and served in tulip glasses — accompanies all of it.",
     signature_dishes: [
       { name: "İskender kebap", description: "Thinly sliced lamb döner laid over torn flatbread, drenched in tomato sauce and browned butter, served alongside yogurt. Bursa's masterpiece — one of Turkey's greatest dishes." },
       { name: "Menemen", description: "Scrambled eggs with tomato, green pepper, and spices, cooked in one pan and eaten from it. Turkey's classic breakfast — made in minutes, impossible to improve." },
@@ -1737,7 +1737,7 @@ export const countries: Country[] = [
     name: "Vietnam",
     continent: "Asia",
     flag: "🇻🇳",
-    cuisine_summary: "Vietnamese food is bright, light, and full of herbs — rice noodle soups perfumed with star anise, baguette sandwiches from the French era, and a lot of lime.",
+    cuisine_summary: "Vietnamese food arrived in San Francisco through one of the most dramatic chapters in the city's history. After the fall of Saigon in 1975, thousands of Vietnamese refugees settled in the Tenderloin — a neighborhood no one else wanted — and transformed Larkin Street into Little Saigon, officially designated in 2003. The two-block stretch is more than 80% Vietnamese-owned. Pho, bánh mì, and bún bò Huế became SF staples. Saigon Sandwich on Larkin has been making bánh mì for 40+ years. It is one of the great immigrant comeback stories in American food history.",
     signature_dishes: [
       { name: "Phở", description: "Beef noodle soup in long-simmered broth with star anise and clove. Add basil, sprouts, lime, chile to taste." },
       { name: "Bánh mì", description: "Crusty baguette with pâté, pickled daikon and carrot, cucumber, cilantro, and meat. The Franco-Vietnamese sandwich." },
@@ -1757,7 +1757,7 @@ export const countries: Country[] = [
     name: "Israel",
     continent: "Middle East",
     flag: "🇮🇱",
-    cuisine_summary: "Israeli food draws from across the diaspora and the region — hummus shops with lifelong regulars, eggs poached in spiced tomato, and pita stuffed with falafel and pickles.",
+    cuisine_summary: "Israeli cuisine is a living archive of Jewish diaspora cooking merged with the flavors of the broader Middle East. Hummus is eaten daily and argued about seriously — the best shops have lines before they open. Shakshuka (eggs poached in spiced tomato) is the morning standard; falafel in warm pita with pickles and tahini is lunch. Yemenite, Moroccan, Persian, and Ashkenazi traditions all share the same table. The modern Israeli food scene — fueled in part by chefs like Yotam Ottolenghi — has made this one of the most globally influential cuisines of the past two decades.",
     signature_dishes: [
       { name: "Hummus (the meal kind)", description: "Warm, mounded chickpea purée with olive oil, sometimes meat or whole chickpeas on top. Eaten with pita, not as a dip." },
       { name: "Sabich", description: "Pita stuffed with fried eggplant, hard-boiled egg, hummus, tahini, amba (mango pickle), and herbs." },
@@ -1773,7 +1773,7 @@ export const countries: Country[] = [
     name: "Lebanon",
     continent: "Middle East",
     flag: "🇱🇧",
-    cuisine_summary: "Lebanese food is the mezze table — bowls of hummus and labneh, charred eggplant smoked over flame, and warm flatbread arriving in stacks.",
+    cuisine_summary: "Lebanese cuisine is the Middle East's most widely exported and beloved table. The mezze spread is its greatest expression — hummus, baba ganoush, labneh, kibbeh, tabbouleh, fattoush, and warm flatbread arriving in endless rounds. Shawarma, man'oushe (flatbread with za'atar and olive oil), and falafel are street foods that have traveled to every corner of the world. The cuisine is rooted in the Levantine pantry: olive oil, lemon, garlic, fresh herbs, and pomegranate. Lebanese food culture is also inseparable from hospitality — the table is never considered full, and a guest leaving hungry is a genuine failure.",
     signature_dishes: [
       { name: "Hummus with warm pita", description: "Smooth chickpea-tahini purée with lemon and good olive oil. Served warm, eaten with bread torn from the pile." },
       { name: "Shawarma", description: "Marinated meat shaved from a vertical spit, wrapped in flatbread with garlic sauce and pickles." },
@@ -1805,7 +1805,7 @@ export const countries: Country[] = [
     name: "Yemen",
     continent: "Middle East",
     flag: "🇾🇪",
-    cuisine_summary: "Yemeni cooking is slow-roasted lamb and beef, smoky clay-oven breads, and side condiments that range from herbaceous to mouth-burning.",
+    cuisine_summary: "Yemeni cuisine is one of the Arabian Peninsula's oldest and most distinctive — shaped by ancient spice trade routes, mountain geography, and coastal fishing traditions. Saltah is the national dish: a meat stew finished with hulba (fenugreek froth) and served bubbling in a stone bowl. Mandi — whole lamb or chicken slow-roasted over smoldering wood in a sealed pit — is the great ceremonial dish, eaten with fragrant rice. Bint al-sahn (honey-drenched flaky bread) is the beloved dessert. Lahoh (a spongy sourdough flatbread) is the breakfast staple. Yemeni food is aromatic without being fiery — spices like hawaij (a warm blend of cumin, turmeric, coriander, and black pepper) perfume the cooking with subtlety and depth.",
     signature_dishes: [
       { name: "Mandi", description: "Spiced rice with slow-roasted lamb or chicken cooked in a tandoor-like pit. Served on a communal platter." },
       { name: "Saltah", description: "Brown meat stew topped with fenugreek froth, eaten with flatbread. Yemen's national dish." },
@@ -1849,7 +1849,7 @@ export const countries: Country[] = [
     name: "Benin",
     continent: "Africa",
     flag: "🇧🇯",
-    cuisine_summary: "Beninese food is West African at its most direct — cornmeal and yam porridges, palm oil-based stews with chiles, and grilled fish from the lagoon. Peanuts and peppers are the two constant seasonings.",
+    cuisine_summary: "Beninese cuisine is West African cooking at its most elemental — cornmeal and yam porridges anchoring every meal, peanut-based sauces layered with chiles and dried fish, and grilled bonga fish pulled from the lagoon. Acarajé (black-eyed pea fritters fried in palm oil) traveled from Benin to Brazil with the slave trade and became a street-food icon on two continents. Peanuts and peppers are the two constants; palm oil is the medium through which everything is cooked and flavored.",
     signature_dishes: [
       { name: "Amiwo", description: "Stiff cornmeal cooked in a red palm oil and tomato sauce. Rich, deeply spiced, and served with fish or slow-cooked meat." },
       { name: "Kuli-kuli", description: "Ground peanut paste shaped into balls or sticks and deep-fried until crunchy. The everywhere snack of Benin and the wider region." },
@@ -1862,7 +1862,7 @@ export const countries: Country[] = [
     name: "Botswana",
     continent: "Africa",
     flag: "🇧🇼",
-    cuisine_summary: "Botswanan food is simple and sustaining — sorghum porridge, boiled and pounded meats, and sun-dried beef. Seswaa is the dish of ceremonies; morogo (wild leafy greens) is the vegetable of everyday life.",
+    cuisine_summary: "Botswanan cuisine is the food of a landlocked, semi-arid country — honest, sustaining, and built on what the land provides. Seswaa is the dish of weddings and ceremonies: beef or goat pounded after slow boiling into rough, shredded strands, served over sorghum or maize pap. Morogo (foraged wild leafy greens) is the everyday vegetable. Sun-dried meat preserves protein through dry seasons. It is food shaped by constraint and community, not abundance — and it carries that directness with quiet dignity.",
     signature_dishes: [
       { name: "Seswaa", description: "Beef or goat slow-boiled until falling apart, then pounded with a wooden pestle and served with pap. The dish of funerals, weddings, and national holidays." },
       { name: "Bogobe", description: "Thick sorghum or maize porridge eaten with stew, meat, or vegetables. The Botswanan staple — present at every meal." },
@@ -1888,7 +1888,7 @@ export const countries: Country[] = [
     name: "Burundi",
     continent: "Africa",
     flag: "🇧🇮",
-    cuisine_summary: "Burundian food is staple-driven and simple — beans, cassava, sweet potato, and plantain. Beans appear at nearly every meal, and ugali (maize porridge) is the backbone of daily life across the country.",
+    cuisine_summary: "Burundian cuisine is quietly sustaining — built around the staples that keep a densely populated, landlocked country fed. Beans appear at nearly every meal: red kidney beans in thick sauce are the backbone of daily life. Ugali (stiff maize or sorghum porridge) is served alongside, scooped with the hand. Plantain, sweet potato, and cassava fill the gaps. On special occasions, goat is grilled over charcoal. The cuisine is humble and nourishing — a reflection of a country that grows most of what it eats.",
     signature_dishes: [
       { name: "Isombe", description: "Pounded cassava leaves cooked in palm oil with onion and sometimes groundnuts. The everyday green stew — nutrient-dense and filling." },
       { name: "Mukeke", description: "Dried and grilled lake fish from Lake Tanganyika, eaten with ugali. The protein of the inland fishing economy." },
@@ -2048,7 +2048,7 @@ export const countries: Country[] = [
     name: "Eswatini",
     continent: "Africa",
     flag: "🇸🇿",
-    cuisine_summary: "Swazi food is Southern African staple cooking — maize porridge (pap), slow-stewed meats, and wild spinach (imfino). Simple, nourishing, and deeply tied to rural tradition and the agricultural calendar.",
+    cuisine_summary: "Swazi cuisine is rooted in the rhythms of the land — maize is the backbone, pounded into pap (thick porridge) and eaten with slow-stewed meats and imifino (foraged wild greens). Emasi (soured milk) is a dietary staple and a point of cultural pride. Umncweba (sun-dried meat, similar to biltong) preserves protein through dry seasons. Traditional Swazi food is shaped by subsistence farming and communal life — meals are simple, generous, and closely tied to the agricultural calendar and ancestral tradition.",
     signature_dishes: [
       { name: "Emasi", description: "Soured thick milk, similar to a chunky yogurt. Eaten with pap or on its own — the Swazi daily staple, sharp and cooling." },
       { name: "Sidvudvu", description: "Pumpkin porridge thickened with mealie meal. A traditional Swazi breakfast dish — slightly sweet, warming, and comforting." },
@@ -2061,7 +2061,7 @@ export const countries: Country[] = [
     name: "Ethiopia",
     continent: "Africa",
     flag: "🇪🇹",
-    cuisine_summary: "Ethiopian food is communal — a big round of spongy sourdough flatbread (injera) topped with stews you tear off pieces to scoop up. Spice-heavy, no utensils.",
+    cuisine_summary: "Ethiopian cuisine is one of the world's great communal eating traditions. At its center is injera — a large, spongy sourdough flatbread made from teff, spread with wats (slow-simmered stews) of lentils, chickpeas, lamb, or beef, spiced with berbere and mitmita. You eat with your hands, tearing injera to scoop up the stews. Fasting traditions in the Ethiopian Orthodox Church have produced one of the world's most sophisticated vegetarian and vegan cuisines — misir wat, gomen, and shiro are remarkable without a scrap of meat. Coffee originated in Ethiopia, and the coffee ceremony — three rounds, hours long — is as important as any dish on the table.",
     signature_dishes: [
       { name: "Doro wat with injera", description: "Chicken stew with berbere spice and hard-boiled egg, scooped with injera. The Sunday dish." },
       { name: "Tibs", description: "Beef or lamb sautéed with onion, peppers, and rosemary. Crispy edges, tender center." },
@@ -2117,7 +2117,7 @@ export const countries: Country[] = [
     name: "Guinea",
     continent: "Africa",
     flag: "🇬🇳",
-    cuisine_summary: "Guinean food is West African at its most elemental — rice as the unwavering staple, groundnut and palm oil sauces, dried fish for depth of flavor, and fresh chiles at every table.",
+    cuisine_summary: "Guinean cuisine is shaped by the country's three distinct regions — the coastal Basse-Côte, the Fouta Djallon highlands, and the savanna interior. Rice is the universal constant, but how it's served shifts: with peanut-based sauces (maafe) in the interior, with palm oil and smoked fish on the coast. Soups built on okra, dried fish, and leafy greens are everyday staples. Fouta Djallon is known for its dairy tradition — a rarity in West Africa. The cuisine is honest and ingredient-driven, built by a country that grows some of the region's finest rice, pineapples, and mangoes.",
     signature_dishes: [
       { name: "Poulet yassa", description: "Chicken marinated in lemon and mustard, braised with masses of softened onions. Shared across the West African coast, but mastered throughout Guinea." },
       { name: "Riz gras", description: "Rice cooked long and slowly in a broth of meat, tomato, and vegetables until every grain is deeply flavored. The celebration and everyday meal alike." },
@@ -2359,7 +2359,7 @@ export const countries: Country[] = [
     name: "Seychelles",
     continent: "Africa",
     flag: "🇸🇨",
-    cuisine_summary: "Seychellois food is Indian Ocean Creole — fresh catch from the surrounding reef, coconut milk in most dishes, and a spice-blend tradition shaped by French, African, Chinese, and Indian settlers.",
+    cuisine_summary: "Seychellois cuisine is Indian Ocean Creole at its most layered — a product of French colonialism, African roots, Indian spice traditions, and Chinese influence, all stirred together on a remote archipelago of 115 islands. Fresh reef fish — red snapper, grouper, tuna — is the cornerstone, cooked in coconut milk curries fragrant with lemongrass and turmeric. Shark chutney (smoked shark mixed with bilimbi fruit and turmeric) is the most distinctively Seychellois dish. The spice garden of the islands produces cinnamon, vanilla, and cloves that perfume both the food and the air.",
     signature_dishes: [
       { name: "Grilled fish Creole", description: "Fresh catch (red snapper or grouper) marinated in Creole spices — ginger, turmeric, chili, garlic — and grilled over coals. The daily island staple." },
       { name: "Ladob", description: "Ripe banana or breadfruit cooked in sweetened coconut milk with vanilla and nutmeg. A Seychellois dessert or sweet side dish — tropical and comforting." },
