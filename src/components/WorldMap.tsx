@@ -89,10 +89,15 @@ const FLAG_MARKER_MIN_ZOOM = 2.4;
 const FLAG_MARKER_SIZE = 24;
 const FLAG_MARKER_GAP = 4;
 const NEARBY_COUNTRY_RADIUS = 34;
+const NEARBY_PICKER_MIN_ZOOM = 2.2;
 
 // Cursor avatar size. Aspect comes from /public/avatar.svg viewBox (88.5 × 209.45).
 const CURSOR_AVATAR_HEIGHT = 56;
 const CURSOR_AVATAR_WIDTH = CURSOR_AVATAR_HEIGHT * (88.5 / 209.45);
+
+const COUNTRY_LABEL_COORDINATE_OVERRIDES: Record<string, [number, number]> = {
+  usa: [-97, 39],
+};
 
 const OCEAN_LABELS: Array<{
   name: string;
@@ -492,7 +497,7 @@ export default function WorldMap({
                   geography={geo}
                   onClick={(event) => {
                     const geoId = geo.id ?? "";
-                    if (isKnown) {
+                    if (isKnown && position.zoom >= NEARBY_PICKER_MIN_ZOOM) {
                       const nearby = nearbyCountriesForSlug(slug);
                       if (nearby.length > 1 && containerRef.current) {
                         const rect =
@@ -713,7 +718,8 @@ export default function WorldMap({
           colliding in dense regions. */}
       {knownSlugs.map((slug) => {
         if (slug !== hovered) return null;
-        const coord = centroidForSlug(slug);
+        const coord =
+          COUNTRY_LABEL_COORDINATE_OVERRIDES[slug] ?? centroidForSlug(slug);
         if (!coord) return null;
         const name = nameForSlug(slug);
         if (!name) return null;

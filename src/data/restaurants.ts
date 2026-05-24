@@ -289,6 +289,8 @@ export const countries: Country[] = [
       { name: "Tiramisu", description: "Espresso-soaked ladyfingers layered with sweet mascarpone — Italy's answer to coffee dessert." },
     ],
     restaurants: [
+      { id: "delfina", name: "Delfina", neighborhood: "Mission", address: "3621 18th St, San Francisco, CA 94110" },
+      { id: "little-original-joes", name: "Little Original Joe's", neighborhood: "Marina", address: "2301 Chestnut St, San Francisco, CA 94123" },
       { id: "cotogna", name: "Cotogna", neighborhood: "Jackson Square", address: "490 Pacific Ave, San Francisco, CA 94133" },
       { id: "flour-and-water", name: "Flour + Water", neighborhood: "Mission", address: "2401 Harrison St, San Francisco, CA 94110" },
       { id: "tonys-pizza-napoletana", name: "Tony's Pizza Napoletana", neighborhood: "North Beach", address: "1570 Stockton St, San Francisco, CA 94133" },
@@ -523,7 +525,9 @@ export const countries: Country[] = [
       { name: "Paella valenciana", description: "Saffron rice cooked over fire with seafood or chicken. The crusty bottom (socarrat) is the prize." },
     ],
     restaurants: [
+      { id: "abrazo", name: "Abrazo", neighborhood: "Russian Hill", address: "2000 Hyde St, San Francisco, CA 94109" },
       { id: "coqueta", name: "Coqueta", neighborhood: "Embarcadero", address: "Pier 5, The Embarcadero" },
+      { id: "destapas", name: "Destapas", neighborhood: "Mission", address: "2708 24th St, San Francisco, CA 94110" },
     ],
   },
   {
@@ -585,6 +589,7 @@ export const countries: Country[] = [
     restaurants: [
       { id: "dingles-public-house", name: "Dingles Public House", neighborhood: "Hayes Valley", address: "333 Fulton St" },
       { id: "the-cavalier", name: "The Cavalier", neighborhood: "SoMa", address: "360 Jessie St" },
+      { id: "the-pig-and-whistle", name: "The Pig and Whistle", neighborhood: "Inner Richmond", address: "2801 Geary Blvd, San Francisco, CA 94118" },
     ],
   },
   // ── NORTH AMERICA ──
@@ -751,6 +756,8 @@ export const countries: Country[] = [
       { name: "Kak'ik", description: "Turkey soup seasoned with dried chiles, achiote, and fresh coriander. An ancient Q'eqchi' Maya ceremonial dish, still served at festivals." },
     ],
     restaurants: [
+      { id: "cafe-guatemalteco", name: "Cafe Guatemalteco", neighborhood: "Excelsior", address: "4794 Mission St, San Francisco, CA 94112" },
+      { id: "restaurante-hermelinda", name: "Restaurante Hermelinda Comida Guatemalteca", neighborhood: "Mission", address: "2279 Mission St, San Francisco, CA 94110" },
       { id: "antigua-guatemala", name: "Antigua Guatemala Restaurant", neighborhood: "Mission", address: "2732 24th St, San Francisco, CA 94110" },
     ],
   },
@@ -779,6 +786,8 @@ export const countries: Country[] = [
       { name: "Tapado", description: "Whole seafood stewed in coconut milk with green plantain and root vegetables. A Garifuna-origin dish from the Caribbean shore — complex and coastal." },
     ],
     restaurants: [
+      { id: "el-honduras-restaurant", name: "El Honduras Restaurant", neighborhood: "Mission", address: "3047 Mission St, San Francisco, CA 94110" },
+      { id: "el-paisa", name: "El Paisa", neighborhood: "Mission", address: "3322 Mission St, San Francisco, CA 94110" },
       { id: "honduras-kitchen", name: "Honduras Kitchen", neighborhood: "Excelsior", address: "5278 Mission St, San Francisco, CA 94112" },
     ],
   },
@@ -809,6 +818,7 @@ export const countries: Country[] = [
       { name: "Chiles rellenos", description: "Roasted poblano peppers stuffed with cheese, dipped in egg batter, and fried golden." },
     ],
     restaurants: [
+      { id: "californios", name: "Californios", neighborhood: "SoMa", address: "355 11th St, San Francisco, CA 94103" },
       { id: "cantina-los-mayas", name: "Cantina Los Mayas", neighborhood: "Inner Richmond", address: "431 Balboa St" },
       { id: "el-farolito", name: "El Farolito", neighborhood: "Mission", address: "2779 Mission St" },
       { id: "la-taqueria", name: "La Taqueria", neighborhood: "Mission", address: "2889 Mission St" },
@@ -882,6 +892,9 @@ export const countries: Country[] = [
       { name: "Fried chicken", description: "Buttermilk-marinated chicken fried in a heavily seasoned flour crust until shattering-crisp. The American South's most important dish — adopted everywhere, never quite replicated." },
     ],
     restaurants: [
+      { id: "7-adams", name: "7 Adams", neighborhood: "Lower Pacific Heights / Fillmore", address: "1963 Sutter St, San Francisco, CA 94115" },
+      { id: "saison", name: "Saison", neighborhood: "SoMa", address: "178 Townsend St, San Francisco, CA 94107" },
+      { id: "state-bird-provisions", name: "State Bird Provisions", neighborhood: "Fillmore", address: "1529 Fillmore St, San Francisco, CA 94115" },
       { id: "wayfare-tavern", name: "Wayfare Tavern", neighborhood: "Financial District", address: "201 Pine St" },
       { id: "zuni-cafe", name: "Zuni Cafe", neighborhood: "Hayes Valley", address: "1658 Market St" },
     ],
@@ -1062,6 +1075,7 @@ export const countries: Country[] = [
     ],
     restaurants: [
       { id: "arepas-latin-cuisine", name: "Arepas Latin Cuisine", neighborhood: "Mission", address: "3198 16th St" },
+      { id: "pica-pica-arepa-kitchen", name: "Pica Pica Arepa Kitchen", neighborhood: "Mission", address: "401 Valencia St, San Francisco, CA 94103" },
     ],
   },
   // ── ASIA ──
@@ -1175,6 +1189,7 @@ export const countries: Country[] = [
       { name: "Coconut chicken noodle soup (ohn no khao swè)", description: "Yellow curry coconut broth with egg noodles and chicken. Garnish with fried onions, chile, lime, hard egg." },
     ],
     restaurants: [
+      { id: "mandalay", name: "Mandalay", neighborhood: "Inner Richmond", address: "4348 California St, San Francisco, CA 94118" },
       { id: "burma-love", name: "Burma Love", neighborhood: "Mission", address: "211 Valencia St, San Francisco, CA 94103" },
       { id: "burma-superstar", name: "Burma Superstar", neighborhood: "Inner Richmond", address: "309 Clement St, San Francisco, CA 94118" },
       { id: "burmese-kitchen", name: "Burmese Kitchen", neighborhood: "Inner Richmond", address: "3815 Geary Blvd, San Francisco, CA 94118" },
@@ -1193,6 +1208,7 @@ export const countries: Country[] = [
       { name: "Nom banh chok", description: "Rice noodles in a fresh green fish-based curry sauce with raw vegetables and herbs. The traditional Khmer breakfast noodle." },
     ],
     restaurants: [
+      { id: "megans-table", name: "Megan's Table", neighborhood: "Ingleside", address: "1422 Ocean Ave, San Francisco, CA 94112" },
       { id: "lunette-cambodia", name: "Lunette Cambodia", neighborhood: "Embarcadero / Ferry Building", address: "1 Ferry Building, Shop 37, San Francisco, CA 94111" },
     ],
   },
@@ -1242,6 +1258,8 @@ export const countries: Country[] = [
       { name: "Biryani", description: "Long-grain basmati rice layered with marinated meat, saffron, and fried onion. Special-occasion food." },
     ],
     restaurants: [
+      { id: "copra-india", name: "Copra", neighborhood: "Fillmore", address: "1700 Fillmore St, San Francisco, CA 94115" },
+      { id: "tiya", name: "Tiya", neighborhood: "Marina / Cow Hollow", address: "3213 Scott St, San Francisco, CA 94123" },
       { id: "amber-india", name: "Amber India", neighborhood: "SoMa / Union Square", address: "25 Yerba Buena Ln, San Francisco, CA 94103" },
       { id: "besharam", name: "Besharam", neighborhood: "Dogpatch", address: "1275 Minnesota St, San Francisco, CA 94107" },
       { id: "rooh", name: "Rooh", neighborhood: "SoMa", address: "333 Brannan St, San Francisco, CA 94107" },
@@ -1274,6 +1292,7 @@ export const countries: Country[] = [
       { name: "Fesenjan", description: "Duck or chicken braised in a dark pomegranate molasses and walnut sauce. Sweet, sour, richly complex — the dish of Nowruz and celebration tables." },
     ],
     restaurants: [
+      { id: "delam", name: "Delam", neighborhood: "Mission", address: "1152 Valencia St, San Francisco, CA 94110" },
       { id: "lavash", name: "Lavash", neighborhood: "Inner Sunset", address: "511 Irving St, San Francisco, CA 94122" },
       { id: "maykadeh", name: "Maykadeh", neighborhood: "North Beach", address: "470 Green St, San Francisco, CA 94133" },
     ],
@@ -1407,6 +1426,7 @@ export const countries: Country[] = [
       { name: "Or lam", description: "Lao-style stew of vegetables, meat, and mai sakaan (a numbing wood spice). Rich, herby, and uniquely Luang Prabang." },
     ],
     restaurants: [
+      { id: "champa-garden", name: "Champa Garden Restaurant", neighborhood: "Excelsior", address: "613 Faxon Ave, San Francisco, CA 94112" },
       { id: "lao-table", name: "Lao Table", neighborhood: "SoMa / Financial District", address: "149 2nd St, San Francisco, CA 94105" },
     ],
   },
@@ -1468,6 +1488,7 @@ export const countries: Country[] = [
       { name: "Thukpa", description: "Tibetan-influenced noodle soup with vegetables or meat in a warming spiced broth. The high-altitude comfort dish — popular across the Himalayan region." },
     ],
     restaurants: [
+      { id: "base-camp", name: "Base Camp", neighborhood: "Mission", address: "2400 Folsom St, San Francisco, CA 94110" },
       { id: "cuisine-of-nepal", name: "Cuisine of Nepal", neighborhood: "Bernal Heights", address: "3486 Mission St" },
       { id: "dancing-yak", name: "Dancing Yak", neighborhood: "Mission Dolores", address: "280 Valencia St" },
     ],
@@ -1497,6 +1518,7 @@ export const countries: Country[] = [
       { name: "Biryani (Karachi-style)", description: "Fragrant basmati rice layered with spiced meat and potatoes, richer and more intensely flavored than Indian varieties. Karachi's biryani is a source of municipal pride." },
     ],
     restaurants: [
+      { id: "pakwan-restaurant", name: "Pakwan Restaurant", neighborhood: "Mission", address: "3182 16th St, San Francisco, CA 94103" },
       { id: "karahi-house", name: "Karahi House", neighborhood: "Polk Gulch", address: "1409 Polk St" },
       { id: "mashaallah-halal", name: "Mashaallah Halal Pakistani Food", neighborhood: "SoMa", address: "315 5th St" },
       { id: "shalimar", name: "Shalimar", neighborhood: "Tenderloin", address: "532 Jones St" },
@@ -1572,7 +1594,6 @@ export const countries: Country[] = [
     ],
     restaurants: [
       { id: "1601-bar-kitchen", name: "1601 Bar & Kitchen", neighborhood: "Western SoMa", address: "1601 Howard St" },
-      { id: "copra", name: "Copra", neighborhood: "Fillmore", address: "1700 Fillmore St" },
     ],
   },
   {
@@ -1602,7 +1623,9 @@ export const countries: Country[] = [
       { name: "Bubble tea", description: "Sweetened milk tea shaken with ice and loaded with chewy tapioca pearls. Born in Taichung in the 1980s — now a global phenomenon that Taiwan invented." },
     ],
     restaurants: [
+      { id: "house-of-pancakes", name: "House of Pancakes", neighborhood: "Outer Sunset", address: "937 Taraval St, San Francisco, CA 94116" },
       { id: "shihlin-taiwan-street-snacks", name: "Shihlin Taiwan Street Snacks", neighborhood: "Stonestown", address: "3251 20th Ave" },
+      { id: "teawood-cafe", name: "TeaWood Cafe", neighborhood: "Inner Richmond", address: "3944 Geary Blvd, San Francisco, CA 94118" },
     ],
   },
   {
@@ -1630,8 +1653,11 @@ export const countries: Country[] = [
       { name: "Green curry", description: "Coconut milk curry of fresh green chiles, basil, and chicken or eggplant. Eat over jasmine rice." },
     ],
     restaurants: [
+      { id: "khao-tiew", name: "Khao Tiew", neighborhood: "West Portal", address: "272 Claremont Blvd, San Francisco, CA 94127" },
       { id: "kin-khao", name: "Kin Khao", neighborhood: "Theater District", address: "55 Cyril Magnin St" },
       { id: "lers-ros", name: "Lers Ros Thai", neighborhood: "Tenderloin", address: "730 Larkin St" },
+      { id: "nari", name: "Nari", neighborhood: "Japantown", address: "1625 Post St, San Francisco, CA 94115" },
+      { id: "the-thonglor", name: "The Thonglor", neighborhood: "Union Square", address: "420 Geary St, San Francisco, CA 94102" },
     ],
   },
   {
@@ -1661,6 +1687,8 @@ export const countries: Country[] = [
     restaurants: [
       { id: "anatolian-table", name: "Anatolian Table", neighborhood: "Mission Dolores", address: "702 Valencia St" },
       { id: "kitchen-istanbul", name: "Kitchen Istanbul", neighborhood: "Inner Richmond", address: "349 Clement St" },
+      { id: "taksim", name: "Taksim", neighborhood: "SoMa", address: "564 4th St, San Francisco, CA 94107" },
+      { id: "turquaz", name: "Turquaz", neighborhood: "SoMa", address: "1198 Mission St, San Francisco, CA 94103" },
     ],
   },
   {
@@ -1716,8 +1744,11 @@ export const countries: Country[] = [
       { name: "Bún bò Huế", description: "Spicy lemongrass beef noodle soup from central Vietnam — bolder and more pungent than phở." },
     ],
     restaurants: [
+      { id: "anh-hong", name: "Anh Hong", neighborhood: "Outer Richmond", address: "3123 Clement St, San Francisco, CA 94121" },
+      { id: "pho-2000", name: "Pho 2000", neighborhood: "Tenderloin / Little Saigon", address: "637 Larkin St, San Francisco, CA 94109" },
       { id: "saigon-sandwich", name: "Saigon Sandwich", neighborhood: "Tenderloin", address: "560 Larkin St" },
       { id: "turtle-tower-marina", name: "Turtle Tower", neighborhood: "Marina", address: "3145 Fillmore St" },
+      { id: "thanh-long", name: "Thanh Long", neighborhood: "Outer Sunset", address: "4101 Judah St, San Francisco, CA 94122" },
     ],
   },
   // ── MIDDLE EAST ──
@@ -1751,6 +1782,22 @@ export const countries: Country[] = [
     restaurants: [
       { id: "beit-rima", name: "Beit Rima", neighborhood: "Duboce Triangle", address: "138 Church St, San Francisco, CA 94114" },
       { id: "mezze-and-mooore", name: "Mezze and Mooore", neighborhood: "Mission", address: "198 Guerrero St, San Francisco, CA 94103" },
+    ],
+  },
+  {
+    id: "palestine",
+    name: "Palestine",
+    continent: "Middle East",
+    flag: "🇵🇸",
+    cuisine_summary: "Palestinian food is Levantine and deeply tied to home cooking — olive oil, sumac, za'atar, slow-cooked rice dishes, and breads wrapped around roasted chicken or vegetables.",
+    signature_dishes: [
+      { name: "Musakhan", description: "Roasted chicken with sumac, caramelized onions, and olive oil served over taboon bread. The Palestinian table centerpiece." },
+      { name: "Maqluba", description: "Rice, meat, and vegetables cooked in one pot, then flipped upside down onto a platter. Dramatic, fragrant, and built for sharing." },
+      { name: "Knafeh", description: "Shredded pastry layered with cheese or cream, soaked in syrup, and served warm. Nablus is especially famous for it." },
+    ],
+    restaurants: [
+      { id: "falasteen", name: "Falasteen", neighborhood: "Noe Valley", address: "4018 24th St, San Francisco, CA 94114" },
+      { id: "freekeh", name: "Freekeh", neighborhood: "Mission", address: "3126 16th St, San Francisco, CA 94103" },
     ],
   },
   {
@@ -2220,6 +2267,7 @@ export const countries: Country[] = [
       { name: "Harira", description: "Thick tomato and chickpea soup with lamb, lentils, and fresh herbs. The soup that breaks the Ramadan fast each sunset — warming, spiced, and deeply nourishing." },
     ],
     restaurants: [
+      { id: "aziza", name: "Aziza", neighborhood: "Outer Richmond", address: "5800 Geary Blvd, San Francisco, CA 94121" },
       { id: "el-mansour", name: "El Mansour", neighborhood: "Inner Richmond", address: "3119 Clement St" },
       { id: "marrakech-sf", name: "Marrakech", neighborhood: "Tenderloin", address: "419 O'Farrell St" },
     ],
@@ -2382,7 +2430,9 @@ export const countries: Country[] = [
       { name: "Kissra", description: "Thin, pliable fermented sorghum flatbread — simultaneously the plate and the utensil. Laid flat and covered in stew, torn and used to scoop every last drop." },
       { name: "Waika", description: "Stew of dried okra, meat, and spices eaten over kissra. Sudan's most characteristic everyday dish — earthy, textured, and tied to the country's agricultural traditions." },
     ],
-    restaurants: [],
+    restaurants: [
+      { id: "z-zoul-cafe", name: "Z Zoul Cafe", neighborhood: "Tenderloin", address: "295 Eddy St, San Francisco, CA 94102" },
+    ],
   },
   {
     id: "sao_tome_and_principe",

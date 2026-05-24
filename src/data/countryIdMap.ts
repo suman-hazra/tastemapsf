@@ -129,6 +129,7 @@ export const isoToSlug: Record<string, string> = {
   // Middle East
   "376": "israel",
   "422": "lebanon",
+  "275": "palestine",
   "887": "yemen",
 
   // Africa

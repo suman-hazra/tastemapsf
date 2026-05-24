@@ -25,6 +25,29 @@ const CONFETTI = [
 
 const SHARE_URL_BASE = "https://www.tastemapsf.com/";
 
+function scoreMessage(tried: number, total: number): string {
+  const pct = total > 0 ? tried / total : 0;
+  if (pct >= 1) {
+    return "You did it. Every available country on the map is stamped.";
+  }
+  if (pct >= 0.9) {
+    return "You have nearly eaten the world without leaving San Francisco.";
+  }
+  if (pct >= 0.75) {
+    return "Your passport is packed. You are down to the hard-to-find corners of San Francisco.";
+  }
+  if (pct >= 0.5) {
+    return "You have crossed the halfway mark. Now it is about curiosity, not convenience.";
+  }
+  if (pct >= 0.25) {
+    return "You have tasted across continents, but the best surprises may still be ahead.";
+  }
+  if (pct >= 0.1) {
+    return "You know your way around a handful of cuisines, but there is still a lot of SF to taste.";
+  }
+  return "You have only taken the first bite of the map. Start with one country, one dish, one neighborhood.";
+}
+
 export default function ScoreDialog({
   tried,
   total,
@@ -50,6 +73,7 @@ export default function ScoreDialog({
   const shareText = `I scored ${tried} out of ${total} on TastemapSF!!!\n\nWhat is your score? Try it yourself here:`;
   const canNativeShare =
     typeof (navigator as Navigator & { share?: unknown }).share === "function";
+  const message = scoreMessage(tried, total);
 
   useEffect(() => {
     return () => {
@@ -173,12 +197,16 @@ export default function ScoreDialog({
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             <span className="inline-block bg-white/70 px-2 py-1 text-ink">
-              San Francisco has room for every appetite. You have tasted part
-              of the map, and there is always another cuisine, neighborhood,
-              and table to try next.
+              {message}
             </span>
           </p>
-          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div
+            className={
+              canSuggestNext
+                ? "mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
+                : "mt-5 grid grid-cols-1"
+            }
+          >
             <button
               type="button"
               onClick={onClose}
@@ -186,14 +214,16 @@ export default function ScoreDialog({
             >
               Back to map
             </button>
-            <button
-              type="button"
-              onClick={pickNextBite}
-              disabled={!canSuggestNext || biteState === "spinning"}
-              className="h-11 whitespace-nowrap rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas disabled:cursor-default disabled:border-black/5 disabled:bg-white/70 disabled:text-ink-soft"
-            >
-              {biteState === "spinning" ? "Picking..." : "Pick My Next Bite"}
-            </button>
+            {canSuggestNext && (
+              <button
+                type="button"
+                onClick={pickNextBite}
+                disabled={biteState === "spinning"}
+                className="h-11 whitespace-nowrap rounded-chip border border-black/10 bg-white px-4 text-sm font-semibold transition-colors hover:bg-canvas disabled:cursor-default disabled:border-black/5 disabled:bg-white/70 disabled:text-ink-soft"
+              >
+                {biteState === "spinning" ? "Picking..." : "Pick My Next Bite"}
+              </button>
+            )}
           </div>
           {nextBite && (
             <div className="mt-5 grid place-items-center">

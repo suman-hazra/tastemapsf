@@ -1,27 +1,53 @@
 // Marks the app's home city on the map. Rendered inside react-simple-maps'
 // <Marker> so the parent supplies projected screen positioning.
 
-const PIN = "#C0362C";
+const POLE = "#5c4634";
 const INK = "#1a1a1a";
 
 export default function SanFranciscoMarker() {
   return (
     <g style={{ pointerEvents: "none" }} filter="url(#pinShadow)">
-      {/* Teardrop pin. Tip sits at (0, 0) — the projected SF point. */}
-      <path
-        d="M0 0 C -5 -8, -7 -12, -7 -16 A 7 7 0 1 1 7 -16 C 7 -12, 5 -8, 0 0 Z"
-        fill={PIN}
+      {/* Flagpole base sits at (0, 0) — the projected SF point. */}
+      <line
+        x1={0}
+        y1={0}
+        x2={0}
+        y2={-31}
+        stroke={POLE}
+        strokeWidth={1.4}
+        strokeLinecap="round"
       />
-      <circle cx="0" cy="-16" r="2.4" fill="#fff" />
+      <circle cx={0} cy={0} r={1.8} fill={POLE} />
+      <circle cx={0} cy={-31} r={1.3} fill={POLE} />
+
+      {/* Compact California flag. Uses the public SVG asset, scaled for map use. */}
+      <g transform="translate(0 -31)">
+        <image
+          href="/Flag_of_California.svg"
+          x={0}
+          y={0}
+          width={30}
+          height={20}
+          preserveAspectRatio="xMidYMid meet"
+        />
+        <rect
+          x={0}
+          y={0}
+          width={30}
+          height={20}
+          fill="none"
+          stroke={INK}
+          strokeWidth={0.6}
+        />
+      </g>
       <text
         x={0}
         y={10}
         textAnchor="middle"
-        fontFamily="Helvetica, Arial, sans-serif"
-        fontSize="7"
-        fontWeight={700}
+        fontFamily="'EB Garamond', Garamond, Georgia, serif"
+        fontSize="8"
+        fontWeight={500}
         fill={INK}
-        letterSpacing="0.02em"
       >
         San Francisco
       </text>
