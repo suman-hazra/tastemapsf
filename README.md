@@ -4,7 +4,7 @@ Explore San Francisco's global cuisine, one country at a time.
 
 Tastemap SF is a static React app that turns SF's restaurant diversity into a world map. Click a country to learn what the cuisine is about, what to order first, and where to try it in San Francisco. Mark cuisines you have tried, see your score, share it, or ask the app to pick your next bite.
 
-![Tastemap SF social preview](./public/og.png)
+![Tastemap SF](./public/newlogo.png)
 
 ## Features
 
