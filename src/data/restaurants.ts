@@ -1253,7 +1253,7 @@ export const countries: Country[] = [
     flag: "🇮🇳",
     cuisine_summary: "Indian cuisine is one of the world's most vast and varied — not a single cuisine at all, but a mosaic of regional traditions as different from each other as French is from Greek. The north is tandoor-charred bread, slow-cooked kormas, and buttery dal; the south is crispy fermented dosa, coconut-based curries, and tamarind-soured rice; the west is Goan pork vindaloo from the Portuguese era and Gujarati vegetarian cooking of extraordinary refinement; the east is mustard-oil fish from Bengal and dumplings from the Himalayan borderlands. Spice blends, cooking fats, and staple grains shift every few hundred kilometers. India has been shaping global food — through the spice trade alone — for over two thousand years.",
     signature_dishes: [
-      { name: "Chicken tikka masala", description: "Yogurt-marinated chicken in a tomato-cream sauce. Brit-Indian classic, weeknight favorite." },
+      { name: "Butter Chicken", description: "Probably the most popular Indian dish featuring tender, marinated chicken in a rich, creamy, and mildly spiced tomato-based sauce, often with butter, cream, and aromatic spices like garam masala, ginger, and garlic." },
       { name: "Masala dosa", description: "Thin, crispy rice-and-lentil crepe wrapped around spiced potato. Eat with sambar and coconut chutney." },
       { name: "Biryani", description: "Long-grain basmati rice layered with marinated meat, saffron, and fried onion. Special-occasion food." },
     ],
