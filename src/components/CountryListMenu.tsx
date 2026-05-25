@@ -275,21 +275,18 @@ export default function CountryListMenu({
 }
 
 function CountryDetails({ country }: { country: Country }) {
+  // Mirror the map panel's hierarchy: cuisine intro (clamped to two lines),
+  // then where to eat, then dishes. Expand state is local; the component
+  // remounts per country, so it starts collapsed each time.
+  const [isIntroExpanded, setIsIntroExpanded] = useState(false);
   const hasRestaurants = country.restaurants.length > 0;
   return (
     <div className="animate-[list-detail-in_220ms_cubic-bezier(0.22,1,0.36,1)] space-y-5 rounded-xl border border-black/[0.06] bg-[rgba(124,58,237,0.03)] px-4 py-4">
-      <p className="text-[13px] leading-[1.55] text-[#6b6b76]">
-        {country.cuisine_summary}
-      </p>
-
-      <section>
-        <DetailLabel>Order these first</DetailLabel>
-        <ul className="space-y-3">
-          {country.signature_dishes.map((dish) => (
-            <DishEntry key={dish.name} dish={dish} />
-          ))}
-        </ul>
-      </section>
+      <IntroSummary
+        text={country.cuisine_summary}
+        isExpanded={isIntroExpanded}
+        onToggle={() => setIsIntroExpanded((expanded) => !expanded)}
+      />
 
       {hasRestaurants && (
         <section>
@@ -301,6 +298,52 @@ function CountryDetails({ country }: { country: Country }) {
           </ul>
         </section>
       )}
+
+      <section>
+        <DetailLabel>Order these first</DetailLabel>
+        <ul className="space-y-3">
+          {country.signature_dishes.map((dish) => (
+            <DishEntry key={dish.name} dish={dish} />
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}
+
+function IntroSummary({
+  text,
+  isExpanded,
+  onToggle,
+}: {
+  text: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div>
+      <p
+        className="text-[13px] leading-[1.55] text-[#6b6b76]"
+        style={
+          isExpanded
+            ? undefined
+            : {
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+              }
+        }
+      >
+        {text}
+      </p>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="mt-2 text-[12px] font-semibold text-[#7c3aed] underline decoration-[#7c3aed]/25 underline-offset-2 transition-colors hover:text-[#6d28d9] hover:decoration-[#7c3aed]/60"
+      >
+        {isExpanded ? "Show less" : "Read more"}
+      </button>
     </div>
   );
 }
