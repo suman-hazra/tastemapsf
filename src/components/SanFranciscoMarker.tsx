@@ -1,55 +1,58 @@
 // Marks the app's home city on the map. Rendered inside react-simple-maps'
 // <Marker> so the parent supplies projected screen positioning.
 
-const POLE = "#5c4634";
-const INK = "#1a1a1a";
-
 export default function SanFranciscoMarker() {
-  return (
-    <g style={{ pointerEvents: "none" }} filter="url(#pinShadow)">
-      {/* Flagpole base sits at (0, 0) — the projected SF point. */}
-      <line
-        x1={0}
-        y1={0}
-        x2={0}
-        y2={-31}
-        stroke={POLE}
-        strokeWidth={1.4}
-        strokeLinecap="round"
-      />
-      <circle cx={0} cy={0} r={1.8} fill={POLE} />
-      <circle cx={0} cy={-31} r={1.3} fill={POLE} />
+  const labelStyle = {
+    fontFamily: "'Inter', sans-serif",
+    textShadow:
+      "0 1px 3px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7)",
+    userSelect: "none" as const,
+  };
 
-      {/* Compact California flag. Uses the public SVG asset, scaled for map use. */}
-      <g transform="translate(0 -31)">
-        <image
-          href="/Flag_of_California.svg"
-          x={0}
-          y={0}
-          width={30}
-          height={20}
-          preserveAspectRatio="xMidYMid meet"
-        />
-        <rect
-          x={0}
-          y={0}
-          width={30}
-          height={20}
-          fill="none"
-          stroke={INK}
-          strokeWidth={0.6}
-        />
-      </g>
+  return (
+    <g style={{ pointerEvents: "none" }}>
+      <circle
+        className="sf-pulse-ring"
+        r={7}
+        fill="none"
+        stroke="url(#sfMarkerGrad)"
+        strokeWidth={1.5}
+      />
+      <circle
+        className="sf-pulse-ring sf-pulse-ring-delayed"
+        r={7}
+        fill="none"
+        stroke="url(#sfMarkerGrad)"
+        strokeWidth={1}
+      />
+
+      <circle r={7} fill="url(#sfMarkerGrad)" filter="url(#sfGlow)" />
+      <circle r={7} fill="url(#sfMarkerGrad)" />
+      <circle cx={-1.5} cy={-1.5} r={2.5} fill="#ffffff" opacity={0.9} />
+
       <text
-        x={0}
-        y={10}
-        textAnchor="middle"
-        fontFamily="'EB Garamond', Garamond, Georgia, serif"
-        fontSize="8"
-        fontWeight={500}
-        fill={INK}
+        x={-16}
+        y={4}
+        textAnchor="end"
+        fontSize={11}
+        fontWeight={700}
+        letterSpacing="0.08em"
+        fill="#0f0f12"
+        style={labelStyle}
       >
         San Francisco
+      </text>
+      <text
+        x={-16}
+        y={16}
+        textAnchor="end"
+        fontSize={8}
+        fontWeight={600}
+        letterSpacing="0.12em"
+        fill="#6b6b76"
+        style={labelStyle}
+      >
+        HOME BASE
       </text>
     </g>
   );

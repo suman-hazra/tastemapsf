@@ -7,7 +7,7 @@ export default function FinishButton({ onClick }: Props) {
     <button
       type="button"
       onClick={onClick}
-      className="fixed bottom-4 left-1/2 z-20 flex h-12 -translate-x-1/2 items-center gap-2 rounded-chip border border-black/10 bg-panel px-4 text-sm font-semibold text-ink shadow-lg transition-colors hover:bg-canvas sm:bottom-6 sm:h-14 sm:gap-3 sm:px-6 sm:text-base"
+      className="fixed bottom-4 left-1/2 z-20 inline-flex h-11 -translate-x-1/2 items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#7c3aed_0%,#06b6d4_100%)] px-5 text-[14px] font-semibold text-white shadow-[0_8px_24px_rgba(124,58,237,0.35),0_2px_6px_rgba(6,182,212,0.18)] transition-all duration-150 ease-out hover:scale-[1.02] hover:shadow-[0_12px_32px_rgba(124,58,237,0.45),0_4px_10px_rgba(6,182,212,0.22)] focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_#ffffff,0_0_0_4px_#7c3aed,0_8px_24px_rgba(124,58,237,0.35)] active:scale-[0.98] active:shadow-[0_4px_12px_rgba(124,58,237,0.30)] disabled:scale-100 disabled:cursor-not-allowed disabled:bg-black/[0.06] disabled:text-[#6b6b76] disabled:shadow-none sm:bottom-6"
     >
       <FlagIcon />
       <span>Finish</span>
@@ -19,27 +19,18 @@ function FlagIcon() {
   return (
     <svg
       aria-hidden="true"
-      width="22"
-      height="22"
-      viewBox="0 0 22 22"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
       fill="none"
     >
       <path
-        d="M5 18V4"
+        d="M3.25 1.5v13M3.25 2.25h8.25l-1.5 3 1.5 3H3.25"
         stroke="currentColor"
-        strokeWidth="1.7"
+        strokeWidth="1.5"
         strokeLinecap="round"
-      />
-      <path
-        d="M5.4 4.4H17.2V12.4H5.4V4.4Z"
-        fill="#ffffff"
-        stroke="currentColor"
-        strokeWidth="1.2"
         strokeLinejoin="round"
       />
-      <path d="M5.4 4.4H9.3V8.4H5.4V4.4Z" fill="currentColor" />
-      <path d="M13.3 4.4H17.2V8.4H13.3V4.4Z" fill="currentColor" />
-      <path d="M9.3 8.4H13.3V12.4H9.3V8.4Z" fill="currentColor" />
     </svg>
   );
 }

@@ -1,10 +1,10 @@
-// Passport-style world map. Michelin / Google Maps aesthetic:
-//   • Ocean-blue background, white land, hairline gray borders
-//   • Warm hover wash on seeded countries (cursor: pointer)
-//   • Red accent stroke on the selected country
-//   • Tried countries fill green and get a flag marker
-//   • Country labels for seeded countries (DM Sans, gray)
-//   • Italic Newsreader ocean / sea labels float over the water
+// Gradient-pop world map:
+//   • Pale ocean background, light gray inactive land, white country borders
+//   • Violet/cyan gradient for countries with SF restaurants
+//   • Lime/cyan gradient for tried countries
+//   • Hover/selected states preserve fill and darken only the outline
+//   • Tried countries keep flag markers at higher zoom levels
+//   • Uppercase Inter ocean labels float over the water
 //
 // Bounded panning (no globe wrap): the SVG viewBox is sized to the world's
 // projected width at scale 170 (~930px), so there's no empty Pacific margin
@@ -468,27 +468,19 @@ export default function WorldMap({
               const isSelected = isKnown && slug === selectedSlug;
               const isHovered = isKnown && slug === hovered;
 
-              // Four fills, in order of "engagement" with the country:
-              //   no restaurants < restaurants < selected/hovered < tried
+              // Fill carries the semantic state. Hover/selection only changes
+              // the outline so color meaning stays stable.
               let fill: string;
-              let stroke: string;
-              let strokeWidth = 0.9;
+              const isEmphasized = isSelected || isHovered;
+              const stroke = isEmphasized ? c.chromeText : c.landLine;
+              const strokeWidth = isEmphasized ? 1.2 : 0.6;
 
               if (!hasRestaurants) {
                 fill = c.unseededLand;
-                stroke = c.unseededLine;
               } else if (isTried) {
                 fill = c.visited;
-                stroke = c.visitedInk;
-              } else if (isSelected) {
-                fill = c.selectedLand;
-                stroke = c.chromeText;
-              } else if (isHovered) {
-                fill = c.landHover;
-                stroke = c.landLine;
               } else {
                 fill = c.land;
-                stroke = c.landLine;
               }
 
               return (
@@ -581,7 +573,7 @@ export default function WorldMap({
                     default: {
                       fill: "transparent",
                       stroke: c.visitedInk,
-                      strokeWidth: 0.9,
+                      strokeWidth: 0.6,
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
@@ -590,7 +582,7 @@ export default function WorldMap({
                     hover: {
                       fill: "transparent",
                       stroke: c.visitedInk,
-                      strokeWidth: 0.9,
+                      strokeWidth: 0.6,
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
@@ -599,7 +591,7 @@ export default function WorldMap({
                     pressed: {
                       fill: "transparent",
                       stroke: c.visitedInk,
-                      strokeWidth: 0.9,
+                      strokeWidth: 0.6,
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
@@ -642,7 +634,7 @@ export default function WorldMap({
                       default: {
                         fill: "transparent",
                         stroke: c.chromeText,
-                        strokeWidth: 0.9,
+                        strokeWidth: 1.2,
                         strokeLinejoin: "round",
                         vectorEffect: "non-scaling-stroke",
                         outline: "none",
@@ -651,7 +643,7 @@ export default function WorldMap({
                       hover: {
                         fill: "transparent",
                         stroke: c.chromeText,
-                        strokeWidth: 0.9,
+                        strokeWidth: 1.2,
                         strokeLinejoin: "round",
                         vectorEffect: "non-scaling-stroke",
                         outline: "none",
@@ -660,7 +652,7 @@ export default function WorldMap({
                       pressed: {
                         fill: "transparent",
                         stroke: c.chromeText,
-                        strokeWidth: 0.9,
+                        strokeWidth: 1.2,
                         strokeLinejoin: "round",
                         vectorEffect: "non-scaling-stroke",
                         outline: "none",
@@ -686,13 +678,12 @@ export default function WorldMap({
           >
             <text
               textAnchor="middle"
-              fontFamily="var(--font-map-serif)"
-              fontStyle="italic"
-              fontSize={o.size}
-              fontWeight={500}
-              letterSpacing="0.14em"
+              fontFamily="var(--font-body)"
+              fontSize={Math.max(8, o.size - 7)}
+              fontWeight={600}
+              letterSpacing="0.18em"
               fill={c.oceanMajor}
-              opacity={0.85}
+              opacity={0.9}
             >
               {(o.lines ?? [o.name]).map((line, lineIndex, lines) => (
                 <tspan
@@ -706,7 +697,7 @@ export default function WorldMap({
                       : "1.1em"
                   }
                 >
-                  {line}
+                  {line.toUpperCase()}
                 </tspan>
               ))}
             </text>
@@ -772,6 +763,18 @@ export default function WorldMap({
         }}
       >
         <defs>
+          <linearGradient id="activeCountryGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#06b6d4" />
+          </linearGradient>
+          <linearGradient id="visitedCountryGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#84cc16" />
+            <stop offset="100%" stopColor="#22d3ee" />
+          </linearGradient>
+          <linearGradient id="sfMarkerGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#f97316" />
+          </linearGradient>
           <filter
             id="pinShadow"
             x="-100%"
@@ -786,6 +789,13 @@ export default function WorldMap({
               floodColor="#000"
               floodOpacity="0.28"
             />
+          </filter>
+          <filter id="sfGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
 
@@ -824,6 +834,15 @@ export default function WorldMap({
           {renderWorldContent()}
         </ZoomableGroup>
       </ComposableMap>
+
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 20% 35%, transparent 50%, rgba(255,255,255,0.25) 100%)",
+          zIndex: 1,
+        }}
+      />
 
       {flagMarkers.length > 0 && (
         <svg

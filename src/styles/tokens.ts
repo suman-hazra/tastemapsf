@@ -27,39 +27,38 @@ export const colors = {
   border: "rgba(26, 26, 26, 0.12)",
 } as const;
 
-// Passport-style map palette (Michelin / Google Maps inspired).
-// Four country states, each a distinct fill:
-//   • unseeded   — cool pale stone, recedes against the ocean
-//   • seeded     — warm yellow, invites exploration
-//   • selected   — honey wash, "you're looking at this one"
-//   • tried      — green, the completed state
-// Progression: cool → warm yellow → warm honey → green.
+// Gradient Pop map palette.
+// The country fill carries the semantic state:
+//   • unavailable/no restaurant — quiet gray
+//   • in SF                    — blue/violet gradient
+//   • tried                    — lime/cyan gradient
+// Hover and selection preserve the fill and only darken the outline.
 export const map = {
   logoNavy: "#092652",
-  bg: "#a8d3e6",          // vibrant ocean blue
+  bg: "#f8f8fb",
 
-  unseededLand: "#e3e8ec", // cool pale stone — not in our list
-  unseededLine: "#b0bac3", // darker so boundaries inside the unseeded mass read
-  land: "#f1d47a",         // warm yellow — seeded country
-  landLine: "#9aa6b0",     // medium gray-blue — reads against the warm cream fill
-  landHover: "#e9c766",    // slightly deeper yellow on hover
-  selectedLand: "#e8c89a", // honey wash — selected
-  label: "#7d8a93",
-  labelHover: "#0e0e0c",
+  unseededLand: "#e8e8ee",
+  unseededLine: "#ffffff",
+  land: "url(#activeCountryGrad)",
+  landLine: "#ffffff",
+  landHover: "url(#activeCountryGrad)",
+  selectedLand: "url(#activeCountryGrad)",
+  label: "#a1a1b5",
+  labelHover: "#0f0f12",
 
-  visited: "#7CC576",      // green — tried
-  visitedInk: "#2f8f45",   // tried country border
+  visited: "url(#visitedCountryGrad)",
+  visitedInk: "#ffffff",
 
   accent: "#c8281e",       // pin / selected stroke
   accentInk: "#7a1612",    // pin border
 
-  oceanMajor: "#4d7a96",
-  oceanSea: "#6a92ab",
+  oceanMajor: "#a1a1b5",
+  oceanSea: "#a1a1b5",
 
   chromeBg: "#ffffff",
   chromeHover: "#fafaf9",
   chromeLine: "#e8e6e1",
-  chromeText: "#0e0e0c",
+  chromeText: "#0f0f12",
   chromeQuiet: "#9a948a",
 } as const;
 

@@ -46,6 +46,50 @@ body {
   overscroll-behavior: none;
 }
 
+@keyframes welcome-card-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drawer-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes modal-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes menu-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .score-confetti {
   position: absolute;
   top: -12px;
@@ -156,6 +200,141 @@ body {
   opacity: 0;
 }
 
+.picker-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(15, 15, 18, 0.15);
+  border-top-color: #7c3aed;
+  border-radius: 9999px;
+  animation: picker-spin 1s linear infinite;
+}
+
+.picker-wheel {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at center, transparent 0 23px, #ffffff 24px 25px, transparent 26px),
+    conic-gradient(
+      from -90deg,
+      #7c3aed 0deg 43deg,
+      transparent 43deg 45deg,
+      #ec4899 45deg 88deg,
+      transparent 88deg 90deg,
+      #06b6d4 90deg 133deg,
+      transparent 133deg 135deg,
+      #84cc16 135deg 178deg,
+      transparent 178deg 180deg,
+      #f59e0b 180deg 223deg,
+      transparent 223deg 225deg,
+      #ef4444 225deg 268deg,
+      transparent 268deg 270deg,
+      #3b82f6 270deg 313deg,
+      transparent 313deg 315deg,
+      #10b981 315deg 358deg,
+      transparent 358deg 360deg
+    );
+  box-shadow: 0 10px 26px rgba(124, 58, 237, 0.16);
+  animation: picker-spin 1s linear infinite;
+}
+
+.picker-wheel-hub {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(15, 15, 18, 0.1);
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(15, 15, 18, 0.08);
+}
+
+.reveal-section {
+  animation: reveal-in 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.view-list-panel {
+  animation: panel-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.legal-panel {
+  animation: panel-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.view-list-row {
+  animation: row-enter 220ms ease-out both;
+}
+
+.sf-pulse-ring {
+  animation: sf-pulse 2.5s ease-out infinite;
+  opacity: 0.6;
+}
+
+.sf-pulse-ring-delayed {
+  animation-delay: 0.8s;
+  opacity: 0.25;
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sf-pulse {
+  0% {
+    r: 7;
+    opacity: 0.6;
+  }
+  50% {
+    r: 22;
+    opacity: 0;
+  }
+  100% {
+    r: 7;
+    opacity: 0;
+  }
+}
+
+@keyframes picker-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reveal-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .next-bite-result {
   position: relative;
   z-index: 3;
@@ -243,5 +422,12 @@ body {
     max-width: 180px;
     padding: 5px 12px;
     font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-pulse-ring {
+    animation: none;
+    opacity: 0.3;
   }
 }
