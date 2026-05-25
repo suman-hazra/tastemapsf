@@ -24,7 +24,7 @@ The goal of Phase 1 is a working, shareable web app with no backend required.
 - Clicking a country slides in a panel from the right showing:
   - Restaurants in SF serving that cuisine
   - Top 3–5 must-order dishes for that cuisine
-- All data served from static JSON files bundled with the app
+- All data authored as hand-edited CSVs in `data/`, generated into a typed TS module (`src/data/restaurants.ts`) bundled with the app — no backend
 
 ### Phase 2 — Richer Data
 
@@ -157,31 +157,41 @@ A separate Node.js or Python script (not part of the web app) will be responsibl
 
 ---
 
-## Folder Structure (Proposed)
+## Folder Structure (Actual)
 
 ```
-taste-map-sf/
+tastemapsf/
 ├── public/
-│   └── world.topojson          # World map geometry file
+│   ├── countries-110m.json     # World map geometry (TopoJSON)
+│   ├── newlogo.png             # Brand logo (README header + share image)
+│   ├── og.png                  # Open Graph social preview
+│   ├── favicon.png             # Browser tab icon
+│   ├── avatar.svg              # Map avatar figure
+│   └── dolores.jpg             # Welcome dialog photo
 ├── src/
-│   ├── components/
-│   │   ├── WorldMap.jsx         # D3 SVG map + zoom/pan
-│   │   ├── Avatar.jsx           # The little traveler figure
-│   │   ├── CountryPanel.jsx     # Slide-in side panel
-│   │   ├── RestaurantCard.jsx   # Individual restaurant entry
-│   │   └── DishBadge.jsx        # Signature dish chip
+│   ├── components/             # WorldMap, CountryPanel, ScoreDialog, Counter, … (.tsx)
 │   ├── data/
-│   │   └── restaurants.json     # The full dataset
+│   │   ├── types.ts            # Country / Restaurant / Dish interfaces
+│   │   ├── restaurants.ts      # AUTO-GENERATED dataset (do not hand-edit)
+│   │   └── countryIdMap.ts     # TopoJSON ISO code → country slug
 │   ├── hooks/
-│   │   └── useMapData.js        # Load and index the JSON data
-│   └── App.jsx
-├── scripts/
-│   └── build-data/              # Data collection scripts (Yelp, Google, Reddit)
-│       ├── fetch-yelp.js
-│       ├── fetch-google.js
-│       ├── harvest-reddit.js
-│       └── merge.js
+│   │   └── useMapData.ts        # Load + index map geometry and centroids
+│   ├── styles/
+│   │   └── tokens.ts            # Color tokens for react-simple-maps (raw hex)
+│   ├── utils/
+│   │   └── toggleSlug.ts        # Immutable tried-set toggle (unit tested)
+│   ├── index.css                # Tailwind v4 @theme tokens + base styles
+│   ├── App.tsx                  # Root: panel/prompt state machine + counter
+│   └── main.tsx
+├── data/                        # Source-of-truth CSVs (hand-edited)
+│   ├── countries.csv            # Country metadata + signature dishes
+│   ├── restaurants.csv          # Restaurants joined by country_id
+│   ├── build.mjs                # CSV → src/data/restaurants.ts generator
+│   └── README.md                # Data editing workflow
 ├── README.md
+├── CLAUDE.md
+├── LEGAL.md
+├── TODOS.md
 └── package.json
 ```
 
@@ -191,14 +201,14 @@ taste-map-sf/
 
 | Phase | Milestone | Status |
 |---|---|---|
-| Phase 1 | World map renders with clickable countries | Not started |
-| Phase 1 | Avatar teleports on country click | Not started |
-| Phase 1 | Side panel shows restaurants + dishes for ~40 countries | Not started |
-| Phase 1 | Data collection script (Yelp + Google + Reddit) | Not started |
-| Phase 2 | Restaurant addresses + neighborhoods for all entries | Not started |
+| Phase 1 | World map renders with clickable countries | ✅ Shipped |
+| Phase 1 | Avatar teleports on country click | ✅ Shipped |
+| Phase 1 | Side panel shows restaurants + dishes | ✅ Shipped (75 of 180 countries seeded with restaurants) |
+| Phase 1 | Data collection script (Yelp + Google + Reddit) | Changed — CSV + LLM-assisted curation instead of an API scraper |
+| Phase 2 | Restaurant addresses + neighborhoods for all entries | Not started (neighborhoods done; addresses deferred) |
 | Phase 2 | Menu cross-reference for must-order dishes | Not started |
-| Phase 3 | "Tried this" tracking per country and restaurant | Not started |
-| Phase 3 | Personal food passport stats + map visualization | Not started |
+| Phase 3 | "Tried this" tracking per country and restaurant | ✅ Shipped (food passport pulled forward into Phase 1) |
+| Phase 3 | Personal food passport stats + map visualization | Partial — score dialog + map flags shipped; cross-device persistence deferred |
 
 ---
 
@@ -211,4 +221,4 @@ taste-map-sf/
 
 ---
 
-*Last updated: 2026-05-22*
+*Last updated: 2026-05-24*

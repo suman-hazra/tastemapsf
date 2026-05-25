@@ -7,6 +7,24 @@ Priorities:
 - **P2** — nice-to-have, do when convenient
 - **P3** — polish; do only if you feel like it
 
+> Item numbers below are stable identifiers; completed items keep their original
+> number and move to the Completed section rather than being renumbered.
+
+---
+
+## ✅ Completed
+
+### 2. Touch zoom on the world map
+Shipped — the map is wrapped in `react-simple-maps` `<ZoomableGroup>`, so phone
+users can pinch-zoom to tap small countries.
+**Completed:** 2026-05-24
+
+### 4. "Surprise me" / random untried-country button
+Shipped as **Pick My Next Bite** — a lottery-style wheel picks an untried
+country, reveals it with a larger flag animation, then opens that country's
+details.
+**Completed:** 2026-05-24
+
 ---
 
 ## P1 — first follow-up iteration
@@ -18,12 +36,7 @@ Priorities:
 **Effort:** M (~2h human / ~30 min CC)
 **Depends on:** Phase 1 shipped
 
-### 2. Touch zoom on the world map
-**What:** Wrap the map in `react-simple-maps` `<ZoomableGroup>` so phone users can pinch-zoom to tap small countries (Eritrea, Lebanon, Sri Lanka, etc.).
-**Why:** Codex flagged that without zoom, the map is functionally unusable on phones. Accepted as known risk for Phase 1; this is the fix.
-**Context:** `react-simple-maps` ships `ZoomableGroup`. Test event bubbling at high zoom (known quirk).
-**Effort:** S (~30-60 min human / ~10 min CC)
-**Depends on:** Phase 1 shipped; benefits from being paired with item 1
+> Item 2 (touch zoom) shipped — see the Completed section above.
 
 ---
 
@@ -35,11 +48,7 @@ Priorities:
 **Context:** Schema already has `continent` per country, so the grouping is free. Just a render addition.
 **Effort:** S (~30 min human / ~5 min CC)
 
-### 4. "Surprise me" / random untried-country button
-**What:** A button that picks a random untried country, opens its panel, and recommends a starting restaurant.
-**Why:** Turns the app from passive directory into active next-meal planner.
-**Context:** Trivial: filter the country list by `!triedSet.has(id)`, pick random, dispatch the same click handler.
-**Effort:** S (~30 min human / ~5 min CC)
+> Item 4 ("Surprise me") shipped as Pick My Next Bite — see the Completed section.
 
 ### 5. Keyboard accessibility for the map
 **What:** Tab to focus map, arrow keys to navigate countries, Enter to open panel.
