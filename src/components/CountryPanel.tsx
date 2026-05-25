@@ -24,6 +24,12 @@ interface Props {
   onSetTried?: (countryId: string, tried: boolean) => void;
   showTriedHint?: boolean;
   onDismissTriedHint?: () => void;
+  /**
+   * Hide the "Mark as tried" bar. Set when the panel was opened from a
+   * "Pick my next bite" suggestion — the country was suggested precisely
+   * because the user hasn't been there, so asking is pointless.
+   */
+  hideTriedControl?: boolean;
 }
 
 const TIP_EMAIL = "tastemapsf@gmail.com";
@@ -88,6 +94,7 @@ export default function CountryPanel({
   onSetTried,
   showTriedHint = false,
   onDismissTriedHint,
+  hideTriedControl = false,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
@@ -131,7 +138,10 @@ export default function CountryPanel({
   const displayFlag = country.flag;
   const flagUrl = twemojiFlagUrl(displayFlag);
   const showTriedControl =
-    !isUnseeded && country.restaurants.length > 0 && onSetTried !== undefined;
+    !isUnseeded &&
+    country.restaurants.length > 0 &&
+    onSetTried !== undefined &&
+    !hideTriedControl;
   const isTried = !isUnseeded && triedSet?.has(country.id) === true;
 
   return (

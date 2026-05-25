@@ -540,6 +540,9 @@ export default function App() {
                 selectedSlug !== suggestedSlug
               }
               onDismissTriedHint={dismissTriedHint}
+              hideTriedControl={
+                selectedSlug !== null && selectedSlug === suggestedSlug
+              }
             />
           )}
           {mapData.status === "ready" && showProgressDialog && (
