@@ -213,6 +213,8 @@ export default function CountryPanel({
               onToggle={() => {
                 onSetTried(country.id, !isTried);
                 onDismissTriedHint?.();
+                // Marking tried closes the panel — same as the X button.
+                onClose();
               }}
             />
           </div>
