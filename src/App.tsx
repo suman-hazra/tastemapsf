@@ -72,6 +72,10 @@ export default function App() {
   const [unseededName, setUnseededName] = useState<string | null>(null);
   const [unseededFlag, setUnseededFlag] = useState<string | null>(null);
   const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
+  // Set when a country is opened via "Pick my next bite". Suppresses the
+  // tried prompt — desktop dialog and the mobile in-panel yes/no bar — since
+  // the user picked a suggestion precisely because they haven't been yet.
+  const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
@@ -129,6 +133,8 @@ export default function App() {
     unseededDisplayName: string | null,
     unseededDisplayFlag: string | null,
   ) => {
+    // Any direct map selection is deliberate, so clear the suggestion flag.
+    setSuggestedSlug(null);
     if (slug) {
       setUnseededName(null);
       setUnseededFlag(null);
@@ -236,6 +242,7 @@ export default function App() {
     setUnseededName(null);
     setUnseededFlag(null);
     setTriedPromptSlug(null);
+    setSuggestedSlug(nextCountry.id);
     setSelectedSlug(nextCountry.id);
   };
 
@@ -446,6 +453,9 @@ export default function App() {
               onClose={closePanel}
               triedSet={triedSet}
               onSetTried={setCountryTried}
+              hideTriedControl={
+                selectedSlug !== null && selectedSlug === suggestedSlug
+              }
             />
           )}
           {mapData.status === "ready" && !isMobileViewport && (

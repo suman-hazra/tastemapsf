@@ -17,6 +17,9 @@ interface Props {
   onClose: () => void;
   triedSet?: ReadonlySet<string>;
   onSetTried?: (countryId: string, tried: boolean) => void;
+  // Hide the mobile yes/no tried bar — used when the panel was opened from a
+  // "Pick my next bite" suggestion, where asking "tried it?" makes no sense.
+  hideTriedControl?: boolean;
 }
 
 const TIP_EMAIL = "tastemapsf@gmail.com";
@@ -78,6 +81,7 @@ export default function CountryPanel({
   onClose,
   triedSet,
   onSetTried,
+  hideTriedControl = false,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
@@ -123,7 +127,8 @@ export default function CountryPanel({
   const showMobileTriedControl =
     !isUnseeded &&
     country.restaurants.length > 0 &&
-    onSetTried !== undefined;
+    onSetTried !== undefined &&
+    !hideTriedControl;
   const isTried = !isUnseeded && triedSet?.has(country.id) === true;
 
   return (
