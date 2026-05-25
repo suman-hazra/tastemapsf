@@ -419,11 +419,6 @@ export default function App() {
                     />
                   </div>
                   <FinishButton onClick={openScoreDialog} />
-                  <TriedPromptDialog
-                    country={triedPromptCountry}
-                    onAnswer={answerTriedPrompt}
-                    onClose={closeTriedPrompt}
-                  />
                 </>
               )}
             </div>
@@ -434,6 +429,13 @@ export default function App() {
               and slogan instead of being trapped beneath them. */}
           {mapData.status === "ready" && (
             <CountryPanel country={panelCountry} onClose={closePanel} />
+          )}
+          {mapData.status === "ready" && (
+            <TriedPromptDialog
+              country={triedPromptCountry}
+              onAnswer={answerTriedPrompt}
+              onClose={closeTriedPrompt}
+            />
           )}
           {mapData.status === "ready" && (showScoreDialog || sharedScore) && (
             <ScoreDialog
