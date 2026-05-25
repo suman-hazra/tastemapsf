@@ -172,7 +172,10 @@ export default function CountryPanel({ country, onClose }: Props) {
 
         <div className="mx-6 h-px bg-black/[0.08]" />
 
-        <div className="flex-1 space-y-7 overflow-y-auto px-6 py-5" tabIndex={0}>
+        <div
+          className="flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch]"
+          tabIndex={0}
+        >
           {isUnseeded ? (
             <UnseededBody
               country={{ name: country.displayName, flag: country.flag }}
@@ -181,6 +184,15 @@ export default function CountryPanel({ country, onClose }: Props) {
           ) : (
             <SeededBody country={country} onSuggest={setSuggestionCountry} />
           )}
+          <div className="sticky bottom-0 -mx-6 -mb-5 bg-white/85 px-6 pb-5 pt-3 backdrop-blur-[18px] md:hidden">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-12 w-full items-center justify-center rounded-xl border border-black/[0.08] bg-white text-sm font-semibold text-[#0f0f12] shadow-[0_6px_18px_rgba(15,15,18,0.08)]"
+            >
+              Back to map
+            </button>
+          </div>
         </div>
 
         {suggestionCountry && (
