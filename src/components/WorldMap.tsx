@@ -364,6 +364,28 @@ export default function WorldMap({
     onResetSelection();
   };
 
+  // Treat a click on empty space (ocean, letterbox margins) as "exit" and
+  // dismiss the panel. Country/pin clicks stopPropagation, so they never reach
+  // here. A pointer-down position is recorded so a drag-to-pan — which ends in
+  // a trailing click — is ignored rather than closing the panel.
+  const pointerDownRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleBackgroundPointerDown = (e: React.PointerEvent) => {
+    pointerDownRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    const down = pointerDownRef.current;
+    pointerDownRef.current = null;
+    if (down) {
+      const dx = e.clientX - down.x;
+      const dy = e.clientY - down.y;
+      // >6px of travel between press and release means the user panned.
+      if (dx * dx + dy * dy > 36) return;
+    }
+    onSelect(null, null, null);
+  };
+
   useEffect(() => {
     const media = window.matchMedia("(max-width: 639px)");
     const update = () => setIsMobileViewport(media.matches);
@@ -502,7 +524,8 @@ export default function WorldMap({
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
-                  onClick={() => {
+                  onClick={(event: React.MouseEvent) => {
+                    event.stopPropagation();
                     const geoId = geo.id ?? "";
                     onSelect(
                       isKnown ? slug : null,
@@ -770,7 +793,10 @@ export default function WorldMap({
           <Marker
             key={`pin-${slug}`}
             coordinates={coord}
-            onClick={() => onSelect(slug, null, null)}
+            onClick={(event: React.MouseEvent) => {
+              event.stopPropagation();
+              onSelect(slug, null, null);
+            }}
             onMouseEnter={() => setHovered(slug)}
             onMouseLeave={() => setHovered(null)}
             style={{
@@ -848,6 +874,8 @@ export default function WorldMap({
       ref={containerRef}
       className="relative h-full w-full"
       style={{ background: c.bg }}
+      onPointerDown={handleBackgroundPointerDown}
+      onClick={handleBackgroundClick}
     >
       <ComposableMap
         projection="geoNaturalEarth1"
@@ -900,14 +928,15 @@ export default function WorldMap({
           </filter>
         </defs>
 
-        {/* Ocean background — sits outside the zoom group so it always fills */}
+        {/* Ocean background — sits outside the zoom group so it always fills.
+            Dismissal is handled on the container so it also covers the zoom
+            group's own transparent pan-rect and the SVG letterbox margins. */}
         <rect
           x={0}
           y={0}
           width={MAP_WIDTH}
           height={MAP_HEIGHT}
           fill={c.bg}
-          onClick={() => onSelect(null, null, null)}
         />
 
         <ZoomableGroup
@@ -947,7 +976,10 @@ export default function WorldMap({
         <button
           type="button"
           aria-label="Back to world view"
-          onClick={resetToWorldView}
+          onClick={(event) => {
+            event.stopPropagation();
+            resetToWorldView();
+          }}
           className="grid h-9 w-9 place-items-center rounded-xl border border-black/[0.08] bg-white/[0.82] text-[#0f0f12] shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_24px_rgba(124,58,237,0.12)] backdrop-blur-[20px] transition-all hover:bg-white hover:shadow-[0_1px_0_rgba(255,255,255,0.75)_inset,0_10px_28px_rgba(124,58,237,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/40"
         >
           <svg
