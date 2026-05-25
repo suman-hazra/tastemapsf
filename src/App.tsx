@@ -419,7 +419,6 @@ export default function App() {
                     />
                   </div>
                   <FinishButton onClick={openScoreDialog} />
-                  <CountryPanel country={panelCountry} onClose={closePanel} />
                   <TriedPromptDialog
                     country={triedPromptCountry}
                     onAnswer={answerTriedPrompt}
@@ -433,6 +432,9 @@ export default function App() {
           {/* Full-screen modals live at the <main> level — not inside the
               z-10 map region — so their z-[60] overlays the z-20 top banner
               and slogan instead of being trapped beneath them. */}
+          {mapData.status === "ready" && (
+            <CountryPanel country={panelCountry} onClose={closePanel} />
+          )}
           {mapData.status === "ready" && (showScoreDialog || sharedScore) && (
             <ScoreDialog
               tried={sharedScore?.tried ?? triedCount}
