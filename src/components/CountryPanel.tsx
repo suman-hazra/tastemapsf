@@ -205,7 +205,10 @@ export default function CountryPanel({
             <TriedBarControl
               countryName={country.name}
               isTried={isTried}
-              onSetTried={(tried) => onSetTried(country.id, tried)}
+              onSetTried={(tried) => {
+                onSetTried(country.id, tried);
+                onClose();
+              }}
             />
           </div>
         )}
