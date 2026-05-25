@@ -26,6 +26,7 @@ import type { Feature, FeatureCollection, Geometry } from "geojson";
 import {
   assertCountryIdMapIntegrity,
   slugForGeoId,
+  UNMAPPED_SLUG_COORDINATES,
 } from "../data/countryIdMap";
 import { countries } from "../data/restaurants";
 import type { Country } from "../data/types";
@@ -120,6 +121,13 @@ export function useMapData(): MapData {
               centroidBySlug.set(slug, [lng, lat]);
             }
           }
+        }
+
+        // Microstates omitted from the 110m TopoJSON have no polygon centroid,
+        // so seed their pin coordinates directly — this is what lets the avatar
+        // teleport to (and the panel zoom toward) Singapore, Malta, etc.
+        for (const [slug, coord] of Object.entries(UNMAPPED_SLUG_COORDINATES)) {
+          if (!centroidBySlug.has(slug)) centroidBySlug.set(slug, coord);
         }
 
         setState({

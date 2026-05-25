@@ -214,6 +214,33 @@ export const KNOWN_UNMAPPED_SLUGS = new Set<string>([
   "singapore",
 ]);
 
+/**
+ * [lng, lat] anchor for each KNOWN_UNMAPPED_SLUG country. Because these
+ * nations have no polygon in the 110m TopoJSON, the map renders a clickable
+ * pin at these coordinates instead (see WorldMap's destination pins). These
+ * also seed `centroidForSlug` so the avatar teleports to the pin on select.
+ *
+ * Keep keys exactly in sync with KNOWN_UNMAPPED_SLUGS — the dev integrity
+ * check below fails if they drift.
+ */
+export const UNMAPPED_SLUG_COORDINATES: Record<string, [number, number]> = {
+  andorra: [1.52, 42.55],
+  antigua_and_barbuda: [-61.8, 17.27],
+  bahrain: [50.55, 26.07],
+  barbados: [-59.54, 13.18],
+  cabo_verde: [-23.6, 15.12],
+  comoros: [43.33, -11.65],
+  dominica: [-61.37, 15.41],
+  grenada: [-61.68, 12.12],
+  maldives: [73.51, 4.18],
+  malta: [14.4, 35.9],
+  mauritius: [57.55, -20.28],
+  saint_lucia: [-60.98, 13.91],
+  sao_tome_and_principe: [6.61, 0.3],
+  seychelles: [55.49, -4.68],
+  singapore: [103.82, 1.35],
+};
+
 /** Reverse lookup: slug → ISO numeric. Computed once. */
 export const slugToIso: Record<string, string> = Object.fromEntries(
   Object.entries(isoToSlug).map(([iso, slug]) => [slug, iso]),
@@ -457,7 +484,22 @@ export function assertCountryIdMapIntegrity(): void {
     .filter(([, count]) => count > 1)
     .map(([slug]) => slug);
 
-  if (orphansInData.length || orphansInMap.length || duplicates.length) {
+  // Every unmapped slug needs a pin coordinate, and vice versa — otherwise a
+  // microstate silently vanishes from the map (no polygon, no pin).
+  const unmappedMissingCoords = [...KNOWN_UNMAPPED_SLUGS].filter(
+    (slug) => !(slug in UNMAPPED_SLUG_COORDINATES),
+  );
+  const coordsMissingUnmapped = Object.keys(UNMAPPED_SLUG_COORDINATES).filter(
+    (slug) => !KNOWN_UNMAPPED_SLUGS.has(slug),
+  );
+
+  if (
+    orphansInData.length ||
+    orphansInMap.length ||
+    duplicates.length ||
+    unmappedMissingCoords.length ||
+    coordsMissingUnmapped.length
+  ) {
     console.error(
       "[countryIdMap] integrity check failed:\n" +
         (orphansInData.length
@@ -468,6 +510,12 @@ export function assertCountryIdMapIntegrity(): void {
           : "") +
         (duplicates.length
           ? `  Duplicate slugs in isoToSlug: ${duplicates.join(", ")}\n`
+          : "") +
+        (unmappedMissingCoords.length
+          ? `  Unmapped slugs with no pin coordinate: ${unmappedMissingCoords.join(", ")}\n`
+          : "") +
+        (coordsMissingUnmapped.length
+          ? `  Pin coordinates with no KNOWN_UNMAPPED_SLUGS entry: ${coordsMissingUnmapped.join(", ")}\n`
           : ""),
     );
   }

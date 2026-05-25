@@ -24,7 +24,11 @@ import {
 } from "react-simple-maps";
 import { geoNaturalEarth1 } from "d3-geo";
 import { map as c } from "../styles/tokens";
-import { flagForGeoId, slugForGeoId } from "../data/countryIdMap";
+import {
+  flagForGeoId,
+  slugForGeoId,
+  KNOWN_UNMAPPED_SLUGS,
+} from "../data/countryIdMap";
 import SanFranciscoMarker from "./SanFranciscoMarker";
 
 interface Props {
@@ -377,6 +381,10 @@ export default function WorldMap({
 
     const markers = Array.from(triedSet).flatMap((slug) => {
       if (!seededSlugSet.has(slug)) return [];
+      // Unmapped microstates carry their tried state on the pin itself
+      // (it recolors), so skip the HTML flag overlay to avoid stacking a
+      // 24px flag on top of the pin.
+      if (KNOWN_UNMAPPED_SLUGS.has(slug)) return [];
       const coord = centroidForSlug(slug);
       const flag = flagForSlug(slug);
       if (!coord || !flag) return [];
@@ -648,6 +656,8 @@ export default function WorldMap({
           colliding in dense regions. */}
       {knownSlugs.map((slug) => {
         if (slug !== hovered) return null;
+        // Unmapped microstates draw their own label above their pin.
+        if (KNOWN_UNMAPPED_SLUGS.has(slug)) return null;
         const coord =
           COUNTRY_LABEL_COORDINATE_OVERRIDES[slug] ?? centroidForSlug(slug);
         if (!coord) return null;
@@ -670,6 +680,78 @@ export default function WorldMap({
             >
               {name}
             </text>
+          </Marker>
+        );
+      })}
+
+      {/* Destination pins for microstates the 110m TopoJSON omits (Singapore,
+          Malta, Maldives, …). They have no polygon to click, so a fixed pin
+          stands in — tip anchored at the country's coordinates, recolored by
+          seeded/tried state, with its name shown on hover or selection. */}
+      {knownSlugs.map((slug) => {
+        if (!KNOWN_UNMAPPED_SLUGS.has(slug)) return null;
+        const coord = centroidForSlug(slug);
+        if (!coord) return null;
+
+        const hasRestaurants = seededSlugSet.has(slug);
+        const isTried = hasRestaurants && triedSet.has(slug);
+        const isSelected = slug === selectedSlug;
+        const isHovered = slug === hovered;
+        const emphasized = isSelected || isHovered;
+        const fill = isTried
+          ? "url(#visitedCountryGrad)"
+          : hasRestaurants
+            ? "url(#activeCountryGrad)"
+            : c.unseededLand;
+        const name = nameForSlug(slug);
+
+        return (
+          <Marker
+            key={`pin-${slug}`}
+            coordinates={coord}
+            onClick={() => onSelect(slug, null, null)}
+            onMouseEnter={() => setHovered(slug)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              default: { cursor: "pointer" },
+              hover: { cursor: "pointer" },
+              pressed: { cursor: "pointer" },
+            }}
+          >
+            {/* Enlarged transparent hit target so the tiny pin stays easy
+                to click. */}
+            <circle cx={0} cy={-6} r={9} fill="transparent" />
+            <g
+              transform={emphasized ? "scale(0.57)" : "scale(0.5)"}
+              style={{ transition: "transform 140ms cubic-bezier(.2,.7,.3,1)" }}
+            >
+              <path
+                d="M 0 0 C -4 -7 -7.5 -10 -7.5 -15 A 7.5 7.5 0 1 1 7.5 -15 C 7.5 -10 4 -7 0 0 Z"
+                fill={fill}
+                stroke="#ffffff"
+                strokeWidth={emphasized ? 2 : 1.5}
+                filter="url(#pinShadow)"
+              />
+              <circle cx={0} cy={-15} r={3} fill="#ffffff" opacity={0.95} />
+            </g>
+            {(isHovered || isSelected) && name && (
+              <text
+                x={0}
+                y={-15}
+                textAnchor="middle"
+                fontFamily="var(--font-map-sans)"
+                fontSize={12}
+                fontWeight={600}
+                fill={c.labelHover}
+                style={{
+                  pointerEvents: "none",
+                  textShadow:
+                    "0 1px 3px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7)",
+                }}
+              >
+                {name}
+              </text>
+            )}
           </Marker>
         );
       })}
