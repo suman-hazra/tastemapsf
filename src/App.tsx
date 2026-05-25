@@ -425,19 +425,6 @@ export default function App() {
                     onAnswer={answerTriedPrompt}
                     onClose={closeTriedPrompt}
                   />
-                  {(showScoreDialog || sharedScore) && (
-                    <ScoreDialog
-                      tried={sharedScore?.tried ?? triedCount}
-                      total={sharedScore?.total ?? mapData.total}
-                      onClose={closeScoreDialog}
-                      onSuggestNext={suggestNextCountry}
-                      canSuggestNext={
-                        !sharedScore && untriedCountries.length > 0
-                      }
-                      untriedCountries={sharedScore ? [] : untriedCountries}
-                    />
-                  )}
-                  {showWelcome && <WelcomeDialog onDismiss={dismissWelcome} />}
                 </>
               )}
             </div>
@@ -446,6 +433,19 @@ export default function App() {
           {/* Full-screen modals live at the <main> level — not inside the
               z-10 map region — so their z-[60] overlays the z-20 top banner
               and slogan instead of being trapped beneath them. */}
+          {mapData.status === "ready" && (showScoreDialog || sharedScore) && (
+            <ScoreDialog
+              tried={sharedScore?.tried ?? triedCount}
+              total={sharedScore?.total ?? mapData.total}
+              onClose={closeScoreDialog}
+              onSuggestNext={suggestNextCountry}
+              canSuggestNext={!sharedScore && untriedCountries.length > 0}
+              untriedCountries={sharedScore ? [] : untriedCountries}
+            />
+          )}
+          {mapData.status === "ready" && showWelcome && (
+            <WelcomeDialog onDismiss={dismissWelcome} />
+          )}
           {mapData.status === "ready" && showCountryList && (
             <CountryListMenu
               countries={mapData.countries}
