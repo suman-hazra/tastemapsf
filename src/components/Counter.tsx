@@ -16,11 +16,13 @@ interface Props {
   tried: number;
   /** Total seeded countries (denominator). Null = data still loading. */
   total: number | null;
+  /** Opens the score/progress modal. */
+  onClick: () => void;
 }
 
 const PULSE_MS = 400;
 
-export default function Counter({ tried, total }: Props) {
+export default function Counter({ tried, total, onClick }: Props) {
   const [pulse, setPulse] = useState(false);
   const prevTried = useRef(tried);
 
@@ -40,7 +42,14 @@ export default function Counter({ tried, total }: Props) {
   const circumference = 50.26;
 
   return (
-    <div className="flex h-9 items-center gap-2.5 rounded-xl border border-[#7c3aed]/15 bg-[#7c3aed]/[0.06] px-3 leading-none">
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={`View Tastemap score: ${
+        isLoading ? "loading" : `${tried} of ${total} cuisines tried`
+      }`}
+      className="flex h-11 items-center gap-2.5 rounded-xl border border-[#7c3aed]/15 bg-[#7c3aed]/[0.06] px-3 leading-none transition-all duration-150 ease-out hover:scale-[1.05] hover:bg-white/80 hover:shadow-[0_8px_22px_rgba(124,58,237,0.14),0_2px_8px_rgba(6,182,212,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/40 active:scale-[0.98]"
+    >
       <svg
         viewBox="0 0 20 20"
         className="h-5 w-5 -rotate-90"
@@ -72,19 +81,24 @@ export default function Counter({ tried, total }: Props) {
           className="transition-[stroke-dasharray] duration-500"
         />
       </svg>
-      <div className="flex items-baseline gap-1 text-[13px] tabular-nums text-[#0f0f12]">
-        <span
-          className="inline-block font-bold transition-transform duration-300 ease-out"
-          style={{
-            transform: pulse ? "scale(1.12)" : "scale(1)",
-          }}
-        >
-          {isLoading ? "—" : tried}
-        </span>
-        <span className="text-[#6b6b76]">
-          / {isLoading ? "—" : total}
+      <div className="flex flex-col items-start gap-0.5 text-[#0f0f12]">
+        <div className="flex items-baseline gap-1 text-[13px] tabular-nums">
+          <span
+            className="inline-block font-bold transition-transform duration-300 ease-out"
+            style={{
+              transform: pulse ? "scale(1.12)" : "scale(1)",
+            }}
+          >
+            {isLoading ? "—" : tried}
+          </span>
+          <span className="text-[#6b6b76]">
+            / {isLoading ? "—" : total}
+          </span>
+        </div>
+        <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-[#6b6b76]">
+          cuisines tried
         </span>
       </div>
-    </div>
+    </button>
   );
 }

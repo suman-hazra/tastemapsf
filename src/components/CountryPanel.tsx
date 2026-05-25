@@ -17,9 +17,8 @@ interface Props {
   onClose: () => void;
   triedSet?: ReadonlySet<string>;
   onSetTried?: (countryId: string, tried: boolean) => void;
-  // Hide the mobile yes/no tried bar — used when the panel was opened from a
-  // "Pick my next bite" suggestion, where asking "tried it?" makes no sense.
-  hideTriedControl?: boolean;
+  showTriedHint?: boolean;
+  onDismissTriedHint?: () => void;
 }
 
 const TIP_EMAIL = "tastemapsf@gmail.com";
@@ -81,7 +80,8 @@ export default function CountryPanel({
   onClose,
   triedSet,
   onSetTried,
-  hideTriedControl = false,
+  showTriedHint = false,
+  onDismissTriedHint,
 }: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
@@ -124,22 +124,19 @@ export default function CountryPanel({
   const displayName = isUnseeded ? country.displayName : country.name;
   const displayFlag = country.flag;
   const flagUrl = twemojiFlagUrl(displayFlag);
-  const showMobileTriedControl =
-    !isUnseeded &&
-    country.restaurants.length > 0 &&
-    onSetTried !== undefined &&
-    !hideTriedControl;
+  const showTriedControl =
+    !isUnseeded && country.restaurants.length > 0 && onSetTried !== undefined;
   const isTried = !isUnseeded && triedSet?.has(country.id) === true;
 
   return (
-    <div className="absolute inset-0 z-30" onMouseDown={onClose}>
+    <div className="pointer-events-none absolute inset-0 z-30">
       <aside
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="panel-title"
         onMouseDown={(event) => event.stopPropagation()}
-        className="absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col overflow-hidden rounded-t-[20px] border border-black/[0.08] bg-white/[0.88] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_20px_60px_rgba(124,58,237,0.15)] backdrop-blur-[28px] animate-[drawer-enter_280ms_cubic-bezier(0.22,1,0.36,1)_forwards] md:bottom-4 md:left-auto md:right-4 md:top-4 md:w-[420px] md:max-h-none md:rounded-2xl"
+        className="pointer-events-auto absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col overflow-hidden rounded-t-[20px] border border-black/[0.08] bg-white/[0.88] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_20px_60px_rgba(124,58,237,0.15)] backdrop-blur-[28px] animate-[drawer-enter_280ms_cubic-bezier(0.22,1,0.36,1)_forwards] md:bottom-4 md:left-auto md:right-4 md:top-4 md:w-[420px] md:max-h-none md:rounded-2xl"
       >
         <div
           aria-hidden="true"
@@ -187,12 +184,23 @@ export default function CountryPanel({
           </button>
         </header>
 
+        {showTriedControl && (
+          <div className="flex-shrink-0 px-6 pb-4">
+            <TriedActionBar
+              isTried={isTried}
+              showHint={showTriedHint}
+              onToggle={() => {
+                onSetTried(country.id, !isTried);
+                onDismissTriedHint?.();
+              }}
+            />
+          </div>
+        )}
+
         <div className="mx-6 h-px flex-shrink-0 bg-black/[0.08]" />
 
         <div
-          className={`flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch] ${
-            showMobileTriedControl ? "pb-28" : ""
-          }`}
+          className="flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch]"
           tabIndex={0}
         >
           {isUnseeded ? (
@@ -205,19 +213,6 @@ export default function CountryPanel({
           )}
         </div>
 
-        {showMobileTriedControl && (
-          <div className="flex-shrink-0 border-t border-black/[0.08] bg-white/90 px-5 pb-5 pt-3 shadow-[0_-10px_24px_rgba(15,15,18,0.05)] backdrop-blur-[18px] md:hidden">
-            <TriedBarControl
-              countryName={country.name}
-              isTried={isTried}
-              onSetTried={(tried) => {
-                onSetTried(country.id, tried);
-                onClose();
-              }}
-            />
-          </div>
-        )}
-
         {suggestionCountry && (
           <SuggestionDialog
             country={suggestionCountry}
@@ -229,42 +224,67 @@ export default function CountryPanel({
   );
 }
 
-function TriedBarControl({
-  countryName,
+function TriedActionBar({
   isTried,
-  onSetTried,
+  showHint,
+  onToggle,
 }: {
-  countryName: string;
   isTried: boolean;
-  onSetTried: (tried: boolean) => void;
+  showHint: boolean;
+  onToggle: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-sm font-semibold text-[#0f0f12]">
-          Tried {countryName}?
-        </div>
-        <div className="text-xs text-[#6b6b76]">
-          {isTried ? "Marked as tasted" : "Mark this cuisine"}
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => onSetTried(false)}
-          className="h-11 w-16 rounded-xl border border-black/[0.08] bg-white text-sm font-semibold text-[#0f0f12] transition-all active:scale-[0.98]"
+    <button
+      type="button"
+      aria-pressed={isTried}
+      onClick={onToggle}
+      className={`group flex h-11 w-full items-center justify-between gap-3 rounded-xl border px-4 text-left transition-all duration-200 active:scale-[0.99] ${
+        isTried
+          ? "animate-[tried-pill-pop_260ms_cubic-bezier(0.22,1,0.36,1)] border-[#84cc16]/25 bg-[linear-gradient(135deg,#84cc16_0%,#22d3ee_100%)] shadow-[0_2px_12px_rgba(132,204,22,0.20)]"
+          : "border-black/[0.08] bg-white/60 shadow-[0_1px_4px_rgba(15,15,18,0.04)] hover:bg-white/90 hover:shadow-[0_2px_8px_rgba(15,15,18,0.06)]"
+      }`}
+    >
+      <span className="flex min-w-0 items-center gap-3">
+        <span
+          aria-hidden="true"
+          className={`grid h-5 w-5 flex-shrink-0 place-items-center rounded-full border-[1.5px] transition-colors ${
+            isTried
+              ? "border-white/50 bg-white/25 text-white"
+              : "border-black/[0.12] bg-[#0f0f12]/[0.06] text-transparent"
+          }`}
         >
-          No
-        </button>
-        <button
-          type="button"
-          onClick={() => onSetTried(true)}
-          className="h-11 w-16 rounded-xl bg-[linear-gradient(135deg,#7c3aed_0%,#06b6d4_100%)] text-sm font-semibold text-white shadow-[0_8px_20px_rgba(124,58,237,0.24)] transition-all active:scale-[0.98]"
+          {isTried && (
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 6l3 3 5-5"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </span>
+        <span
+          className={`truncate text-[13px] font-semibold ${
+            isTried ? "text-white" : "text-[#0f0f12]"
+          }`}
         >
-          Yes
-        </button>
-      </div>
-    </div>
+          {isTried ? "Tried" : "Mark as tried"}
+        </span>
+      </span>
+      <span
+        className={`hidden flex-shrink-0 text-[11px] font-medium sm:inline ${
+          isTried ? "text-white/70" : "text-[#6b6b76]"
+        }`}
+      >
+        {isTried
+          ? "Added to your map"
+          : showHint
+            ? "Tap to track your progress"
+            : "Update your progress"}
+      </span>
+    </button>
   );
 }
 
@@ -276,21 +296,19 @@ function SeededBody({
   onSuggest: (country: SuggestionCountry) => void;
 }) {
   const hasRestaurants = country.restaurants.length > 0;
+  const [isIntroExpanded, setIsIntroExpanded] = useState(false);
+
+  useEffect(() => {
+    setIsIntroExpanded(false);
+  }, [country.id]);
 
   return (
     <>
-      <p className="text-[13.5px] leading-[1.6] text-[#6b6b76]">
-        {country.cuisine_summary}
-      </p>
-
-      <section>
-        <SectionLabel>Order these first</SectionLabel>
-        <ul className="space-y-4">
-          {country.signature_dishes.map((dish) => (
-            <DishEntry key={dish.name} dish={dish} />
-          ))}
-        </ul>
-      </section>
+      <IntroSummary
+        text={country.cuisine_summary}
+        isExpanded={isIntroExpanded}
+        onToggle={() => setIsIntroExpanded((expanded) => !expanded)}
+      />
 
       <section>
         <SectionLabel>Where to eat in SF</SectionLabel>
@@ -318,7 +336,53 @@ function SeededBody({
           </div>
         )}
       </section>
+
+      <section>
+        <SectionLabel>Order these first</SectionLabel>
+        <ul className="space-y-4">
+          {country.signature_dishes.map((dish) => (
+            <DishEntry key={dish.name} dish={dish} />
+          ))}
+        </ul>
+      </section>
     </>
+  );
+}
+
+function IntroSummary({
+  text,
+  isExpanded,
+  onToggle,
+}: {
+  text: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div>
+      <p
+        className="text-[13.5px] leading-[1.6] text-[#6b6b76]"
+        style={
+          isExpanded
+            ? undefined
+            : {
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: 2,
+                overflow: "hidden",
+              }
+        }
+      >
+        {text}
+      </p>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="mt-2 text-[12px] font-semibold text-[#7c3aed] underline decoration-[#7c3aed]/25 underline-offset-2 transition-colors hover:text-[#6d28d9] hover:decoration-[#7c3aed]/60"
+      >
+        {isExpanded ? "Show less" : "Read more"}
+      </button>
+    </div>
   );
 }
 

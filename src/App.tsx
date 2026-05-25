@@ -18,7 +18,6 @@ import FinishButton from "./components/FinishButton";
 import LegalDialog from "./components/LegalDialog";
 import LoadingState from "./components/LoadingState";
 import ScoreDialog from "./components/ScoreDialog";
-import TriedPromptDialog from "./components/TriedPromptDialog";
 import WelcomeDialog from "./components/WelcomeDialog";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
@@ -28,8 +27,12 @@ interface SharedScore {
   total: number;
 }
 
+type MapFilter = "soon" | "available" | "tried";
+
 const WELCOME_STORAGE_KEY = "tastemap-welcome-dismissed";
 const WELCOME_STORAGE_VERSION = "v1";
+const TRIED_STORAGE_KEY = "tastemap-tried-countries";
+const TRIED_HINT_STORAGE_KEY = "tastemap-tried-hint-dismissed";
 
 function readWelcomeSeen(): boolean {
   try {
@@ -49,6 +52,26 @@ function readSharedScore(): SharedScore | null {
   if (!Number.isInteger(tried) || !Number.isInteger(total)) return null;
   if (tried < 0 || total <= 0 || tried > total) return null;
   return { tried, total };
+}
+
+function readTriedSet(): Set<string> {
+  try {
+    const raw = window.localStorage.getItem(TRIED_STORAGE_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return new Set();
+    return new Set(parsed.filter((item) => typeof item === "string"));
+  } catch {
+    return new Set();
+  }
+}
+
+function readTriedHintSeen(): boolean {
+  try {
+    return window.localStorage.getItem(TRIED_HINT_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
 }
 
 export default function App() {
@@ -72,22 +95,23 @@ export default function App() {
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [unseededName, setUnseededName] = useState<string | null>(null);
   const [unseededFlag, setUnseededFlag] = useState<string | null>(null);
-  const [triedPromptSlug, setTriedPromptSlug] = useState<string | null>(null);
-  // Set when a country is opened via "Pick my next bite". Suppresses the
-  // tried prompt — desktop dialog and the mobile in-panel yes/no bar — since
-  // the user picked a suggestion precisely because they haven't been yet.
+  // Set when a country is opened via "Pick my next bite" so the first-time
+  // tried hint does not point at a cuisine the user likely has not tried yet.
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
   const [showLegalDialog, setShowLegalDialog] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
+  const [activeMapFilter, setActiveMapFilter] = useState<MapFilter | null>(
+    null,
+  );
   const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
     readSharedScore(),
   );
-  const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
-  const [isMobileViewport, setIsMobileViewport] = useState(() =>
-    window.matchMedia("(max-width: 767px)").matches,
+  const [triedSet, setTriedSet] = useState<Set<string>>(() => readTriedSet());
+  const [showTriedHint, setShowTriedHint] = useState(
+    () => !readTriedHintSeen(),
   );
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   // Skip the welcome dialog when the user arrived via a shared score link —
@@ -100,14 +124,6 @@ export default function App() {
     return !readWelcomeSeen();
   });
 
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobileViewport(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-
   const dismissWelcome = () => {
     try {
       window.localStorage.setItem(WELCOME_STORAGE_KEY, WELCOME_STORAGE_VERSION);
@@ -115,6 +131,15 @@ export default function App() {
       // Ignore storage errors — at worst the dialog reappears next visit.
     }
     setShowWelcome(false);
+  };
+
+  const dismissTriedHint = () => {
+    setShowTriedHint(false);
+    try {
+      window.localStorage.setItem(TRIED_HINT_STORAGE_KEY, "true");
+    } catch {
+      // Ignore storage errors — the hint may reappear next visit.
+    }
   };
 
   const openAboutDialog = () => {
@@ -127,7 +152,6 @@ export default function App() {
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
-    setTriedPromptSlug(null);
     setShowAboutDialog(true);
   };
 
@@ -146,26 +170,13 @@ export default function App() {
       setUnseededFlag(null);
       if (selectedSlug === slug) {
         setSelectedSlug(null);
-        setTriedPromptSlug(null);
         return;
       }
       setSelectedSlug(slug);
-      const selectedCountry =
-        mapData.status === "ready"
-          ? mapData.allCountryBySlug.get(slug)
-          : undefined;
-      setTriedPromptSlug(
-        !isMobileViewport &&
-          selectedCountry &&
-          selectedCountry.restaurants.length > 0
-          ? slug
-          : null,
-      );
       return;
     }
     if (unseededDisplayName) {
       setSelectedSlug(null);
-      setTriedPromptSlug(null);
       if (unseededName === unseededDisplayName) {
         setUnseededName(null);
         setUnseededFlag(null);
@@ -178,11 +189,9 @@ export default function App() {
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
-    setTriedPromptSlug(null);
   };
 
   const openScoreDialog = () => {
-    setTriedPromptSlug(null);
     setSharedScore(null);
     setShowMenu(false);
     setShowCountryList(false);
@@ -200,21 +209,13 @@ export default function App() {
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
-    setTriedPromptSlug(null);
   };
 
-  const closeTriedPrompt = () => {
-    setTriedPromptSlug(null);
+  const resetMapSelection = () => {
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
-  };
-
-  const answerTriedPrompt = (tried: boolean) => {
-    if (!triedPromptSlug) return;
-    const answeredSlug = triedPromptSlug;
-    setCountryTried(answeredSlug, tried);
-    closeTriedPrompt();
+    setSuggestedSlug(null);
   };
 
   const setCountryTried = (countryId: string, tried: boolean) => {
@@ -225,8 +226,17 @@ export default function App() {
       } else {
         next.delete(countryId);
       }
+      try {
+        window.localStorage.setItem(
+          TRIED_STORAGE_KEY,
+          JSON.stringify(Array.from(next).sort()),
+        );
+      } catch {
+        // Ignore storage errors — score state still updates for this session.
+      }
       return next;
     });
+    dismissTriedHint();
   };
 
   const openLegalDialog = () => {
@@ -236,7 +246,6 @@ export default function App() {
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
-    setTriedPromptSlug(null);
     setShowLegalDialog(true);
   };
 
@@ -249,7 +258,6 @@ export default function App() {
     setSharedScore(null);
     setUnseededName(null);
     setUnseededFlag(null);
-    setTriedPromptSlug(null);
     setSuggestedSlug(nextCountry.id);
     setSelectedSlug(nextCountry.id);
   };
@@ -264,11 +272,6 @@ export default function App() {
     mapData.status === "ready" && selectedSlug
       ? (mapData.centroidForSlug(selectedSlug) ?? null)
       : null;
-  const triedPromptCountry =
-    mapData.status === "ready" && triedPromptSlug
-      ? (mapData.countryBySlug.get(triedPromptSlug) ?? null)
-      : null;
-
   const panelCountry = selectedCountry
     ? selectedCountry
     : unseededName
@@ -321,7 +324,11 @@ export default function App() {
                 />
               </a>
               <div className="relative flex items-center gap-2">
-                <Counter tried={triedCount} total={total} />
+                <Counter
+                  tried={triedCount}
+                  total={total}
+                  onClick={openScoreDialog}
+                />
                 {!showMenu && (
                   <button
                     ref={menuButtonRef}
@@ -358,7 +365,6 @@ export default function App() {
                       setSelectedSlug(null);
                       setUnseededName(null);
                       setUnseededFlag(null);
-                      setTriedPromptSlug(null);
                     }}
                     onAbout={openAboutDialog}
                     onLegal={openLegalDialog}
@@ -377,17 +383,41 @@ export default function App() {
                 without leaving San Francisco.
               </h1>
               <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#0f0f12] sm:justify-end sm:pb-1">
-                <LegendChip label="Soon" color="#e8e8ee" />
-                <LegendChip
-                  label="In SF"
-                  gradient="linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)"
+                <LegendButton
+                  label="Coming Soon"
+                  color="#e8e8ee"
+                  isActive={activeMapFilter === "soon"}
+                  onClick={() =>
+                    setActiveMapFilter((filter) =>
+                      filter === "soon" ? null : "soon",
+                    )
+                  }
                 />
-                <LegendChip
-                  label="Tasted"
+                <LegendButton
+                  label="Available in SF"
+                  gradient="linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)"
+                  isActive={activeMapFilter === "available"}
+                  onClick={() =>
+                    setActiveMapFilter((filter) =>
+                      filter === "available" ? null : "available",
+                    )
+                  }
+                />
+                <LegendButton
+                  label="Tried ✓"
                   gradient="linear-gradient(135deg, #84cc16 0%, #22d3ee 100%)"
+                  isActive={activeMapFilter === "tried"}
+                  onClick={() =>
+                    setActiveMapFilter((filter) =>
+                      filter === "tried" ? null : "tried",
+                    )
+                  }
                 />
               </div>
             </div>
+            {mapData.status === "ready" && (
+              <FinishButton onClick={openScoreDialog} />
+            )}
           </div>
 
           <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-3 pb-3 sm:px-6 sm:pb-6 md:block md:gap-0">
@@ -441,17 +471,16 @@ export default function App() {
                       flagForSlug={(slug) =>
                         mapData.allCountryBySlug.get(slug)?.flag
                       }
+                      activeFilter={activeMapFilter}
                       onSelect={(slug, displayName, displayFlag) =>
                         handleSelect(slug, displayName, displayFlag)
                       }
+                      onResetSelection={resetMapSelection}
                     />
                   </div>
                 </>
               )}
             </div>
-            {mapData.status === "ready" && (
-              <FinishButton onClick={openScoreDialog} />
-            )}
           </div>
 
           {/* Full-screen modals live at the <main> level — not inside the
@@ -463,16 +492,12 @@ export default function App() {
               onClose={closePanel}
               triedSet={triedSet}
               onSetTried={setCountryTried}
-              hideTriedControl={
-                selectedSlug !== null && selectedSlug === suggestedSlug
+              showTriedHint={
+                showTriedHint &&
+                selectedSlug !== null &&
+                selectedSlug !== suggestedSlug
               }
-            />
-          )}
-          {mapData.status === "ready" && !isMobileViewport && (
-            <TriedPromptDialog
-              country={triedPromptCountry}
-              onAnswer={answerTriedPrompt}
-              onClose={closeTriedPrompt}
+              onDismissTriedHint={dismissTriedHint}
             />
           )}
           {mapData.status === "ready" && (showScoreDialog || sharedScore) && (
@@ -509,24 +534,39 @@ export default function App() {
   );
 }
 
-function LegendChip({
+function LegendButton({
   label,
   color,
   gradient,
+  isActive,
+  onClick,
 }: {
   label: string;
   color?: string;
   gradient?: string;
+  isActive: boolean;
+  onClick: () => void;
 }) {
   return (
-    <span className="inline-flex h-7 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white/70 px-3 backdrop-blur-xl">
+    <button
+      type="button"
+      aria-pressed={isActive}
+      onClick={onClick}
+      className={`inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-xs font-semibold backdrop-blur-xl transition-all duration-200 hover:bg-white active:scale-[0.98] ${
+        isActive
+          ? "scale-[1.02] border-transparent bg-white text-[#0f0f12] shadow-[0_8px_24px_rgba(124,58,237,0.16),0_2px_8px_rgba(6,182,212,0.10)]"
+          : "border-black/[0.08] bg-white/70 text-[#0f0f12] shadow-[0_1px_4px_rgba(15,15,18,0.03)]"
+      }`}
+    >
       <span
         aria-hidden="true"
-        className="h-2 w-2 rounded-full"
+        className={`h-2.5 w-2.5 rounded-full ${
+          isActive ? "ring-2 ring-black/[0.06]" : ""
+        }`}
         style={{ background: gradient ?? color }}
       />
       <span>{label}</span>
-    </span>
+    </button>
   );
 }
 

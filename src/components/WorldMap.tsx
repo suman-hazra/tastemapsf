@@ -46,6 +46,8 @@ interface Props {
   nameForSlug: (slug: string) => string | undefined;
   /** Flag emoji lookup for known countries. */
   flagForSlug: (slug: string) => string | undefined;
+  /** Optional category focus from the map legend. */
+  activeFilter: "soon" | "available" | "tried" | null;
   /**
    * Called on country click. If the country has cuisine/dish data, `slug` is
    * set and unseeded fields are null. Otherwise, `slug` is null and unseeded
@@ -56,6 +58,8 @@ interface Props {
     unseededName: string | null,
     unseededFlag: string | null,
   ) => void;
+  /** Return to the initial map state and clear any open country panel. */
+  onResetSelection: () => void;
 }
 
 // SVG viewBox sized to the world's projected width at scale 170:
@@ -93,10 +97,6 @@ const SELECTED_ZOOM = 3.2;
 const FLAG_MARKER_MIN_ZOOM = 2.4;
 const FLAG_MARKER_SIZE = 24;
 const FLAG_MARKER_GAP = 4;
-
-// Cursor avatar size. Aspect comes from /public/avatar.svg viewBox (88.5 × 209.45).
-const CURSOR_AVATAR_HEIGHT = 56;
-const CURSOR_AVATAR_WIDTH = CURSOR_AVATAR_HEIGHT * (88.5 / 209.45);
 
 const COUNTRY_LABEL_COORDINATE_OVERRIDES: Record<string, [number, number]> = {
   usa: [-97, 39],
@@ -177,6 +177,10 @@ function initialHomeZoom() {
   return window.matchMedia("(max-width: 639px)").matches
     ? MOBILE_HOME_ZOOM
     : HOME_ZOOM;
+}
+
+function initialHomePosition() {
+  return { coordinates: HOME_CENTER, zoom: initialHomeZoom() };
 }
 
 // Mirrors react-simple-maps' projection setup (geoNaturalEarth1 at scale 170,
@@ -318,16 +322,15 @@ export default function WorldMap({
   centroidForSlug,
   nameForSlug,
   flagForSlug,
+  activeFilter,
   onSelect,
+  onResetSelection,
 }: Props) {
   const [hovered, setHovered] = useState<string | null>(null);
-  const [cursorPos, setCursorPos] = useState<{ x: number; y: number } | null>(
-    null,
-  );
   const [position, setPosition] = useState<{
     coordinates: [number, number];
     zoom: number;
-  }>(() => ({ coordinates: HOME_CENTER, zoom: initialHomeZoom() }));
+  }>(() => initialHomePosition());
   const [isMobileViewport, setIsMobileViewport] = useState(() =>
     typeof window === "undefined"
       ? false
@@ -354,6 +357,12 @@ export default function WorldMap({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const resetToWorldView = () => {
+    setHovered(null);
+    setPosition(initialHomePosition());
+    onResetSelection();
+  };
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 639px)");
@@ -401,12 +410,6 @@ export default function WorldMap({
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
-  const handleMouseLeave = () => setCursorPos(null);
-
   const flagMarkers = useMemo(() => {
     if (!containerSize || position.zoom < FLAG_MARKER_MIN_ZOOM) return [];
 
@@ -442,6 +445,20 @@ export default function WorldMap({
     triedSet,
   ]);
 
+  const opacityForSlug = (slug: string | undefined) => {
+    if (!activeFilter) return 1;
+    if (!slug) return activeFilter === "soon" ? 1 : 0.15;
+    const hasRestaurants = seededSlugSet.has(slug);
+    const isTried = hasRestaurants && triedSet.has(slug);
+    const isMatch =
+      activeFilter === "tried"
+        ? isTried
+        : activeFilter === "available"
+          ? hasRestaurants
+          : !hasRestaurants;
+    return isMatch ? 1 : 0.15;
+  };
+
   // One copy of the map's contents: country shapes, ocean labels, country
   // labels, pins, centroid avatar. Called three times (once per wrap copy).
   const renderWorldContent = () => (
@@ -461,6 +478,7 @@ export default function WorldMap({
               const isTried = hasRestaurants && triedSet.has(slug);
               const isSelected = isKnown && slug === selectedSlug;
               const isHovered = isKnown && slug === hovered;
+              const opacity = opacityForSlug(slug);
 
               // Fill carries the semantic state. Hover/selection only changes
               // the outline so color meaning stays stable.
@@ -470,7 +488,10 @@ export default function WorldMap({
               const strokeWidth = isEmphasized ? 1.2 : 0.6;
 
               if (!hasRestaurants) {
-                fill = c.unseededLand;
+                fill =
+                  activeFilter === "soon" && opacity === 1
+                    ? "#c7c7d1"
+                    : c.unseededLand;
               } else if (isTried) {
                 fill = c.visited;
               } else {
@@ -501,7 +522,9 @@ export default function WorldMap({
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
                       cursor: isKnown ? "pointer" : "inherit",
-                      transition: "fill 220ms cubic-bezier(.2,.7,.3,1)",
+                      transition:
+                        "fill 220ms cubic-bezier(.2,.7,.3,1), opacity 200ms ease-in-out",
+                      opacity,
                     },
                     hover: {
                       fill,
@@ -511,6 +534,7 @@ export default function WorldMap({
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
                       cursor: isKnown ? "pointer" : "inherit",
+                      opacity,
                     },
                     pressed: {
                       fill,
@@ -519,6 +543,7 @@ export default function WorldMap({
                       strokeLinejoin: "round",
                       vectorEffect: "non-scaling-stroke",
                       outline: "none",
+                      opacity,
                     },
                   }}
                 />
@@ -739,6 +764,7 @@ export default function WorldMap({
             ? "url(#activeCountryGrad)"
             : c.unseededLand;
         const name = nameForSlug(slug);
+        const opacity = opacityForSlug(slug);
 
         return (
           <Marker
@@ -748,9 +774,9 @@ export default function WorldMap({
             onMouseEnter={() => setHovered(slug)}
             onMouseLeave={() => setHovered(null)}
             style={{
-              default: { cursor: "pointer" },
-              hover: { cursor: "pointer" },
-              pressed: { cursor: "pointer" },
+              default: { cursor: "pointer", opacity },
+              hover: { cursor: "pointer", opacity },
+              pressed: { cursor: "pointer", opacity },
             }}
           >
             {hasOffset && (
@@ -812,7 +838,7 @@ export default function WorldMap({
 
       {/* San Francisco — the app's home city. */}
       <Marker coordinates={[-122.4194, 37.7749]}>
-        <SanFranciscoMarker />
+        <SanFranciscoMarker onReset={resetToWorldView} />
       </Marker>
     </>
   );
@@ -831,13 +857,10 @@ export default function WorldMap({
         }
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
         style={{
           width: "100%",
           height: "100%",
           display: "block",
-          cursor: "none",
         }}
       >
         <defs>
@@ -884,6 +907,7 @@ export default function WorldMap({
           width={MAP_WIDTH}
           height={MAP_HEIGHT}
           fill={c.bg}
+          onClick={() => onSelect(null, null, null)}
         />
 
         <ZoomableGroup
@@ -918,6 +942,40 @@ export default function WorldMap({
           zIndex: 1,
         }}
       />
+
+      <div className="group absolute bottom-4 left-4 z-20">
+        <button
+          type="button"
+          aria-label="Back to world view"
+          onClick={resetToWorldView}
+          className="grid h-9 w-9 place-items-center rounded-xl border border-black/[0.08] bg-white/[0.82] text-[#0f0f12] shadow-[0_1px_0_rgba(255,255,255,0.65)_inset,0_8px_24px_rgba(124,58,237,0.12)] backdrop-blur-[20px] transition-all hover:bg-white hover:shadow-[0_1px_0_rgba(255,255,255,0.75)_inset,0_10px_28px_rgba(124,58,237,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/40"
+        >
+          <svg
+            aria-hidden="true"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="8.5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            />
+            <path
+              d="M3.8 12h16.4M12 3.5c2.2 2.2 3.3 5 3.3 8.5S14.2 18.3 12 20.5M12 3.5C9.8 5.7 8.7 8.5 8.7 12s1.1 6.3 3.3 8.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
+        <div className="pointer-events-none absolute left-11 top-1/2 hidden -translate-y-1/2 whitespace-nowrap rounded-lg border border-black/[0.08] bg-white/[0.95] px-2.5 py-1.5 text-xs font-medium text-[#0f0f12] shadow-[0_8px_24px_rgba(15,15,18,0.10)] backdrop-blur-[18px] group-hover:block group-focus-within:block">
+          Back to world view
+        </div>
+      </div>
 
       {flagMarkers.length > 0 && (
         <svg
@@ -965,33 +1023,9 @@ export default function WorldMap({
         </span>
       ))}
 
-      {/* Cursor avatar — the traveler IS the pointer on the map. Feet land
-          at the cursor; pointer-events disabled so it never blocks clicks. */}
-      {cursorPos && (
-        <img
-          src="/avatar.svg"
-          alt=""
-          aria-hidden="true"
-          draggable={false}
-          style={{
-            position: "absolute",
-            left: cursorPos.x - CURSOR_AVATAR_WIDTH / 2,
-            top: cursorPos.y - CURSOR_AVATAR_HEIGHT,
-            width: CURSOR_AVATAR_WIDTH,
-            height: CURSOR_AVATAR_HEIGHT,
-            pointerEvents: "none",
-            userSelect: "none",
-            zIndex: 4,
-          }}
-        />
-      )}
-
       {/* Centroid avatar — "you were here" marker on the selected country
-          when the cursor isn't on the map. Rendered as an HTML img (not an
-          SVG element) so its CSS-pixel size matches the cursor avatar
-          exactly, regardless of zoom or viewport size. */}
-      {cursorPos === null &&
-        selectedCentroid &&
+          when a country is selected. */}
+      {selectedCentroid &&
         selectedSlug &&
         containerSize &&
         (() => {
@@ -1011,10 +1045,10 @@ export default function WorldMap({
               draggable={false}
               style={{
                 position: "absolute",
-                left: pt.x - CURSOR_AVATAR_WIDTH / 2,
-                top: pt.y - CURSOR_AVATAR_HEIGHT,
-                width: CURSOR_AVATAR_WIDTH,
-                height: CURSOR_AVATAR_HEIGHT,
+                left: pt.x - 12,
+                top: pt.y - 46,
+                width: 20,
+                height: 46,
                 pointerEvents: "none",
                 userSelect: "none",
                 zIndex: 4,

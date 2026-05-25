@@ -14,7 +14,7 @@ import Counter from "./Counter";
 
 describe("Counter", () => {
   it("renders em-dash placeholders when total is null (loading)", () => {
-    render(<Counter tried={0} total={null} />);
+    render(<Counter tried={0} total={null} onClick={() => {}} />);
 
     // The number slot and denominator both show em-dashes during loading
     // The em-dash appears at least twice (once for tried number, once after /)
@@ -23,17 +23,20 @@ describe("Counter", () => {
   });
 
   it("renders 0 / 20 on initial mount with tried=0, total=20", () => {
-    render(<Counter tried={0} total={20} />);
+    render(<Counter tried={0} total={20} onClick={() => {}} />);
 
     expect(screen.getByText("0")).toBeInTheDocument();
     expect(screen.getByText(/\/ 20/)).toBeInTheDocument();
+    expect(screen.getByText("cuisines tried")).toBeInTheDocument();
   });
 
   it("reflects an updated tried count when re-rendered", () => {
-    const { rerender } = render(<Counter tried={0} total={20} />);
+    const { rerender } = render(
+      <Counter tried={0} total={20} onClick={() => {}} />,
+    );
     expect(screen.getByText("0")).toBeInTheDocument();
 
-    rerender(<Counter tried={3} total={20} />);
+    rerender(<Counter tried={3} total={20} onClick={() => {}} />);
     expect(screen.getByText("3")).toBeInTheDocument();
   });
 });

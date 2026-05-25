@@ -1,7 +1,11 @@
 // Marks the app's home city on the map. Rendered inside react-simple-maps'
 // <Marker> so the parent supplies projected screen positioning.
 
-export default function SanFranciscoMarker() {
+interface Props {
+  onReset: () => void;
+}
+
+export default function SanFranciscoMarker({ onReset }: Props) {
   const labelStyle = {
     fontFamily: "'Inter', sans-serif",
     textShadow:
@@ -10,7 +14,22 @@ export default function SanFranciscoMarker() {
   };
 
   return (
-    <g style={{ pointerEvents: "none" }}>
+    <g
+      role="button"
+      tabIndex={0}
+      aria-label="Back to world view"
+      onClick={(event) => {
+        event.stopPropagation();
+        onReset();
+      }}
+      onKeyDown={(event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onReset();
+      }}
+      style={{ cursor: "pointer", outline: "none" }}
+    >
+      <title>Back to world view</title>
       <circle
         className="sf-pulse-ring"
         r={7}
