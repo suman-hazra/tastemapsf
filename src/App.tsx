@@ -80,6 +80,9 @@ export default function App() {
     readSharedScore(),
   );
   const [triedSet, setTriedSet] = useState<Set<string>>(() => new Set());
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    window.matchMedia("(max-width: 767px)").matches,
+  );
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   // Skip the welcome dialog when the user arrived via a shared score link —
   // the score dialog is the primary thing they came to see. In dev, ignore
@@ -90,6 +93,14 @@ export default function App() {
     if (import.meta.env.DEV) return true;
     return !readWelcomeSeen();
   });
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobileViewport(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   const dismissWelcome = () => {
     try {
@@ -132,7 +143,9 @@ export default function App() {
           ? mapData.allCountryBySlug.get(slug)
           : undefined;
       setTriedPromptSlug(
-        selectedCountry && selectedCountry.restaurants.length > 0
+        !isMobileViewport &&
+          selectedCountry &&
+          selectedCountry.restaurants.length > 0
           ? slug
           : null,
       );
@@ -428,9 +441,14 @@ export default function App() {
               z-10 map region — so their z-[60] overlays the z-20 top banner
               and slogan instead of being trapped beneath them. */}
           {mapData.status === "ready" && (
-            <CountryPanel country={panelCountry} onClose={closePanel} />
+            <CountryPanel
+              country={panelCountry}
+              onClose={closePanel}
+              triedSet={triedSet}
+              onSetTried={setCountryTried}
+            />
           )}
-          {mapData.status === "ready" && (
+          {mapData.status === "ready" && !isMobileViewport && (
             <TriedPromptDialog
               country={triedPromptCountry}
               onAnswer={answerTriedPrompt}

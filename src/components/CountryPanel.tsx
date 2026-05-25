@@ -15,6 +15,8 @@ interface SuggestionCountry {
 interface Props {
   country: Country | UnseededCountry | null;
   onClose: () => void;
+  triedSet?: ReadonlySet<string>;
+  onSetTried?: (countryId: string, tried: boolean) => void;
 }
 
 const TIP_EMAIL = "tastemapsf@gmail.com";
@@ -71,7 +73,12 @@ function twemojiFlagUrl(flag?: string) {
   return `https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${codepoints}.svg`;
 }
 
-export default function CountryPanel({ country, onClose }: Props) {
+export default function CountryPanel({
+  country,
+  onClose,
+  triedSet,
+  onSetTried,
+}: Props) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const [suggestionCountry, setSuggestionCountry] =
@@ -113,6 +120,11 @@ export default function CountryPanel({ country, onClose }: Props) {
   const displayName = isUnseeded ? country.displayName : country.name;
   const displayFlag = country.flag;
   const flagUrl = twemojiFlagUrl(displayFlag);
+  const showMobileTriedControl =
+    !isUnseeded &&
+    country.restaurants.length > 0 &&
+    onSetTried !== undefined;
+  const isTried = !isUnseeded && triedSet?.has(country.id) === true;
 
   return (
     <div className="absolute inset-0 z-30" onMouseDown={onClose}>
@@ -173,7 +185,9 @@ export default function CountryPanel({ country, onClose }: Props) {
         <div className="mx-6 h-px flex-shrink-0 bg-black/[0.08]" />
 
         <div
-          className="flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch]"
+          className={`flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch] ${
+            showMobileTriedControl ? "pb-28" : ""
+          }`}
           tabIndex={0}
         >
           {isUnseeded ? (
@@ -186,6 +200,16 @@ export default function CountryPanel({ country, onClose }: Props) {
           )}
         </div>
 
+        {showMobileTriedControl && (
+          <div className="flex-shrink-0 border-t border-black/[0.08] bg-white/90 px-5 pb-5 pt-3 shadow-[0_-10px_24px_rgba(15,15,18,0.05)] backdrop-blur-[18px] md:hidden">
+            <TriedBarControl
+              countryName={country.name}
+              isTried={isTried}
+              onSetTried={(tried) => onSetTried(country.id, tried)}
+            />
+          </div>
+        )}
+
         {suggestionCountry && (
           <SuggestionDialog
             country={suggestionCountry}
@@ -193,6 +217,45 @@ export default function CountryPanel({ country, onClose }: Props) {
           />
         )}
       </aside>
+    </div>
+  );
+}
+
+function TriedBarControl({
+  countryName,
+  isTried,
+  onSetTried,
+}: {
+  countryName: string;
+  isTried: boolean;
+  onSetTried: (tried: boolean) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-sm font-semibold text-[#0f0f12]">
+          Tried {countryName}?
+        </div>
+        <div className="text-xs text-[#6b6b76]">
+          {isTried ? "Marked as tasted" : "Mark this cuisine"}
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={() => onSetTried(false)}
+          className="h-11 w-16 rounded-xl border border-black/[0.08] bg-white text-sm font-semibold text-[#0f0f12] transition-all active:scale-[0.98]"
+        >
+          No
+        </button>
+        <button
+          type="button"
+          onClick={() => onSetTried(true)}
+          className="h-11 w-16 rounded-xl bg-[linear-gradient(135deg,#7c3aed_0%,#06b6d4_100%)] text-sm font-semibold text-white shadow-[0_8px_20px_rgba(124,58,237,0.24)] transition-all active:scale-[0.98]"
+        >
+          Yes
+        </button>
+      </div>
     </div>
   );
 }
