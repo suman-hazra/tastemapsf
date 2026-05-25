@@ -39,7 +39,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
   return (
     <div
       role="presentation"
-      className="fixed inset-0 z-50 grid place-items-center overflow-hidden px-4 py-6"
+      className="fixed inset-0 z-50 grid place-items-center overflow-hidden px-4 pb-6 pt-20 sm:pt-24"
       onMouseDown={onDismiss}
     >
       <div
@@ -59,7 +59,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
         aria-describedby="welcome-info"
         data-welcome-card
         onMouseDown={(event) => event.stopPropagation()}
-        className="relative w-full max-w-[560px] animate-[welcome-card-in_240ms_ease-out] overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/[0.85] px-6 py-7 text-center shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_30px_80px_rgba(124,58,237,0.22),0_8px_28px_rgba(6,182,212,0.10)] backdrop-blur-[28px] sm:px-10 sm:py-9"
+        className="relative w-full max-w-[calc(100vw-2rem)] animate-[welcome-card-in_240ms_ease-out] overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/[0.85] px-5 py-7 text-center shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_30px_80px_rgba(124,58,237,0.22),0_8px_28px_rgba(6,182,212,0.10)] backdrop-blur-[28px] sm:max-w-[560px] sm:px-10 sm:py-9"
       >
         <div
           aria-hidden="true"
@@ -75,7 +75,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
           </div>
           <blockquote
             id="welcome-title"
-            className="mx-auto max-w-md text-[17px] font-semibold leading-[1.4] tracking-normal text-[#0f0f12] sm:text-[19px]"
+            className="mx-auto max-w-full text-wrap font-display text-[20px] font-medium italic leading-[1.3] tracking-normal text-[#0f0f12] sm:max-w-md sm:text-[24px]"
           >
             Anyone who doesn&apos;t have a great time in San Francisco is
             pretty much dead to me.
@@ -114,7 +114,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
           >
             i
           </span>
-          <span>
+          <span className="min-w-0 text-wrap">
             Prefer a checklist instead? Open the menu and choose{" "}
             <span className="font-semibold text-[#0f0f12]">View list</span>.
           </span>

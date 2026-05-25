@@ -71,6 +71,7 @@ const MAX_ZOOM = 10;
 // on first load alongside the destinations.
 const HOME_CENTER: [number, number] = [0, 22];
 const HOME_ZOOM = 1.15;
+const MOBILE_HOME_ZOOM = 1.8;
 
 // Geographic bounds for the visible viewport. As the user pans, we clamp the
 // center so the viewport's edges never wander far past these limits — that's
@@ -171,6 +172,13 @@ function clamp(n: number, lo: number, hi: number) {
   return Math.max(lo, Math.min(hi, n));
 }
 
+function initialHomeZoom() {
+  if (typeof window === "undefined") return HOME_ZOOM;
+  return window.matchMedia("(max-width: 639px)").matches
+    ? MOBILE_HOME_ZOOM
+    : HOME_ZOOM;
+}
+
 // Mirrors react-simple-maps' projection setup (geoNaturalEarth1 at scale 170,
 // translated to MAP_WIDTH/2, MAP_HEIGHT/2). Used to position the HTML-img
 // centroid avatar in container CSS pixels.
@@ -185,6 +193,7 @@ function projectCentroidToContainer(
   center: [number, number],
   zoom: number,
   container: { width: number; height: number },
+  fit: "contain" | "containTop",
 ): { x: number; y: number } | null {
   const base = BASE_PROJECTION(centroid);
   const baseCenter = BASE_PROJECTION(center);
@@ -196,7 +205,8 @@ function projectCentroidToContainer(
     container.height / MAP_HEIGHT,
   );
   const offsetX = (container.width - MAP_WIDTH * scale) / 2;
-  const offsetY = (container.height - MAP_HEIGHT * scale) / 2;
+  const offsetY =
+    fit === "containTop" ? 0 : (container.height - MAP_HEIGHT * scale) / 2;
   return { x: offsetX + svgX * scale, y: offsetY + svgY * scale };
 }
 
@@ -317,7 +327,12 @@ export default function WorldMap({
   const [position, setPosition] = useState<{
     coordinates: [number, number];
     zoom: number;
-  }>({ coordinates: HOME_CENTER, zoom: HOME_ZOOM });
+  }>(() => ({ coordinates: HOME_CENTER, zoom: initialHomeZoom() }));
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(max-width: 639px)").matches,
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState<{
     width: number;
@@ -338,6 +353,14 @@ export default function WorldMap({
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobileViewport(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
   }, []);
 
   useEffect(() => {
@@ -401,6 +424,7 @@ export default function WorldMap({
         position.coordinates,
         position.zoom,
         containerSize,
+        isMobileViewport ? "containTop" : "contain",
       );
       if (!anchor) return [];
       return [{ slug, flag, anchor }];
@@ -410,6 +434,7 @@ export default function WorldMap({
   }, [
     centroidForSlug,
     containerSize,
+    isMobileViewport,
     flagForSlug,
     position.coordinates,
     position.zoom,
@@ -801,6 +826,9 @@ export default function WorldMap({
       <ComposableMap
         projection="geoNaturalEarth1"
         projectionConfig={{ scale: 170 }}
+        preserveAspectRatio={
+          isMobileViewport ? "xMidYMin meet" : "xMidYMid meet"
+        }
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
         onMouseMove={handleMouseMove}
@@ -972,6 +1000,7 @@ export default function WorldMap({
             position.coordinates,
             position.zoom,
             containerSize,
+            isMobileViewport ? "containTop" : "contain",
           );
           if (!pt) return null;
           return (
