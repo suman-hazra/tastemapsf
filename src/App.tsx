@@ -9,6 +9,7 @@
 //   state.triedSet       — slugs the user has marked "tried"
 
 import { useEffect, useRef, useState } from "react";
+import AboutDialog from "./components/AboutDialog";
 import Counter from "./components/Counter";
 import CountryListMenu from "./components/CountryListMenu";
 import CountryPanel from "./components/CountryPanel";
@@ -80,6 +81,7 @@ export default function App() {
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
   const [showLegalDialog, setShowLegalDialog] = useState(false);
+  const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [sharedScore, setSharedScore] = useState<SharedScore | null>(() =>
     readSharedScore(),
   );
@@ -115,14 +117,18 @@ export default function App() {
     setShowWelcome(false);
   };
 
-  const openWelcomeDialog = () => {
+  const openAboutDialog = () => {
     setShowMenu(false);
     setShowCountryList(false);
     setShowLegalDialog(false);
     setShowScoreDialog(false);
+    setShowWelcome(false);
     setSharedScore(null);
+    setSelectedSlug(null);
+    setUnseededName(null);
+    setUnseededFlag(null);
     setTriedPromptSlug(null);
-    setShowWelcome(true);
+    setShowAboutDialog(true);
   };
 
   // Click handler from WorldMap. Toggle semantic: re-clicking the currently
@@ -181,6 +187,7 @@ export default function App() {
     setShowMenu(false);
     setShowCountryList(false);
     setShowLegalDialog(false);
+    setShowAboutDialog(false);
     setShowScoreDialog(true);
   };
 
@@ -225,6 +232,7 @@ export default function App() {
   const openLegalDialog = () => {
     setShowMenu(false);
     setShowCountryList(false);
+    setShowAboutDialog(false);
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
@@ -352,7 +360,7 @@ export default function App() {
                       setUnseededFlag(null);
                       setTriedPromptSlug(null);
                     }}
-                    onAbout={openWelcomeDialog}
+                    onAbout={openAboutDialog}
                     onLegal={openLegalDialog}
                   />
                 )}
@@ -491,6 +499,9 @@ export default function App() {
           )}
           {showLegalDialog && (
             <LegalDialog onClose={() => setShowLegalDialog(false)} />
+          )}
+          {showAboutDialog && (
+            <AboutDialog onClose={() => setShowAboutDialog(false)} />
           )}
         </main>
       </div>
