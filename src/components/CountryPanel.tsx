@@ -184,15 +184,6 @@ export default function CountryPanel({ country, onClose }: Props) {
           ) : (
             <SeededBody country={country} onSuggest={setSuggestionCountry} />
           )}
-          <div className="sticky bottom-0 -mx-6 -mb-5 bg-white/85 px-6 pb-5 pt-3 backdrop-blur-[18px] md:hidden">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex h-12 w-full items-center justify-center rounded-xl border border-black/[0.08] bg-white text-sm font-semibold text-[#0f0f12] shadow-[0_6px_18px_rgba(15,15,18,0.08)]"
-            >
-              Back to map
-            </button>
-          </div>
         </div>
 
         {suggestionCountry && (
