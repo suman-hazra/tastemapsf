@@ -425,18 +425,6 @@ export default function App() {
                     onAnswer={answerTriedPrompt}
                     onClose={closeTriedPrompt}
                   />
-                  {showCountryList && (
-                    <CountryListMenu
-                      countries={mapData.countries}
-                      triedSet={triedSet}
-                      onSetTried={setCountryTried}
-                      onFinish={openScoreDialog}
-                      onClose={() => setShowCountryList(false)}
-                    />
-                  )}
-                  {showLegalDialog && (
-                    <LegalDialog onClose={() => setShowLegalDialog(false)} />
-                  )}
                   {(showScoreDialog || sharedScore) && (
                     <ScoreDialog
                       tried={sharedScore?.tried ?? triedCount}
@@ -454,6 +442,22 @@ export default function App() {
               )}
             </div>
           </div>
+
+          {/* Full-screen modals live at the <main> level — not inside the
+              z-10 map region — so their z-[60] overlays the z-20 top banner
+              and slogan instead of being trapped beneath them. */}
+          {mapData.status === "ready" && showCountryList && (
+            <CountryListMenu
+              countries={mapData.countries}
+              triedSet={triedSet}
+              onSetTried={setCountryTried}
+              onFinish={openScoreDialog}
+              onClose={() => setShowCountryList(false)}
+            />
+          )}
+          {showLegalDialog && (
+            <LegalDialog onClose={() => setShowLegalDialog(false)} />
+          )}
         </main>
       </div>
     </ErrorBoundary>

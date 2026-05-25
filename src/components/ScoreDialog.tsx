@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { Country } from "../data/types";
 
@@ -63,12 +63,7 @@ export default function ScoreDialog({
   const exploreButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLElement>(null);
-  const shareUrl = useMemo(() => {
-    const url = new URL(SHARE_URL_BASE);
-    url.searchParams.set("score", String(tried));
-    url.searchParams.set("total", String(total));
-    return url.toString();
-  }, [tried, total]);
+  const shareUrl = SHARE_URL_BASE;
   const shareText = `I scored ${tried} out of ${total} on TastemapSF!!!\n\nWhat is your score? Try it yourself here:`;
   const canNativeShare =
     typeof (navigator as Navigator & { share?: unknown }).share === "function";
@@ -190,7 +185,7 @@ export default function ScoreDialog({
 
     revealTimerRef.current = window.setTimeout(() => {
       setBiteState("revealed");
-    }, 3000);
+    }, 1500);
   };
 
   const exploreNextBite = () => {
@@ -200,7 +195,7 @@ export default function ScoreDialog({
 
   return (
     <div
-      className="absolute inset-0 z-40 grid place-items-center overflow-hidden px-4 py-6"
+      className="absolute inset-0 z-40 overflow-hidden"
       onMouseDown={closeOrBack}
     >
       <div
@@ -212,6 +207,8 @@ export default function ScoreDialog({
         <div className="absolute bottom-0 left-1/3 h-[400px] w-[500px] rounded-full bg-[#bef264] opacity-25 blur-[64px]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.55)_0%,rgba(255,255,255,0.25)_60%,transparent_100%)]" />
       </div>
+      <div className="absolute inset-0 overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center px-4 py-6">
       <section
         ref={cardRef}
         role="dialog"
@@ -374,6 +371,8 @@ export default function ScoreDialog({
           </div>
         </div>
       </section>
+      </div>
+      </div>
     </div>
   );
 }

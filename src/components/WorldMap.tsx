@@ -88,8 +88,6 @@ const SELECTED_ZOOM = 3.2;
 const FLAG_MARKER_MIN_ZOOM = 2.4;
 const FLAG_MARKER_SIZE = 24;
 const FLAG_MARKER_GAP = 4;
-const NEARBY_COUNTRY_RADIUS = 34;
-const NEARBY_PICKER_MIN_ZOOM = 2.2;
 
 // Cursor avatar size. Aspect comes from /public/avatar.svg viewBox (88.5 × 209.45).
 const CURSOR_AVATAR_HEIGHT = 56;
@@ -313,11 +311,6 @@ export default function WorldMap({
     width: number;
     height: number;
   } | null>(null);
-  const [nearbyPicker, setNearbyPicker] = useState<{
-    x: number;
-    y: number;
-    countries: Array<{ slug: string; name: string; flag?: string }>;
-  } | null>(null);
   const seededSlugSet = useMemo(() => new Set(seededSlugs), [seededSlugs]);
   const knownSlugSet = useMemo(() => new Set(knownSlugs), [knownSlugs]);
 
@@ -360,7 +353,6 @@ export default function WorldMap({
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      setNearbyPicker(null);
       const factor = Math.exp(-e.deltaY * 0.005);
       setPosition((p) => {
         const zoom = clamp(p.zoom * factor, MIN_ZOOM, MAX_ZOOM);
@@ -379,45 +371,6 @@ export default function WorldMap({
     setCursorPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
   const handleMouseLeave = () => setCursorPos(null);
-
-  const nearbyCountriesForSlug = (slug: string) => {
-    if (!containerSize) return [];
-    const coord = centroidForSlug(slug);
-    if (!coord) return [];
-    const anchor = projectCentroidToContainer(
-      coord,
-      position.coordinates,
-      position.zoom,
-      containerSize,
-    );
-    if (!anchor) return [];
-
-    return knownSlugs
-      .flatMap((candidateSlug) => {
-        const candidateCoord = centroidForSlug(candidateSlug);
-        const name = nameForSlug(candidateSlug);
-        if (!candidateCoord || !name) return [];
-        const pt = projectCentroidToContainer(
-          candidateCoord,
-          position.coordinates,
-          position.zoom,
-          containerSize,
-        );
-        if (!pt) return [];
-        const distance = Math.hypot(pt.x - anchor.x, pt.y - anchor.y);
-        if (distance > NEARBY_COUNTRY_RADIUS) return [];
-        return [
-          {
-            slug: candidateSlug,
-            name,
-            flag: flagForSlug(candidateSlug),
-            distance,
-          },
-        ];
-      })
-      .sort((a, b) => a.distance - b.distance || a.name.localeCompare(b.name))
-      .map(({ slug, name, flag }) => ({ slug, name, flag }));
-  };
 
   const flagMarkers = useMemo(() => {
     if (!containerSize || position.zoom < FLAG_MARKER_MIN_ZOOM) return [];
@@ -487,22 +440,8 @@ export default function WorldMap({
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
-                  onClick={(event) => {
+                  onClick={() => {
                     const geoId = geo.id ?? "";
-                    if (isKnown && position.zoom >= NEARBY_PICKER_MIN_ZOOM) {
-                      const nearby = nearbyCountriesForSlug(slug);
-                      if (nearby.length > 1 && containerRef.current) {
-                        const rect =
-                          containerRef.current.getBoundingClientRect();
-                        setNearbyPicker({
-                          x: event.clientX - rect.left,
-                          y: event.clientY - rect.top,
-                          countries: nearby,
-                        });
-                        return;
-                      }
-                    }
-                    setNearbyPicker(null);
                     onSelect(
                       isKnown ? slug : null,
                       isKnown ? null : geo.properties.name,
@@ -818,17 +757,14 @@ export default function WorldMap({
             [MAP_WIDTH, MAP_HEIGHT],
           ]}
           onMoveEnd={(pos) =>
-            {
-              setNearbyPicker(null);
-              setPosition({
-                coordinates: clampCenter(
-                  pos.coordinates[0],
-                  pos.coordinates[1],
-                  pos.zoom,
-                ),
-                zoom: pos.zoom,
-              });
-            }
+            setPosition({
+              coordinates: clampCenter(
+                pos.coordinates[0],
+                pos.coordinates[1],
+                pos.zoom,
+              ),
+              zoom: pos.zoom,
+            })
           }
         >
           {renderWorldContent()}
@@ -889,32 +825,6 @@ export default function WorldMap({
           {marker.flag}
         </span>
       ))}
-
-      {nearbyPicker && (
-        <div
-          className="absolute min-w-40 overflow-hidden border border-black/10 bg-panel shadow-lg"
-          style={{
-            left: Math.min(nearbyPicker.x + 10, (containerSize?.width ?? 0) - 180),
-            top: Math.min(nearbyPicker.y + 10, (containerSize?.height ?? 0) - 56),
-            zIndex: 5,
-          }}
-        >
-          {nearbyPicker.countries.map((country) => (
-            <button
-              key={country.slug}
-              type="button"
-              onClick={() => {
-                setNearbyPicker(null);
-                onSelect(country.slug, null, null);
-              }}
-              className="flex h-11 w-full items-center gap-2 px-3 text-left text-sm font-semibold text-ink hover:bg-canvas"
-            >
-              <span aria-hidden="true">{country.flag}</span>
-              <span>{country.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* Cursor avatar — the traveler IS the pointer on the map. Feet land
           at the cursor; pointer-events disabled so it never blocks clicks. */}

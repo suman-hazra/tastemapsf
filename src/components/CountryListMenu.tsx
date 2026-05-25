@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
-import type { Country } from "../data/types";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import type { Country, Dish, Restaurant } from "../data/types";
 
 interface Props {
   countries: Country[];
@@ -33,6 +33,11 @@ function flagUrl(flag: string) {
   return `https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${codepoints}.svg`;
 }
 
+function googleMapsUrl(restaurant: Restaurant): string {
+  const query = `${restaurant.name} ${restaurant.neighborhood} San Francisco`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 function getFocusableElements(container: HTMLElement) {
   return Array.from(
     container.querySelectorAll<HTMLElement>(
@@ -54,6 +59,7 @@ export default function CountryListMenu({
 }: Props) {
   const panelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const continentGroups = useMemo(
     () => groupCountriesByContinent(countries),
     [countries],
@@ -148,74 +154,95 @@ export default function CountryListMenu({
               <ul>
                 {group.countries.map((country, rowIndex) => {
                   const hasTried = triedSet.has(country.id);
+                  const isExpanded = expandedId === country.id;
                   return (
-                    <li
-                      key={country.id}
-                      className="view-list-row mx-2 flex items-center gap-3 rounded-xl px-4 py-2.5 transition-colors hover:bg-[rgba(124,58,237,0.04)]"
-                      style={{
-                        animationDelay: `${Math.min(
-                          (groupIndex * 8 + rowIndex) * 20,
-                          300,
-                        )}ms`,
-                      }}
-                    >
-                      <img
-                        src={flagUrl(country.flag)}
-                        alt=""
-                        aria-hidden="true"
-                        className="h-5 w-5 flex-shrink-0 rounded object-cover"
-                        loading="lazy"
-                      />
-                      <span className="min-w-0 flex-1 text-sm font-medium leading-tight text-[#0f0f12]">
-                        {country.name}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => onSetTried(country.id, !hasTried)}
-                        aria-pressed={hasTried}
-                        className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-all ${
-                          hasTried
-                            ? "bg-[linear-gradient(135deg,#84CC16_0%,#22D3EE_100%)] text-white shadow-[0_2px_8px_rgba(132,204,22,0.30)]"
-                            : "bg-black/[0.05] text-[#6b6b76] hover:bg-black/[0.08]"
-                        }`}
+                    <Fragment key={country.id}>
+                      <li
+                        className="view-list-row mx-2 flex items-center gap-3 rounded-xl px-4 py-2.5 transition-colors hover:bg-[rgba(124,58,237,0.04)]"
+                        style={{
+                          animationDelay: `${Math.min(
+                            (groupIndex * 8 + rowIndex) * 20,
+                            300,
+                          )}ms`,
+                        }}
                       >
-                        {hasTried && (
+                        <img
+                          src={flagUrl(country.flag)}
+                          alt=""
+                          aria-hidden="true"
+                          className="h-5 w-5 flex-shrink-0 rounded object-cover"
+                          loading="lazy"
+                        />
+                        <span className="min-w-0 flex-1 text-sm font-medium leading-tight text-[#0f0f12]">
+                          {country.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => onSetTried(country.id, !hasTried)}
+                          aria-pressed={hasTried}
+                          className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-all ${
+                            hasTried
+                              ? "bg-[linear-gradient(135deg,#84CC16_0%,#22D3EE_100%)] text-white shadow-[0_2px_8px_rgba(132,204,22,0.30)]"
+                              : "bg-black/[0.05] text-[#6b6b76] hover:bg-black/[0.08]"
+                          }`}
+                        >
+                          {hasTried && (
+                            <svg
+                              aria-hidden="true"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                            >
+                              <path
+                                d="M2.4 6.1L4.8 8.3L9.6 3.7"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="1.7"
+                              />
+                            </svg>
+                          )}
+                          {hasTried ? "Tried" : "Mark as tried"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedId(isExpanded ? null : country.id)
+                          }
+                          aria-expanded={isExpanded}
+                          aria-label={
+                            isExpanded
+                              ? `Hide details for ${country.name}`
+                              : `Show details for ${country.name}`
+                          }
+                          className="grid h-7 w-7 flex-shrink-0 place-items-center text-[#6b6b76] transition-colors hover:text-[#7c3aed]"
+                        >
                           <svg
                             aria-hidden="true"
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            className={`transition-transform duration-200 ${
+                              isExpanded ? "rotate-45" : ""
+                            }`}
                           >
                             <path
-                              d="M2.4 6.1L4.8 8.3L9.6 3.7"
+                              d="M8 3.5V12.5M3.5 8H12.5"
                               fill="none"
                               stroke="currentColor"
                               strokeLinecap="round"
-                              strokeLinejoin="round"
                               strokeWidth="1.7"
                             />
                           </svg>
-                        )}
-                        {hasTried ? "Tried" : "Not yet"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onSetTried(country.id, true)}
-                        disabled={hasTried}
-                        aria-label={`Add ${country.name}`}
-                        className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-lg bg-black/[0.04] text-[#6b6b76] transition-colors hover:bg-[rgba(124,58,237,0.08)] hover:text-[#7c3aed] disabled:cursor-default disabled:opacity-45 disabled:hover:bg-black/[0.04] disabled:hover:text-[#6b6b76]"
-                      >
-                        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16">
-                          <path
-                            d="M8 3.5V12.5M3.5 8H12.5"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeWidth="1.7"
-                          />
-                        </svg>
-                      </button>
-                    </li>
+                        </button>
+                      </li>
+                      {isExpanded && (
+                        <li className="mx-2 mb-1 list-none">
+                          <CountryDetails country={country} />
+                        </li>
+                      )}
+                    </Fragment>
                   );
                 })}
               </ul>
@@ -244,5 +271,80 @@ export default function CountryListMenu({
         </footer>
       </aside>
     </div>
+  );
+}
+
+function CountryDetails({ country }: { country: Country }) {
+  const hasRestaurants = country.restaurants.length > 0;
+  return (
+    <div className="animate-[list-detail-in_220ms_cubic-bezier(0.22,1,0.36,1)] space-y-5 rounded-xl border border-black/[0.06] bg-[rgba(124,58,237,0.03)] px-4 py-4">
+      <p className="text-[13px] leading-[1.55] text-[#6b6b76]">
+        {country.cuisine_summary}
+      </p>
+
+      <section>
+        <DetailLabel>Order these first</DetailLabel>
+        <ul className="space-y-3">
+          {country.signature_dishes.map((dish) => (
+            <DishEntry key={dish.name} dish={dish} />
+          ))}
+        </ul>
+      </section>
+
+      {hasRestaurants && (
+        <section>
+          <DetailLabel>Where to eat in SF</DetailLabel>
+          <ul className="space-y-2">
+            {country.restaurants.map((restaurant) => (
+              <RestaurantEntry key={restaurant.id} restaurant={restaurant} />
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function DetailLabel({ children }: { children: string }) {
+  return (
+    <h4 className="mb-2.5 text-[10.5px] font-bold uppercase tracking-[0.16em] text-[#6b6b76]">
+      {children}
+    </h4>
+  );
+}
+
+function DishEntry({ dish }: { dish: Dish }) {
+  return (
+    <li>
+      <span className="inline-block rounded-md border border-[#7c3aed]/[0.12] bg-[#7c3aed]/[0.07] px-2.5 py-1 text-[12.5px] font-semibold leading-tight text-[#7c3aed]">
+        {dish.name}
+      </span>
+      <p className="mt-1.5 text-[13px] leading-[1.55] text-[#6b6b76]">
+        {dish.description}
+      </p>
+    </li>
+  );
+}
+
+function RestaurantEntry({ restaurant }: { restaurant: Restaurant }) {
+  return (
+    <li>
+      <a
+        href={googleMapsUrl(restaurant)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block rounded-xl border border-black/[0.08] bg-white/60 px-4 py-3 transition-all hover:bg-white hover:shadow-[0_4px_14px_rgba(15,15,18,0.04)]"
+      >
+        <div className="text-[13.5px] font-semibold leading-tight text-[#0f0f12]">
+          {restaurant.name}
+        </div>
+        <div className="mt-0.5 text-xs text-[#6b6b76]">
+          {restaurant.neighborhood}
+        </div>
+        <div className="mt-1.5 inline-flex text-[11.5px] font-medium text-[#7c3aed] hover:opacity-80">
+          Open in Google Maps →
+        </div>
+      </a>
+    </li>
   );
 }

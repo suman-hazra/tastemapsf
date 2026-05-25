@@ -12,9 +12,9 @@ Tastemap SF is a static React app that turns SF's restaurant diversity into a wo
 - **Country side panel**: each seeded country shows cuisine context, signature dishes, and restaurant cards.
 - **Tried prompt**: clicking a seeded country opens a Yes/No dialog. Answering or closing the dialog also clears the side panel.
 - **Visual progress**: tried countries turn green, receive a consistent green outline, and show the country flag on the map.
-- **Checklist mode**: the hamburger menu includes `View list`, grouped by continent, so users can mark countries without browsing the map.
-- **Finish flow**: the bottom-center `Finish` CTA opens the score dialog.
-- **Share flow**: users can share via native share, X, Facebook, or copy. X/copy text includes the score and a score-encoded URL.
+- **Checklist mode**: the hamburger menu includes `View list`, grouped by continent, so users can mark countries without browsing the map. Each row expands inline to reveal that country's cuisine summary, signature dishes, and restaurants.
+- **Finish flow**: the bottom-center `Finish` CTA opens the score dialog. The score dialog scrolls on short viewports so the share row is always reachable.
+- **Share flow**: users can share via native share, X, Facebook, or copy. The share message includes the score; the shared link is the plain `tastemapsf.com` URL.
 - **Pick My Next Bite**: a lottery-style wheel picks an untried country, reveals it with a larger flag animation, then opens that country's details.
 - **Restaurant suggestions**: countries without restaurants include `Send me one`, which opens a prefilled Gmail draft or `mailto:` fallback to `tastemapsf@gmail.com`.
 - **Legal & credits**: disclaimer, privacy, and attribution content lives in one hamburger-menu dialog and in `LEGAL.md`.
@@ -84,7 +84,7 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 ## Current UX
 
 1. Open the map.
-2. Use the welcome dialog to start, or open the hamburger menu and choose `View list` for checklist mode.
+2. Use the welcome dialog to start, or open the hamburger menu and choose `View list` for checklist mode, where each row expands inline to show that cuisine's details.
 3. Click a highlighted country to open its side panel with cuisine summary, dishes, and restaurants.
 4. A centered prompt asks whether you have tried that cuisine.
 5. Answering `Yes` turns the country green, adds its flag marker, increments the score, and closes the prompt/panel.
@@ -96,7 +96,7 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 ## Project Notes
 
 - Progress is intentionally not persisted yet. It resets on refresh or tab close.
-- Score links use `?score=` and `?total=` query parameters so shared URLs can display the score context.
+- Shared links use the plain `tastemapsf.com` URL; the score lives in the share message text, not the URL. The app still reads `?score=` / `?total=` query parameters if present, but no longer generates them.
 - Legal, privacy, and attribution content is available in the hamburger menu under `Legal & credits` and mirrored in `LEGAL.md`.
 - The public contact email for restaurant suggestions and privacy requests is `tastemapsf@gmail.com`.
 - Some marker positions use visual overrides where raw geometry centroids look wrong at this scale.
