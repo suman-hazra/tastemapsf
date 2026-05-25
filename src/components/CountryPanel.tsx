@@ -129,7 +129,7 @@ export default function CountryPanel({ country, onClose }: Props) {
           className="mx-auto mt-2 h-1 w-9 rounded-full bg-[#0f0f12]/15 md:hidden"
         />
 
-        <header className="flex items-start gap-4 px-6 pb-4 pt-6">
+        <header className="hidden items-start gap-4 px-6 pb-4 pt-6 md:flex">
           {flagUrl ? (
             <img
               src={flagUrl}
@@ -170,12 +170,49 @@ export default function CountryPanel({ country, onClose }: Props) {
           </button>
         </header>
 
-        <div className="mx-6 h-px bg-black/[0.08]" />
+        <div className="mx-6 hidden h-px bg-black/[0.08] md:block" />
 
         <div
           className="flex-1 space-y-7 overflow-y-auto px-6 py-5 [-webkit-overflow-scrolling:touch]"
           tabIndex={0}
         >
+          <div className="sticky top-0 z-10 -mx-6 -mt-5 flex items-start gap-4 border-b border-black/[0.08] bg-white/90 px-6 pb-4 pt-5 backdrop-blur-[18px] md:hidden">
+            {flagUrl ? (
+              <img
+                src={flagUrl}
+                alt=""
+                aria-hidden="true"
+                className="block h-12 w-12 flex-shrink-0 rounded-xl shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
+              />
+            ) : displayFlag ? (
+              <div
+                aria-hidden="true"
+                className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-xl bg-white text-4xl shadow-[0_4px_14px_rgba(0,0,0,0.08)]"
+              >
+                {displayFlag}
+              </div>
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#6b6b76]">
+                {isUnseeded ? "Cuisine" : country.continent}
+              </div>
+              <div className="mt-1 text-[22px] font-bold leading-[1.05] tracking-normal text-[#0f0f12]">
+                {displayName}
+              </div>
+              <div className="mt-2 h-0.5 w-12 rounded-full bg-[linear-gradient(90deg,#7c3aed,#06b6d4)]" />
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-lg bg-black/[0.04] text-[#6b6b76]"
+            >
+              <span aria-hidden="true" className="text-[15px] leading-none">
+                x
+              </span>
+            </button>
+          </div>
+
           {isUnseeded ? (
             <UnseededBody
               country={{ name: country.displayName, flag: country.flag }}
