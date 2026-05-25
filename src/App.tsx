@@ -382,8 +382,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="relative z-10 min-h-0 flex-1 px-3 pb-3 sm:px-6 sm:pb-6">
-            <div className="relative h-full overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/70 shadow-[0_1px_0_rgba(255,255,255,0.55)_inset,0_20px_60px_rgba(124,58,237,0.10)]">
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-3 pb-3 sm:px-6 sm:pb-6 md:block md:gap-0">
+            <div className="relative aspect-[93/50] max-h-full w-full shrink-0 overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/70 shadow-[0_1px_0_rgba(255,255,255,0.55)_inset,0_20px_60px_rgba(124,58,237,0.10)] md:aspect-auto md:h-full">
               {mapData.status === "loading" && <LoadingState />}
 
               {mapData.status === "error" && (
@@ -438,10 +438,12 @@ export default function App() {
                       }
                     />
                   </div>
-                  <FinishButton onClick={openScoreDialog} />
                 </>
               )}
             </div>
+            {mapData.status === "ready" && (
+              <FinishButton onClick={openScoreDialog} />
+            )}
           </div>
 
           {/* Full-screen modals live at the <main> level — not inside the
