@@ -17,6 +17,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import FinishButton from "./components/FinishButton";
 import LegalDialog from "./components/LegalDialog";
 import LoadingState from "./components/LoadingState";
+import ProgressDialog from "./components/ProgressDialog";
 import ScoreDialog from "./components/ScoreDialog";
 import WelcomeDialog from "./components/WelcomeDialog";
 import WorldMap from "./components/WorldMap";
@@ -99,6 +100,7 @@ export default function App() {
   // tried hint does not point at a cuisine the user likely has not tried yet.
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
+  const [showProgressDialog, setShowProgressDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
   const [showLegalDialog, setShowLegalDialog] = useState(false);
@@ -197,12 +199,31 @@ export default function App() {
     setShowCountryList(false);
     setShowLegalDialog(false);
     setShowAboutDialog(false);
+    setShowProgressDialog(false);
     setShowScoreDialog(true);
   };
 
   const closeScoreDialog = () => {
     setShowScoreDialog(false);
     setSharedScore(null);
+  };
+
+  const openProgressDialog = () => {
+    setShowMenu(false);
+    setShowCountryList(false);
+    setShowLegalDialog(false);
+    setShowAboutDialog(false);
+    setShowScoreDialog(false);
+    setSharedScore(null);
+    setShowProgressDialog(true);
+  };
+
+  const closeProgressDialog = () => setShowProgressDialog(false);
+
+  // From a progress view: close the dialog and open that country on the map.
+  const pickCountryFromProgress = (slug: string) => {
+    setShowProgressDialog(false);
+    handleSelect(slug, null, null);
   };
 
   const closePanel = () => {
@@ -327,7 +348,7 @@ export default function App() {
                 <Counter
                   tried={triedCount}
                   total={total}
-                  onClick={openScoreDialog}
+                  onClick={openProgressDialog}
                 />
                 {!showMenu && (
                   <button
@@ -498,6 +519,16 @@ export default function App() {
                 selectedSlug !== suggestedSlug
               }
               onDismissTriedHint={dismissTriedHint}
+            />
+          )}
+          {mapData.status === "ready" && showProgressDialog && (
+            <ProgressDialog
+              tried={triedCount}
+              total={mapData.total}
+              countries={mapData.countries}
+              triedSet={triedSet}
+              onClose={closeProgressDialog}
+              onPickCountry={pickCountryFromProgress}
             />
           )}
           {mapData.status === "ready" && (showScoreDialog || sharedScore) && (
