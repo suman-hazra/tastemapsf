@@ -101,6 +101,14 @@ const COUNTRY_LABEL_COORDINATE_OVERRIDES: Record<string, [number, number]> = {
   usa: [-97, 39],
 };
 
+const UNMAPPED_PIN_OFFSETS: Record<string, [number, number]> = {
+  antigua_and_barbuda: [-18, -10],
+  barbados: [25, 8],
+  dominica: [28, -18],
+  grenada: [40, -28],
+  saint_lucia: [8, -6],
+};
+
 const OCEAN_LABELS: Array<{
   name: string;
   coordinates: [number, number];
@@ -698,6 +706,8 @@ export default function WorldMap({
         const isSelected = slug === selectedSlug;
         const isHovered = slug === hovered;
         const emphasized = isSelected || isHovered;
+        const [offsetX, offsetY] = UNMAPPED_PIN_OFFSETS[slug] ?? [0, 0];
+        const hasOffset = offsetX !== 0 || offsetY !== 0;
         const fill = isTried
           ? "url(#visitedCountryGrad)"
           : hasRestaurants
@@ -718,26 +728,45 @@ export default function WorldMap({
               pressed: { cursor: "pointer" },
             }}
           >
-            {/* Enlarged transparent hit target so the tiny pin stays easy
-                to click. */}
-            <circle cx={0} cy={-6} r={9} fill="transparent" />
-            <g
-              transform={emphasized ? "scale(0.57)" : "scale(0.5)"}
-              style={{ transition: "transform 140ms cubic-bezier(.2,.7,.3,1)" }}
-            >
-              <path
-                d="M 0 0 C -4 -7 -7.5 -10 -7.5 -15 A 7.5 7.5 0 1 1 7.5 -15 C 7.5 -10 4 -7 0 0 Z"
-                fill={fill}
-                stroke="#ffffff"
-                strokeWidth={emphasized ? 2 : 1.5}
-                filter="url(#pinShadow)"
+            {hasOffset && (
+              <line
+                x1={0}
+                y1={0}
+                x2={offsetX}
+                y2={offsetY}
+                stroke={c.oceanMajor}
+                strokeOpacity={1}
+                strokeWidth={1.3}
+                strokeDasharray="0.1 3.2"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                style={{ pointerEvents: "none" }}
               />
-              <circle cx={0} cy={-15} r={3} fill="#ffffff" opacity={0.95} />
+            )}
+            <g transform={`translate(${offsetX} ${offsetY})`}>
+              {/* Enlarged transparent hit target so the tiny pin stays easy
+                  to click. */}
+              <circle cx={0} cy={-6} r={11} fill="transparent" />
+              <g
+                transform={emphasized ? "scale(0.57)" : "scale(0.5)"}
+                style={{
+                  transition: "transform 140ms cubic-bezier(.2,.7,.3,1)",
+                }}
+              >
+                <path
+                  d="M 0 0 C -4 -7 -7.5 -10 -7.5 -15 A 7.5 7.5 0 1 1 7.5 -15 C 7.5 -10 4 -7 0 0 Z"
+                  fill={fill}
+                  stroke="#ffffff"
+                  strokeWidth={emphasized ? 2 : 1.5}
+                  filter="url(#pinShadow)"
+                />
+                <circle cx={0} cy={-15} r={3} fill="#ffffff" opacity={0.95} />
+              </g>
             </g>
             {(isHovered || isSelected) && name && (
               <text
-                x={0}
-                y={-15}
+                x={offsetX}
+                y={offsetY - 15}
                 textAnchor="middle"
                 fontFamily="var(--font-map-sans)"
                 fontSize={12}
