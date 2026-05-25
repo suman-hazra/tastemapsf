@@ -15,6 +15,11 @@ interface SuggestionCountry {
 interface Props {
   country: Country | UnseededCountry | null;
   onClose: () => void;
+  /**
+   * Header chrome height in px. On desktop the panel docks below it so it
+   * doesn't cover the counter and legend. Ignored on mobile (bottom sheet).
+   */
+  desktopTopOffset?: number;
   triedSet?: ReadonlySet<string>;
   onSetTried?: (countryId: string, tried: boolean) => void;
   showTriedHint?: boolean;
@@ -78,6 +83,7 @@ function twemojiFlagUrl(flag?: string) {
 export default function CountryPanel({
   country,
   onClose,
+  desktopTopOffset = 0,
   triedSet,
   onSetTried,
   showTriedHint = false,
@@ -129,14 +135,19 @@ export default function CountryPanel({
   const isTried = !isUnseeded && triedSet?.has(country.id) === true;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-30">
+    <div
+      className="pointer-events-none absolute inset-0 z-30"
+      style={
+        { "--panel-top": `${desktopTopOffset + 8}px` } as React.CSSProperties
+      }
+    >
       <aside
         ref={drawerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="panel-title"
         onMouseDown={(event) => event.stopPropagation()}
-        className="pointer-events-auto absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col overflow-hidden rounded-t-[20px] border border-black/[0.08] bg-white/[0.88] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_20px_60px_rgba(124,58,237,0.15)] backdrop-blur-[28px] animate-[drawer-enter_280ms_cubic-bezier(0.22,1,0.36,1)_forwards] md:bottom-4 md:left-auto md:right-4 md:top-4 md:w-[420px] md:max-h-none md:rounded-2xl"
+        className="pointer-events-auto absolute inset-x-0 bottom-0 flex max-h-[82dvh] flex-col overflow-hidden rounded-t-[20px] border border-black/[0.08] bg-white/[0.88] shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_20px_60px_rgba(124,58,237,0.15)] backdrop-blur-[28px] animate-[drawer-enter_280ms_cubic-bezier(0.22,1,0.36,1)_forwards] md:bottom-6 md:left-auto md:right-6 md:top-[var(--panel-top)] md:w-[420px] md:max-h-none md:rounded-2xl"
       >
         <div
           aria-hidden="true"

@@ -116,6 +116,23 @@ export default function App() {
     () => !readTriedHintSeen(),
   );
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  // Height of the top chrome (header bar + slogan + legend row). Used to dock
+  // the desktop country panel below the header instead of over it, so the
+  // counter and legend stay clickable. Mobile uses a bottom sheet and ignores
+  // this. The Finish button is position:fixed on desktop, so it doesn't count.
+  const headerChromeRef = useRef<HTMLDivElement>(null);
+  const [headerChromeHeight, setHeaderChromeHeight] = useState(0);
+
+  useEffect(() => {
+    const el = headerChromeRef.current;
+    if (!el) return;
+    const update = () => setHeaderChromeHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   // Skip the welcome dialog when the user arrived via a shared score link —
   // the score dialog is the primary thing they came to see. In dev, ignore
   // the dismissal flag so the dialog reappears on every reload while
@@ -321,7 +338,10 @@ export default function App() {
             <div className="absolute right-0 top-0 h-[440px] w-[620px] rounded-full bg-[#67e8f9] opacity-20 blur-3xl" />
           </div>
 
-          <div className="relative z-20 shrink-0 px-3 pt-3 sm:px-6 sm:pt-6">
+          <div
+            ref={headerChromeRef}
+            className="relative z-20 shrink-0 px-3 pt-3 sm:px-6 sm:pt-6"
+          >
             <header
               className="relative z-50 flex h-14 items-center justify-between rounded-2xl px-4 sm:px-6"
               style={{
@@ -511,6 +531,7 @@ export default function App() {
             <CountryPanel
               country={panelCountry}
               onClose={closePanel}
+              desktopTopOffset={headerChromeHeight}
               triedSet={triedSet}
               onSetTried={setCountryTried}
               showTriedHint={
