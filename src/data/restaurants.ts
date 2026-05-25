@@ -1360,7 +1360,7 @@ export const countries: Country[] = [
   },
   {
     id: "korea",
-    name: "Korea",
+    name: "South Korea",
     continent: "Asia",
     flag: "🇰🇷",
     cuisine_summary: "Korean cuisine is one of the world's most complete — built on fermentation, fire, and communal abundance. Kimchi (fermented vegetables, hundreds of varieties) is not a side dish; it is a pillar of the culture. Banchan — the small plates that fill the table before the main arrives — reflect a philosophy of balance and contrast: cold and hot, sour and savory, crunchy and soft. Tabletop grilling (samgyeopsal, galbi) turns dinner into a social ritual. Sundubu jjigae, doenjang jjigae, and samgyetang are soups with the weight of centuries behind them. Korean food has gone from niche to globally dominant in a single generation — and it earned every bit of the attention.",
@@ -1377,7 +1377,7 @@ export const countries: Country[] = [
   },
   {
     id: "north_korea",
-    name: "Korea (North)",
+    name: "North Korea",
     continent: "Asia",
     flag: "🇰🇵",
     cuisine_summary: "North Korean food is cold-noodle culture and mountain cooking — buckwheat noodles in icy broth, kimchi in every variation, and a cuisine closely related to South Korean but shaped by the peninsula's northern geography and colder climate.",
