@@ -25,7 +25,7 @@ The CSVs are designed to be easy to edit outside the project (Google Sheets, Exc
 
 | Column | Required | Notes |
 |---|---|---|
-| `id` | yes | Lowercase kebab-case slug, e.g., `france`, `south-korea`. Must also exist in `src/data/countryIdMap.ts` so the map can highlight it. |
+| `id` | yes | Lowercase kebab-case slug, e.g., `france`, `south-korea`. Must be represented in `src/data/countryIdMap.ts` either by a TopoJSON ISO mapping or, for omitted microstates, by the unmapped-slug pin list. |
 | `name` | yes | Display name. |
 | `continent` | yes | One of: `Europe`, `North America`, `South America`, `Asia`, `Middle East`, `Africa`, `Oceania`. |
 | `flag` | yes | Unicode flag emoji (e.g., 🇫🇷). |
@@ -63,9 +63,22 @@ Every restaurant from the original seed is currently marked `status: unverified`
 ### Adding a country
 
 1. Add a row to `countries.csv` with the slug, continent, flag, cuisine summary, and 3 signature dishes.
-2. Confirm the slug exists in `src/data/countryIdMap.ts` so the map will highlight it. Add a mapping there if missing.
+2. Confirm the slug is represented in `src/data/countryIdMap.ts` so the map can expose it. For normal countries, add or verify the numeric ISO mapping in `isoToSlug`. For countries omitted by the 110m TopoJSON, such as microstates and small island nations, add the slug to `KNOWN_UNMAPPED_SLUGS` and add its `[lng, lat]` anchor in `UNMAPPED_SLUG_COORDINATES`; the map will render a clickable destination pin and use that coordinate for avatar/panel positioning.
 3. Add restaurants to `restaurants.csv` with the matching `country_id`.
 4. Run `npm run build:data`, then `npm run dev` and click your new country to spot-check.
+
+### Map coverage and microstates
+
+The app uses the compact `world-atlas` 110m TopoJSON, which omits some very small countries. Those countries cannot be selected from a polygon because no polygon exists in the map file.
+
+Seeded omitted countries are handled explicitly in `src/data/countryIdMap.ts`:
+
+- `KNOWN_UNMAPPED_SLUGS` lists valid country slugs that are intentionally absent from `isoToSlug`.
+- `UNMAPPED_SLUG_COORDINATES` provides one `[lng, lat]` anchor per unmapped slug.
+- `WorldMap` renders those countries as clickable pins, and `useMapData` uses the same coordinates as centroids so avatar movement and panel focus still work.
+- The development integrity check fails if the unmapped slug list and coordinate map drift apart.
+
+If a seeded country should appear as a real polygon, upgrade the map source to a higher-resolution TopoJSON, such as 50m or 10m, and move the slug back into the normal ISO mapping path.
 
 ### Adding restaurants to an existing country
 

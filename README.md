@@ -8,7 +8,7 @@ Tastemap SF is a static React app that turns SF's restaurant diversity into a wo
 
 ## Features
 
-- **Interactive world map**: countries with curated cuisine data are highlighted; unseeded countries still open a short suggestion state.
+- **Interactive world map**: countries with curated cuisine data are highlighted; unseeded countries still open a short suggestion state. Microstates omitted by the 110m TopoJSON render as clickable pins.
 - **Country side panel**: each seeded country shows cuisine context, signature dishes, and restaurant cards.
 - **Tried prompt**: clicking a seeded country opens a Yes/No dialog. Answering or closing the dialog also clears the side panel.
 - **Visual progress**: tried countries turn green, receive a consistent green outline, and show the country flag on the map.
@@ -71,6 +71,7 @@ The source of truth is in `data/`:
 - `data/countries.csv`: country metadata, cuisine summaries, flags, and signature dishes.
 - `data/restaurants.csv`: restaurant rows joined by `country_id`.
 - `data/build.mjs`: generates `src/data/restaurants.ts`.
+- `src/data/countryIdMap.ts`: map coverage config, including TopoJSON ISO mappings and pin coordinates for microstates omitted by the 110m map.
 
 Do not edit `src/data/restaurants.ts` directly. It is generated.
 

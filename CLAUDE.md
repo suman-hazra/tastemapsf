@@ -118,6 +118,7 @@ Each country maps to a list of restaurants. The schema is intentionally flat and
 
 - The world map fills the viewport and is zoomable/pannable (mouse wheel + drag)
 - All countries are rendered as SVG paths and are clickable
+- Seeded microstates and small island nations omitted from the 110m TopoJSON are rendered as clickable pins from `UNMAPPED_SLUG_COORDINATES`
 - Countries with SF restaurant data are visually distinct (e.g., slightly highlighted or a different fill)
 - Countries with no data are still clickable but show a friendly "No restaurants found yet" state
 

@@ -40,6 +40,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 - Language: **TypeScript** (catch country-id typos in `restaurants.json` at compile time)
 - Styling: **Tailwind CSS** (color tokens for tried/seeded/unseeded states live in `tailwind.config.js`)
 - Map: `react-simple-maps` (a React wrapper over D3-geo) + a static TopoJSON file in `public/`
+- Microstates / tiny island nations omitted by the 110m TopoJSON are first-class seeded countries via explicit map pins: the slug lives in `KNOWN_UNMAPPED_SLUGS`, its pin/centroid in `UNMAPPED_SLUG_COORDINATES`, and the rendered pin carries seeded/tried/selected state.
 - Data: manually curated `src/data/restaurants.json` matching the CLAUDE.md schema
 - No Yelp/Google/Reddit scraping pipeline in Phase 1 — that's a Phase 2 effort
 - Deploy: Vercel via `git push`
@@ -101,6 +102,7 @@ Not applicable (SELECTIVE EXPANSION, not full EXPANSION). The agreed Phase 1 sco
 - Counter loading: `"— / —"` (em-dashes), then snaps to `"0 / 20"` when data ready.
 - Map loading: centered spinner + "Loading map…" (already locked in earlier reviews).
 - Country with **0 restaurants but seeded** (cuisine + dishes defined, restaurants empty): show cuisine_summary + dishes + "Restaurants coming soon — got a pick?" mailto. NOT the unseeded empty state.
+- Seeded microstate / tiny island omitted by the 110m TopoJSON: render a clickable destination pin instead of a country polygon. The pin uses the same seeded/tried/selected semantics as mapped countries, opens the same panel, and supplies the avatar centroid.
 - Avatar at first load: hidden. Only appears after first country click.
 - Tablet (768-1024px): panel widens to 40% of viewport; desktop layout preserved.
 - Mobile (<768px): panel becomes full-width / full-height (already locked).
