@@ -1278,6 +1278,7 @@ export const countries: Country[] = [
     ],
     restaurants: [
       { id: "rasa-rasa-kitchen", name: "Rasa Rasa Kitchen (R2K)", neighborhood: "Mission", address: "2200 Bryant St, San Francisco, CA 94110" },
+      { id: "fikscue-thrive-city", name: "Fikscue Thrive City", neighborhood: "Mission Bay / Thrive City", address: "7 Warriors Wy Suite 208, San Francisco, CA 94158" },
     ],
   },
   {

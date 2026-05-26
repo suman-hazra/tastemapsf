@@ -116,28 +116,57 @@ export default function AboutDialog({ onClose }: Props) {
             </h3>
             <div className="flex flex-col gap-6 text-sm leading-[1.6] text-[#6b6b76]">
               <p className="m-0">
-                I grew up in small Indian cities - places with incredible food,
-                but mostly our own. The world's cuisines simply hadn't made
-                their way there yet. I didn't have my first pizza until college
-                in Delhi. My first Thai curry. My first Japanese meal. Not
-                because Indian food wasn't enough; it's endlessly rich but
-                because I had never been in a place where the rest of the
-                world's tables were also within reach.
+                I have been fascinated with food for as long as I can remember.
+                After coming back from school, I would plop my massive backpack
+                on the floor, much to the annoyance of my mother, and giddily
+                take my place next to her on the barebones sofa. I would already
+                be mildly disappointed after glancing at the vegetables she had
+                been peeling while occasionally looking up at the television. We
+                were going to have gourd for dinner for the thousandth time.
               </p>
               <p className="m-0">
-                As I grew older, I started traveling - Vietnam, Thailand,
-                Japan, Turkey, across Europe — and food became the whole point.
-                Not the monuments. The food. I'd watch MasterChef
-                and Top Chef obsessively, fascinated not just by technique but
-                by the history and culture packed into every dish.
+                For now, though, I found solace in what was playing on TV. An
+                elegant, beautifully draped middle-aged woman was preparing some
+                exotic dish from some exotic part of the world. I had never
+                tried any of the ingredients lying in front of her, and I didn't
+                know if I ever would, but she had my full attention as I stared
+                raptly at the screen, full of intrigue and desire.
               </p>
               <p className="m-0">
-                Then I moved to San Francisco, and I was genuinely floored. I
-                had never lived somewhere with this much culinary diversity. But
-                the abundance was almost paralyzing - so many cuisines, so
-                little guidance on where to start. So I built Tastemap SF: a way
-                to explore the city one country at a time, keep score, and
-                always have a reason to try something new.
+                Growing up in small military outposts all over India, delicious
+                food was abundant, but it was almost always Indian. Probably the
+                only non-Indian food I had was the so-called Chinese food, which
+                I later learned was nothing like the food people actually eat in
+                China.
+              </p>
+              <p className="m-0">
+                So when I moved to Delhi for college, I made it a point to
+                immerse myself in the culinary variety the metropolis had to
+                offer. I would look up unfamiliar cuisines and try to find
+                restaurants in Delhi where I could experience them. I didn't get
+                very far because I had very little money, but whenever I could,
+                I made it a point to experiment. And I would be lying if I said
+                my friends, who often became unwilling participants in these
+                experiments, didn't suffer for it.
+              </p>
+              <p className="m-0">
+                As I grew older and started traveling, my culinary horizons
+                expanded further. It wouldn't be an exaggeration to say I
+                traveled more for food than for tourist attractions. In Rome, my
+                first priority was finding the best pizza. The Colosseum could
+                wait.
+              </p>
+              <p className="m-0">
+                When I moved to San Francisco, I had many firsts: my first
+                authentic Mexican taco, my first authentic Peking duck, my first
+                authentic rendang, and so much more. The culinary variety this
+                city offers is dizzying, and I found the abundance almost
+                paralyzing when deciding where to go next.
+              </p>
+              <p className="m-0">
+                That's why I built TasteMapSF. My hope is that this project
+                gives people a way to explore the city one country at a time,
+                and a reason to try something new.
               </p>
             </div>
           </section>
