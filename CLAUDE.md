@@ -47,6 +47,21 @@ Allow users to track their own culinary journey across the map:
 
 ---
 
+## Current Implementation Snapshot
+
+Updated 2026-05-26.
+
+- The food passport loop has been pulled into the shipped app: users can mark countries as tried, see the counter update, and reopen the app with tried state restored from `localStorage`.
+- The hamburger menu now has four items: `View list`, `About`, `Get involved`, and `Legal & credits`.
+- `About` is a dedicated story dialog. `Get involved` is a separate dialog with GitHub, restaurant-tip, email, and social links. Legal/privacy/attribution remain in `Legal & credits` and `LEGAL.md`.
+- Mobile is no longer a minimal fallback. It uses a compact top bar, a cover-cropped map that fills the available frame, floating filter pills (`Soon`, `In SF`, `Tried`), and a floating `Finish` CTA inside the map.
+- Mobile map panning bounds are computed from the actual cropped viewport so users can pan to offscreen regions such as Australia.
+- Mobile hides desktop-only map affordances that do not make sense in the cropped view: the `Back to world view` button, tried-country flag overlays, and the San Francisco text label. The San Francisco marker dot remains.
+- About, Get involved, and Legal sheets use `dvh`-aware mobile height caps to avoid iOS Safari toolbar clipping.
+- Desktop keeps the original larger hero/header composition, desktop legend labels, desktop map controls, and desktop marker labels.
+
+---
+
 ## Data
 
 ### Sources
@@ -171,6 +186,9 @@ tastemapsf/
 │   └── dolores.jpg             # Welcome dialog photo
 ├── src/
 │   ├── components/             # WorldMap, CountryPanel, ScoreDialog, Counter, … (.tsx)
+│   │   ├── AboutDialog.tsx      # Project story dialog
+│   │   ├── GetInvolvedDialog.tsx # GitHub/contact/contribution dialog
+│   │   └── LegalDialog.tsx      # Policy + attribution dialog
 │   ├── data/
 │   │   ├── types.ts            # Country / Restaurant / Dish interfaces
 │   │   ├── restaurants.ts      # AUTO-GENERATED dataset (do not hand-edit)
@@ -209,7 +227,7 @@ tastemapsf/
 | Phase 2 | Restaurant addresses + neighborhoods for all entries | Not started (neighborhoods done; addresses deferred) |
 | Phase 2 | Menu cross-reference for must-order dishes | Not started |
 | Phase 3 | "Tried this" tracking per country and restaurant | ✅ Shipped (food passport pulled forward into Phase 1) |
-| Phase 3 | Personal food passport stats + map visualization | Partial — score dialog + map flags shipped; cross-device persistence deferred |
+| Phase 3 | Personal food passport stats + map visualization | Partial — score dialog + map coloring shipped; local-device persistence shipped; cross-device persistence deferred |
 
 ---
 
@@ -222,4 +240,4 @@ tastemapsf/
 
 ---
 
-*Last updated: 2026-05-24*
+*Last updated: 2026-05-26*

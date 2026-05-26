@@ -13,14 +13,15 @@ Tastemap SF is a static React app that turns SF's restaurant diversity into a wo
 - **Tried prompt**: clicking a seeded country opens a Yes/No dialog. Answering or closing the dialog also clears the side panel.
 - **Visual progress**: tried countries turn green, receive a consistent green outline, and show the country flag on the map.
 - **Checklist mode**: the hamburger menu includes `View list`, grouped by continent, so users can mark countries without browsing the map. Each row expands inline to reveal that country's cuisine summary, signature dishes, and restaurants.
-- **Finish flow**: the bottom-center `Finish` CTA opens the score dialog. The score dialog scrolls on short viewports so the share row is always reachable.
+- **Finish flow**: the `Finish` CTA opens the score dialog. On desktop it anchors below the header; on mobile it floats inside the map frame.
 - **Share flow**: users can share via native share, X, Facebook, or copy. The share message includes the score; the shared link is the plain `tastemapsf.com` URL.
 - **Pick My Next Bite**: a lottery-style wheel picks an untried country, reveals it with a larger flag animation, then opens that country's details.
 - **Restaurant suggestions**: countries without restaurants include `Send me one`, which opens a prefilled Gmail draft or `mailto:` fallback to `tastemapsf@gmail.com`.
+- **About and Get involved**: the hamburger menu separates the project story from open-source/contribution links.
 - **Legal & credits**: disclaimer, privacy, and attribution content lives in one hamburger-menu dialog and in `LEGAL.md`.
-- **Responsive polish**: the main map, dialogs, panels, score UI, and picker are tuned for both desktop and mobile browser viewports.
+- **Responsive polish**: desktop keeps the full map/hero layout; mobile uses a compact header, full-height cover-cropped map, floating filter pills, and iOS-safe modal sheets.
 - **Google Maps links**: restaurant cards build search links from restaurant name, neighborhood, and San Francisco.
-- **No backend required**: progress state is in-memory; closing the tab resets progress.
+- **No backend required**: tried progress is stored locally in the browser with `localStorage`.
 
 ## Tech Stack
 
@@ -93,12 +94,23 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 7. If a country has no restaurants yet, use `Send me one` to draft a restaurant suggestion email.
 8. Click `Finish` to see your score, share it, or use `Pick My Next Bite`.
 9. `Pick My Next Bite` spins a wheel, reveals a larger country flag/name, then shifts the map to that country's details.
+10. Use `About`, `Get involved`, and `Legal & credits` from the hamburger menu for project context, contribution links, and policy/attribution notes.
+
+### Mobile UX Notes
+
+- The mobile map intentionally uses a cover-cropped world view so the map fills the available frame.
+- Mobile panning bounds are calculated from the visible cropped viewport, so users can pan to regions such as Australia even though the full world is not visible at once.
+- The mobile legend appears as floating pills inside the map: `Soon`, `In SF`, and `Tried`.
+- The mobile `Finish` CTA floats at the bottom of the map.
+- Desktop-only map labels and controls that do not translate well to the cropped mobile map, such as the `Back to world view` control and the San Francisco text label, are hidden on mobile.
+- About, Get involved, and Legal sheets use `dvh`-aware mobile height caps to avoid iOS Safari toolbar clipping.
 
 ## Project Notes
 
-- Progress is intentionally not persisted yet. It resets on refresh or tab close.
+- Progress is persisted in `localStorage` on the current device/browser. Cross-device sync still requires a backend and remains future work.
 - Shared links use the plain `tastemapsf.com` URL; the score lives in the share message text, not the URL. The app still reads `?score=` / `?total=` query parameters if present, but no longer generates them.
 - Legal, privacy, and attribution content is available in the hamburger menu under `Legal & credits` and mirrored in `LEGAL.md`.
+- The hamburger menu currently contains `View list`, `About`, `Get involved`, and `Legal & credits`.
 - The public contact email for restaurant suggestions and privacy requests is `tastemapsf@gmail.com`.
 - Some marker positions use visual overrides where raw geometry centroids look wrong at this scale.
 - The logo assets were generated with OpenAI tools. The Dolores Park photo attribution still needs exact Wikimedia Commons source confirmation before broader launch.
@@ -116,11 +128,12 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 - [x] Restaurant suggestion email flow
 - [x] Legal, privacy, and attribution dialog
 - [x] Desktop/mobile viewport polish
+- [x] Separate About and Get involved menu/dialog flows
 - [x] CSV-driven data workflow
-- [ ] Persisted progress
+- [x] Local-device persisted progress
+- [ ] Cross-device persisted progress
 - [ ] More countries and restaurant verification
 - [ ] Confirm exact Dolores Park image attribution
-- [ ] Add a personal About section with links
 - [ ] Broader real-device mobile QA
 
 ## Contributing

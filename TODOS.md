@@ -25,18 +25,24 @@ country, reveals it with a larger flag animation, then opens that country's
 details.
 **Completed:** 2026-05-24
 
+### 1. Proper mobile responsive (bottom sheet + touch-friendly map)
+Shipped — mobile now uses a compact top bar, full-height cover-cropped map,
+floating filter pills, floating Finish CTA, mobile-safe panning bounds, hidden
+desktop-only map controls/labels, and iOS-safe dialog heights. Country details
+already render as the mobile bottom-sheet style.
+**Completed:** 2026-05-26
+
+### 10. About page
+Shipped as hamburger-menu dialogs instead of a route. `About` contains the
+project story; `Get involved` is a separate menu item/dialog for GitHub,
+restaurant tips, email, and social links.
+**Completed:** 2026-05-26
+
 ---
 
 ## P1 — first follow-up iteration
 
-### 1. Proper mobile responsive (bottom sheet + touch-friendly map)
-**What:** Replace the minimal `@media (max-width: 768px)` panel fallback with a real mobile UX: panel becomes a draggable bottom sheet, map respects touch gestures.
-**Why:** Most share-DM opens are on phones. Phase 1 ships with a survivable but ugly mobile experience.
-**Context:** Phase 1 has only the minimal media query fallback. The bottom-sheet pattern (e.g. `react-spring-bottom-sheet` or a custom implementation) costs ~2h.
-**Effort:** M (~2h human / ~30 min CC)
-**Depends on:** Phase 1 shipped
-
-> Item 2 (touch zoom) shipped — see the Completed section above.
+No open P1 items.
 
 ---
 
@@ -59,7 +65,7 @@ details.
 ### 6. Persistence + shareable passport URL (paired)
 **What:** Add real persistence (localStorage → eventually Supabase/Firebase + auth) and let users share their passport state via a URL.
 **Why:** This is the actual Phase 2 vision. The session-only Phase 1 passport is a personal experience; this turns it social.
-**Context:** Will likely need a real backend by the time it ships. Plan separately.
+**Context:** Local-device persistence via `localStorage` is shipped. This item now specifically means cross-device/server persistence and a shareable passport state URL.
 **Effort:** L (~1-2 days human / ~2-4h CC) — design + plan separately
 
 ---
@@ -79,11 +85,6 @@ details.
 ### 9. Onboarding tooltip for first-time visitors
 **What:** A subtle tooltip pointing at the map: "Click a country to start your passport."
 **Why:** Reduces "what do I do?" friction.
-**Effort:** S (~20 min)
-
-### 10. About page
-**What:** A small `/about` route explaining the project's premise, data sources, and how to contribute tips.
-**Why:** Useful when sharing — friends often ask "what is this."
 **Effort:** S (~20 min)
 
 ### 11. Phase 2 test foundation: two starter tests

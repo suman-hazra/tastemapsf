@@ -16,7 +16,10 @@ function getFocusableElements(container: HTMLElement) {
   );
 }
 
-export default function AboutDialog({ onClose }: Props) {
+const LINK_CLASS =
+  "font-medium text-[#7c3aed] underline decoration-[#7c3aed]/30 underline-offset-2 transition-colors hover:text-[#6d28d9] hover:decoration-[#7c3aed]/60";
+
+export default function GetInvolvedDialog({ onClose }: Props) {
   const panelRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -61,7 +64,7 @@ export default function AboutDialog({ onClose }: Props) {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="about-title"
+        aria-labelledby="get-involved-title"
         className="flex max-h-[85vh] max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-black/[0.08] bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_30px_80px_rgba(124,58,237,0.15),0_8px_28px_rgba(6,182,212,0.08)] backdrop-blur-[28px] backdrop-saturate-150 sm:max-h-[calc(100vh-80px)] sm:max-w-[540px] sm:rounded-[24px]"
       >
         <div className="h-1 flex-shrink-0 bg-[linear-gradient(90deg,#7C3AED_0%,#EC4899_50%,#06B6D4_100%)]" />
@@ -85,59 +88,59 @@ export default function AboutDialog({ onClose }: Props) {
             </svg>
           </button>
 
-          <h2
-            id="about-title"
-            className="m-0 pr-10 text-[22px] font-bold leading-tight tracking-normal text-[#0f0f12]"
-          >
-            About
-          </h2>
-          <p className="mt-1 max-w-[390px] text-[13px] leading-normal text-[#6b6b76]">
-            The story behind Tastemap SF
-          </p>
+          <div className="flex items-center gap-3 pr-10">
+            <GetInvolvedIcon />
+            <div>
+              <h2
+                id="get-involved-title"
+                className="m-0 text-[22px] font-bold leading-tight tracking-normal text-[#0f0f12]"
+              >
+                Get involved
+              </h2>
+              <p className="mt-1 max-w-[390px] text-[13px] leading-normal text-[#6b6b76]">
+                Help improve Tastemap SF.
+              </p>
+            </div>
+          </div>
         </header>
 
         <div className="flex-1 overflow-y-auto [-webkit-overflow-scrolling:touch]">
-          <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-black/[0.08] bg-[#0f0f12]">
-            <img
-              src="/suman.jpg"
-              alt="Suman pulling a cheesy bite at a San Francisco restaurant"
-              loading="lazy"
-              className="h-full w-full object-cover object-[center_22%]"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-[linear-gradient(to_top,rgba(255,255,255,0.9),transparent)]"
-            />
-          </div>
-
           <section className="px-5 py-5 sm:px-7">
-            <h3 className="mb-3.5 text-[10.5px] font-bold uppercase leading-none tracking-[0.16em] text-[#a1a1ab]">
-              About
-            </h3>
             <div className="flex flex-col gap-6 text-sm leading-[1.6] text-[#6b6b76]">
               <p className="m-0">
-                I grew up in small Indian cities - places with incredible food,
-                but mostly our own. The world's cuisines simply hadn't made
-                their way there yet. I didn't have my first pizza until college
-                in Delhi. My first Thai curry. My first Japanese meal. Not
-                because Indian food wasn't enough; it's endlessly rich but
-                because I had never been in a place where the rest of the
-                world's tables were also within reach.
+                Tastemap SF is open source. If you want to poke around the code,
+                suggest a restaurant, or build your own version for another
+                city, everything is on{" "}
+                <a
+                  href="https://github.com/suman-hazra/tastemapsf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={LINK_CLASS}
+                >
+                  GitHub
+                </a>
+                . Fork it, adapt it, make it yours.
               </p>
               <p className="m-0">
-                As I grew older, I started traveling - Vietnam, Thailand,
-                Japan, Turkey, across Europe — and food became the whole point.
-                Not the monuments. The food. I'd watch MasterChef
-                and Top Chef obsessively, fascinated not just by technique but
-                by the history and culture packed into every dish.
+                Have a restaurant you think belongs on the map? Know a cuisine
+                that's missing? Drop me a line at{" "}
+                <a href="mailto:tastemapsf@gmail.com" className={LINK_CLASS}>
+                  tastemapsf@gmail.com
+                </a>
+                . I read everything. Same goes for feedback, corrections, or
+                just thoughts on the project.
               </p>
               <p className="m-0">
-                Then I moved to San Francisco, and I was genuinely floored. I
-                had never lived somewhere with this much culinary diversity. But
-                the abundance was almost paralyzing - so many cuisines, so
-                little guidance on where to start. So I built Tastemap SF: a way
-                to explore the city one country at a time, keep score, and
-                always have a reason to try something new.
+                You can also find me on{" "}
+                <a
+                  href="https://x.com/SumanHazra_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={LINK_CLASS}
+                >
+                  X
+                </a>
+                .
               </p>
             </div>
           </section>
@@ -150,5 +153,26 @@ export default function AboutDialog({ onClose }: Props) {
         </footer>
       </section>
     </div>
+  );
+}
+
+function GetInvolvedIcon() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl bg-[#7c3aed]/10 text-[#7c3aed]"
+    >
+      <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+        <circle cx="4" cy="3.5" r="1.8" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="4" cy="12.5" r="1.8" stroke="currentColor" strokeWidth="1.4" />
+        <circle cx="12" cy="5.5" r="1.8" stroke="currentColor" strokeWidth="1.4" />
+        <path
+          d="M4 5.3v5.4M5.8 3.5H7.4c1.2 0 2.1.9 2.1 2v0"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinecap="round"
+        />
+      </svg>
+    </span>
   );
 }

@@ -15,6 +15,7 @@ import CountryListMenu from "./components/CountryListMenu";
 import CountryPanel from "./components/CountryPanel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FinishButton from "./components/FinishButton";
+import GetInvolvedDialog from "./components/GetInvolvedDialog";
 import LegalDialog from "./components/LegalDialog";
 import LoadingState from "./components/LoadingState";
 import ProgressDialog from "./components/ProgressDialog";
@@ -105,6 +106,7 @@ export default function App() {
   const [showCountryList, setShowCountryList] = useState(false);
   const [showLegalDialog, setShowLegalDialog] = useState(false);
   const [showAboutDialog, setShowAboutDialog] = useState(false);
+  const [showGetInvolvedDialog, setShowGetInvolvedDialog] = useState(false);
   const [activeMapFilter, setActiveMapFilter] = useState<MapFilter | null>(
     null,
   );
@@ -165,6 +167,7 @@ export default function App() {
     setShowMenu(false);
     setShowCountryList(false);
     setShowLegalDialog(false);
+    setShowGetInvolvedDialog(false);
     setShowScoreDialog(false);
     setShowWelcome(false);
     setSharedScore(null);
@@ -172,6 +175,20 @@ export default function App() {
     setUnseededName(null);
     setUnseededFlag(null);
     setShowAboutDialog(true);
+  };
+
+  const openGetInvolvedDialog = () => {
+    setShowMenu(false);
+    setShowCountryList(false);
+    setShowLegalDialog(false);
+    setShowAboutDialog(false);
+    setShowScoreDialog(false);
+    setShowWelcome(false);
+    setSharedScore(null);
+    setSelectedSlug(null);
+    setUnseededName(null);
+    setUnseededFlag(null);
+    setShowGetInvolvedDialog(true);
   };
 
   // Click handler from WorldMap. Toggle semantic: re-clicking the currently
@@ -230,6 +247,7 @@ export default function App() {
     setShowCountryList(false);
     setShowLegalDialog(false);
     setShowAboutDialog(false);
+    setShowGetInvolvedDialog(false);
     setShowScoreDialog(false);
     setSharedScore(null);
     setShowProgressDialog(true);
@@ -281,6 +299,7 @@ export default function App() {
     setShowMenu(false);
     setShowCountryList(false);
     setShowAboutDialog(false);
+    setShowGetInvolvedDialog(false);
     setSelectedSlug(null);
     setUnseededName(null);
     setUnseededFlag(null);
@@ -408,12 +427,16 @@ export default function App() {
                     }}
                     onViewList={() => {
                       setShowMenu(false);
+                      setShowAboutDialog(false);
+                      setShowGetInvolvedDialog(false);
+                      setShowLegalDialog(false);
                       setShowCountryList(true);
                       setSelectedSlug(null);
                       setUnseededName(null);
                       setUnseededFlag(null);
                     }}
                     onAbout={openAboutDialog}
+                    onGetInvolved={openGetInvolvedDialog}
                     onLegal={openLegalDialog}
                   />
                 )}
@@ -629,6 +652,11 @@ export default function App() {
           {showAboutDialog && (
             <AboutDialog onClose={() => setShowAboutDialog(false)} />
           )}
+          {showGetInvolvedDialog && (
+            <GetInvolvedDialog
+              onClose={() => setShowGetInvolvedDialog(false)}
+            />
+          )}
         </main>
       </div>
     </ErrorBoundary>
@@ -684,17 +712,24 @@ function HamburgerMenu({
   onClose,
   onViewList,
   onAbout,
+  onGetInvolved,
   onLegal,
 }: {
   onClose: () => void;
   onViewList: () => void;
   onAbout: () => void;
+  onGetInvolved: () => void;
   onLegal: () => void;
 }) {
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const items = [
     { label: "View list", icon: <ListIcon />, action: onViewList },
     { label: "About", icon: <InfoIcon />, action: onAbout },
+    {
+      label: "Get involved",
+      icon: <GetInvolvedMenuIcon />,
+      action: onGetInvolved,
+    },
     { label: "Legal & credits", icon: <ShieldIcon />, action: onLegal },
   ];
 
@@ -802,6 +837,17 @@ function InfoIcon() {
       <circle cx="8" cy="8" r="5.5" stroke="#6b6b76" strokeWidth="1.5" />
       <path d="M8 7.4v3.3" stroke="#6b6b76" strokeWidth="1.5" strokeLinecap="round" />
       <circle cx="8" cy="5.4" r="0.7" fill="#6b6b76" />
+    </svg>
+  );
+}
+
+function GetInvolvedMenuIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0">
+      <circle cx="4" cy="3.5" r="1.65" stroke="#6b6b76" strokeWidth="1.35" />
+      <circle cx="4" cy="12.5" r="1.65" stroke="#6b6b76" strokeWidth="1.35" />
+      <circle cx="12" cy="5.5" r="1.65" stroke="#6b6b76" strokeWidth="1.35" />
+      <path d="M4 5.15v5.7M5.65 3.5H7.4c1.2 0 2.1.9 2.1 2" stroke="#6b6b76" strokeWidth="1.35" strokeLinecap="round" />
     </svg>
   );
 }
