@@ -74,6 +74,7 @@ const MAX_ZOOM = 10;
 // seeded countries in Europe/Asia, so the "home city" marker is visible
 // on first load alongside the destinations.
 const HOME_CENTER: [number, number] = [0, 22];
+const SF_COORDINATES: [number, number] = [-122.4194, 37.7749];
 const HOME_ZOOM = 1.15;
 const MOBILE_HOME_ZOOM = 1.8;
 
@@ -197,17 +198,17 @@ function projectCentroidToContainer(
   center: [number, number],
   zoom: number,
   container: { width: number; height: number },
-  fit: "contain" | "containTop",
+  fit: "contain" | "containTop" | "slice",
 ): { x: number; y: number } | null {
   const base = BASE_PROJECTION(centroid);
   const baseCenter = BASE_PROJECTION(center);
   if (!base || !baseCenter) return null;
   const svgX = MAP_WIDTH / 2 + (base[0] - baseCenter[0]) * zoom;
   const svgY = MAP_HEIGHT / 2 + (base[1] - baseCenter[1]) * zoom;
-  const scale = Math.min(
-    container.width / MAP_WIDTH,
-    container.height / MAP_HEIGHT,
-  );
+  const scale =
+    fit === "slice"
+      ? Math.max(container.width / MAP_WIDTH, container.height / MAP_HEIGHT)
+      : Math.min(container.width / MAP_WIDTH, container.height / MAP_HEIGHT);
   const offsetX = (container.width - MAP_WIDTH * scale) / 2;
   const offsetY =
     fit === "containTop" ? 0 : (container.height - MAP_HEIGHT * scale) / 2;
@@ -297,9 +298,19 @@ function clampCenter(
   lng: number,
   lat: number,
   zoom: number,
+  viewport?: { width: number; height: number } | null,
 ): [number, number] {
-  const halfLng = HALF_LNG_AT_Z1 / zoom;
-  const halfLat = HALF_LAT_AT_Z1 / zoom;
+  const sliceScale = viewport
+    ? Math.max(viewport.width / MAP_WIDTH, viewport.height / MAP_HEIGHT)
+    : null;
+  const visibleWidth = sliceScale
+    ? Math.min(MAP_WIDTH, viewport!.width / sliceScale)
+    : MAP_WIDTH;
+  const visibleHeight = sliceScale
+    ? Math.min(MAP_HEIGHT, viewport!.height / sliceScale)
+    : MAP_HEIGHT;
+  const halfLng = (HALF_LNG_AT_Z1 * (visibleWidth / MAP_WIDTH)) / zoom;
+  const halfLat = (HALF_LAT_AT_Z1 * (visibleHeight / MAP_HEIGHT)) / zoom;
   const lngMin = PAN_BOUNDS.lngWest + halfLng;
   const lngMax = PAN_BOUNDS.lngEast - halfLng;
   const latMin = PAN_BOUNDS.latSouth + halfLat;
@@ -404,11 +415,12 @@ export default function WorldMap({
           selectedCentroid[0],
           selectedCentroid[1],
           zoom,
+          isMobileViewport ? containerSize : null,
         ),
         zoom,
       };
     });
-  }, [selectedCentroid, selectedSlug]);
+  }, [containerSize, isMobileViewport, selectedCentroid, selectedSlug]);
 
   // Wheel-zoom handler attached non-passively so we can preventDefault on
   // ctrl+wheel (Mac trackpad pinch). Without this the browser does an OS
@@ -423,16 +435,22 @@ export default function WorldMap({
       setPosition((p) => {
         const zoom = clamp(p.zoom * factor, MIN_ZOOM, MAX_ZOOM);
         return {
-          coordinates: clampCenter(p.coordinates[0], p.coordinates[1], zoom),
+          coordinates: clampCenter(
+            p.coordinates[0],
+            p.coordinates[1],
+            zoom,
+            isMobileViewport ? containerSize : null,
+          ),
           zoom,
         };
       });
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, []);
+  }, [containerSize, isMobileViewport]);
 
   const flagMarkers = useMemo(() => {
+    if (isMobileViewport) return [];
     if (!containerSize || position.zoom < FLAG_MARKER_MIN_ZOOM) return [];
 
     const markers = Array.from(triedSet).flatMap((slug) => {
@@ -449,7 +467,7 @@ export default function WorldMap({
         position.coordinates,
         position.zoom,
         containerSize,
-        isMobileViewport ? "containTop" : "contain",
+        isMobileViewport ? "slice" : "contain",
       );
       if (!anchor) return [];
       return [{ slug, flag, anchor }];
@@ -863,8 +881,11 @@ export default function WorldMap({
       })}
 
       {/* San Francisco — the app's home city. */}
-      <Marker coordinates={[-122.4194, 37.7749]}>
-        <SanFranciscoMarker onReset={resetToWorldView} />
+      <Marker coordinates={SF_COORDINATES}>
+        <SanFranciscoMarker
+          onReset={resetToWorldView}
+          showLabel={!isMobileViewport}
+        />
       </Marker>
     </>
   );
@@ -881,7 +902,7 @@ export default function WorldMap({
         projection="geoNaturalEarth1"
         projectionConfig={{ scale: 170 }}
         preserveAspectRatio={
-          isMobileViewport ? "xMidYMin meet" : "xMidYMid meet"
+          isMobileViewport ? "xMidYMid slice" : "xMidYMid meet"
         }
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
@@ -944,16 +965,24 @@ export default function WorldMap({
           zoom={position.zoom}
           minZoom={MIN_ZOOM}
           maxZoom={MAX_ZOOM}
-          translateExtent={[
-            [0, 0],
-            [MAP_WIDTH, MAP_HEIGHT],
-          ]}
+          translateExtent={
+            isMobileViewport
+              ? [
+                  [-MAP_WIDTH, -MAP_HEIGHT],
+                  [MAP_WIDTH * 2, MAP_HEIGHT * 2],
+                ]
+              : [
+                  [0, 0],
+                  [MAP_WIDTH, MAP_HEIGHT],
+                ]
+          }
           onMoveEnd={(pos) =>
             setPosition({
               coordinates: clampCenter(
                 pos.coordinates[0],
                 pos.coordinates[1],
                 pos.zoom,
+                isMobileViewport ? containerSize : null,
               ),
               zoom: pos.zoom,
             })
@@ -972,7 +1001,7 @@ export default function WorldMap({
         }}
       />
 
-      <div className="group absolute bottom-4 left-4 z-20">
+      <div className="group absolute bottom-4 left-4 z-20 hidden sm:block">
         <button
           type="button"
           aria-label="Back to world view"
@@ -1066,7 +1095,7 @@ export default function WorldMap({
             position.coordinates,
             position.zoom,
             containerSize,
-            isMobileViewport ? "containTop" : "contain",
+            isMobileViewport ? "slice" : "contain",
           );
           if (!pt) return null;
           return (

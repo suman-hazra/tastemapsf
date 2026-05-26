@@ -95,7 +95,7 @@ export default function LegalDialog({ onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="legal-title"
-        className="legal-panel flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-[24px] border border-black/[0.08] bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_30px_80px_rgba(124,58,237,0.15),0_8px_28px_rgba(6,182,212,0.08)] backdrop-blur-[28px] backdrop-saturate-150 sm:max-h-[calc(100vh-80px)] sm:max-w-[540px] sm:rounded-[24px]"
+        className="legal-panel flex max-h-[85vh] max-h-[85dvh] w-full flex-col overflow-hidden rounded-t-[24px] border border-black/[0.08] bg-white/90 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_30px_80px_rgba(124,58,237,0.15),0_8px_28px_rgba(6,182,212,0.08)] backdrop-blur-[28px] backdrop-saturate-150 sm:max-h-[calc(100vh-80px)] sm:max-w-[540px] sm:rounded-[24px]"
       >
         <div className="h-1 flex-shrink-0 bg-[linear-gradient(90deg,#7C3AED_0%,#EC4899_50%,#06B6D4_100%)]" />
 

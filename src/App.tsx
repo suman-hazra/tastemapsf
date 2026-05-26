@@ -370,14 +370,20 @@ export default function App() {
                   total={total}
                   onClick={openProgressDialog}
                 />
-                {!showMenu && (
-                  <button
-                    ref={menuButtonRef}
-                    type="button"
-                    aria-label="Open menu"
-                    onClick={() => setShowMenu(true)}
-                    className="grid h-9 w-9 place-items-center rounded-xl border border-black/10 bg-white/70 text-[#0f0f12] transition-colors hover:bg-white sm:h-10 sm:w-10"
-                  >
+                <button
+                  ref={menuButtonRef}
+                  type="button"
+                  aria-label={showMenu ? "Close menu" : "Open menu"}
+                  onClick={() => setShowMenu((isOpen) => !isOpen)}
+                  className={`grid h-9 w-9 place-items-center rounded-xl border border-black/10 bg-white/70 transition-colors hover:bg-white sm:h-10 sm:w-10 ${
+                    showMenu
+                      ? "text-[#6b6b76] sm:hidden"
+                      : "text-[#0f0f12]"
+                  }`}
+                >
+                  {showMenu ? (
+                    <CloseIcon />
+                  ) : (
                     <svg
                       aria-hidden="true"
                       width="20"
@@ -392,8 +398,8 @@ export default function App() {
                         strokeLinecap="round"
                       />
                     </svg>
-                  </button>
-                )}
+                  )}
+                </button>
                 {showMenu && (
                   <HamburgerMenu
                     onClose={() => {
@@ -414,8 +420,8 @@ export default function App() {
               </div>
             </header>
 
-            <div className="flex flex-col gap-3 px-3 pb-3 pt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-6 sm:pb-4 sm:pt-6">
-              <h1 className="max-w-3xl text-[clamp(1.5rem,3vw,2.25rem)] font-bold leading-[0.98] tracking-normal text-[#0f0f12]">
+            <div className="hidden flex-col gap-3 px-3 pb-3 pt-4 sm:flex sm:flex-row sm:items-end sm:justify-between sm:gap-6 sm:px-6 sm:pb-4 sm:pt-6">
+              <h1 className="hidden max-w-3xl text-[clamp(1.5rem,3vw,2.25rem)] font-bold leading-[0.98] tracking-normal text-[#0f0f12] sm:block">
                 Eat the{" "}
                 <span className="bg-[linear-gradient(120deg,#7c3aed_0%,#ec4899_40%,#06b6d4_80%)] bg-clip-text text-transparent">
                   world
@@ -423,9 +429,10 @@ export default function App() {
                 ,<br />
                 without leaving San Francisco.
               </h1>
-              <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-[#0f0f12] sm:justify-end sm:pb-1">
+              <div className="hidden flex-nowrap items-center justify-center gap-2 text-xs font-medium text-[#0f0f12] sm:flex sm:flex-wrap sm:justify-end sm:pb-1">
                 <LegendButton
                   label="Coming Soon"
+                  mobileLabel="Soon"
                   color="#e8e8ee"
                   isActive={activeMapFilter === "soon"}
                   onClick={() =>
@@ -436,6 +443,7 @@ export default function App() {
                 />
                 <LegendButton
                   label="Available in SF"
+                  mobileLabel="In SF"
                   gradient="linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)"
                   isActive={activeMapFilter === "available"}
                   onClick={() =>
@@ -456,13 +464,16 @@ export default function App() {
                 />
               </div>
             </div>
+            <div className="h-3 sm:hidden" />
             {mapData.status === "ready" && (
+              <div className="hidden sm:block">
               <FinishButton onClick={openScoreDialog} />
+              </div>
             )}
           </div>
 
           <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-4 px-3 pb-3 sm:px-6 sm:pb-6 md:block md:gap-0">
-            <div className="relative aspect-[93/50] max-h-full w-full shrink-0 overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/70 shadow-[0_1px_0_rgba(255,255,255,0.55)_inset,0_20px_60px_rgba(124,58,237,0.10)] md:aspect-auto md:h-full">
+            <div className="relative h-full w-full overflow-hidden rounded-[24px] border border-black/[0.08] bg-white/70 shadow-[0_1px_0_rgba(255,255,255,0.55)_inset,0_20px_60px_rgba(124,58,237,0.10)] md:aspect-auto md:h-full">
               {mapData.status === "loading" && <LoadingState />}
 
               {mapData.status === "error" && (
@@ -518,6 +529,41 @@ export default function App() {
                       }
                       onResetSelection={resetMapSelection}
                     />
+                  </div>
+                  <div className="absolute left-1/2 top-4 z-30 flex w-[calc(100%-2rem)] -translate-x-1/2 flex-nowrap items-center justify-center gap-4 text-xs font-medium text-[#0f0f12] sm:hidden">
+                    <LegendButton
+                      label="Soon"
+                      color="#e8e8ee"
+                      isActive={activeMapFilter === "soon"}
+                      onClick={() =>
+                        setActiveMapFilter((filter) =>
+                          filter === "soon" ? null : "soon",
+                        )
+                      }
+                    />
+                    <LegendButton
+                      label="In SF"
+                      gradient="linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)"
+                      isActive={activeMapFilter === "available"}
+                      onClick={() =>
+                        setActiveMapFilter((filter) =>
+                          filter === "available" ? null : "available",
+                        )
+                      }
+                    />
+                    <LegendButton
+                      label="Tried ✓"
+                      gradient="linear-gradient(135deg, #84cc16 0%, #22d3ee 100%)"
+                      isActive={activeMapFilter === "tried"}
+                      onClick={() =>
+                        setActiveMapFilter((filter) =>
+                          filter === "tried" ? null : "tried",
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 sm:hidden">
+                    <FinishButton onClick={openScoreDialog} />
                   </div>
                 </>
               )}
@@ -591,12 +637,14 @@ export default function App() {
 
 function LegendButton({
   label,
+  mobileLabel,
   color,
   gradient,
   isActive,
   onClick,
 }: {
   label: string;
+  mobileLabel?: string;
   color?: string;
   gradient?: string;
   isActive: boolean;
@@ -607,7 +655,7 @@ function LegendButton({
       type="button"
       aria-pressed={isActive}
       onClick={onClick}
-      className={`inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-xs font-semibold backdrop-blur-xl transition-all duration-200 hover:bg-white active:scale-[0.98] ${
+      className={`inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap rounded-full border px-3.5 text-xs font-semibold backdrop-blur-xl transition-all duration-200 hover:bg-white active:scale-[0.98] ${
         isActive
           ? "scale-[1.02] border-transparent bg-white text-[#0f0f12] shadow-[0_8px_24px_rgba(124,58,237,0.16),0_2px_8px_rgba(6,182,212,0.10)]"
           : "border-black/[0.08] bg-white/70 text-[#0f0f12] shadow-[0_1px_4px_rgba(15,15,18,0.03)]"
@@ -620,7 +668,14 @@ function LegendButton({
         }`}
         style={{ background: gradient ?? color }}
       />
-      <span>{label}</span>
+      {mobileLabel ? (
+        <>
+          <span className="sm:hidden">{mobileLabel}</span>
+          <span className="hidden sm:inline">{label}</span>
+        </>
+      ) : (
+        <span>{label}</span>
+      )}
     </button>
   );
 }
@@ -683,15 +738,15 @@ function HamburgerMenu({
 
   return (
     <div
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-40 sm:z-50"
       onMouseDown={onClose}
     >
-      <div className="absolute right-3 top-3 sm:right-6 sm:top-6">
+      <div className="absolute right-3 top-[4.75rem] sm:right-6 sm:top-6">
         <button
           type="button"
           onClick={onClose}
           aria-label="Close menu"
-          className="ml-auto grid h-9 w-9 place-items-center rounded-xl border border-black/[0.08] bg-white/[0.92] text-[#6b6b76] shadow-[0_2px_12px_rgba(15,15,18,0.06)] backdrop-blur-[20px] transition-all hover:bg-white hover:shadow-[0_4px_16px_rgba(15,15,18,0.10)] sm:h-10 sm:w-10"
+          className="ml-auto hidden h-9 w-9 place-items-center rounded-xl border border-black/[0.08] bg-white/[0.92] text-[#6b6b76] shadow-[0_2px_12px_rgba(15,15,18,0.06)] backdrop-blur-[20px] transition-all hover:bg-white hover:shadow-[0_4px_16px_rgba(15,15,18,0.10)] sm:grid sm:h-10 sm:w-10"
         >
           <CloseIcon />
         </button>
@@ -699,7 +754,7 @@ function HamburgerMenu({
           role="menu"
           aria-label="Main menu"
           onMouseDown={(event) => event.stopPropagation()}
-          className="mt-4 w-[200px] animate-[menu-enter_250ms_cubic-bezier(0.22,1,0.36,1)_forwards] overflow-hidden rounded-[18px] border border-black/[0.08] bg-white/[0.92] py-1.5 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_20px_60px_rgba(124,58,237,0.12),0_6px_20px_rgba(6,182,212,0.08)] backdrop-blur-[24px] sm:w-60"
+          className="w-[200px] animate-[menu-enter_250ms_cubic-bezier(0.22,1,0.36,1)_forwards] overflow-hidden rounded-[18px] border border-black/[0.08] bg-white/[0.92] py-1.5 shadow-[0_1px_0_rgba(255,255,255,0.7)_inset,0_20px_60px_rgba(124,58,237,0.12),0_6px_20px_rgba(6,182,212,0.08)] backdrop-blur-[24px] sm:mt-4 sm:w-60"
         >
           {items.map((item, index) => (
             <button

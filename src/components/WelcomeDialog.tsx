@@ -91,8 +91,8 @@ export default function WelcomeDialog({ onDismiss }: Props) {
           id="welcome-info"
           className="mx-auto mb-7 max-w-md text-[14px] leading-[1.55] text-[#0f0f12] sm:text-[14.5px]"
         >
-          SF serves the world on a plate. Click a country to see where to eat
-          its cuisine in the city, and mark the ones you&apos;ve tried.
+          SF serves the world on a plate. Click on a country to see where to
+          eat its cuisine in the city, and mark the ones you&apos;ve tried.
         </p>
 
         <button
@@ -110,7 +110,7 @@ export default function WelcomeDialog({ onDismiss }: Props) {
         <p className="mt-5 flex items-center justify-center gap-2 text-xs leading-relaxed text-[#6b6b76]">
           <span
             aria-hidden="true"
-            className="inline-grid h-4 w-4 flex-shrink-0 place-items-center rounded-full bg-[#7c3aed]/10 text-[10px] font-bold leading-none text-[#7c3aed]"
+            className="hidden h-4 w-4 flex-shrink-0 place-items-center rounded-full bg-[#7c3aed]/10 text-[10px] font-bold leading-none text-[#7c3aed] sm:inline-grid"
           >
             i
           </span>

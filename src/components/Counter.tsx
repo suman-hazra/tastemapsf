@@ -48,7 +48,7 @@ export default function Counter({ tried, total, onClick }: Props) {
       aria-label={`View Tastemap score: ${
         isLoading ? "loading" : `${tried} of ${total} cuisines tried`
       }`}
-      className="flex h-11 items-center gap-2.5 rounded-xl border border-[#7c3aed]/15 bg-[#7c3aed]/[0.06] px-3 leading-none transition-all duration-150 ease-out hover:scale-[1.05] hover:bg-white/80 hover:shadow-[0_8px_22px_rgba(124,58,237,0.14),0_2px_8px_rgba(6,182,212,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/40 active:scale-[0.98]"
+      className="flex h-10 items-center gap-2 rounded-xl border border-[#7c3aed]/15 bg-[#7c3aed]/[0.06] px-2.5 leading-none transition-all duration-150 ease-out hover:scale-[1.05] hover:bg-white/80 hover:shadow-[0_8px_22px_rgba(124,58,237,0.14),0_2px_8px_rgba(6,182,212,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/40 active:scale-[0.98] sm:h-11 sm:gap-2.5 sm:px-3"
     >
       <svg
         viewBox="0 0 20 20"
@@ -82,7 +82,7 @@ export default function Counter({ tried, total, onClick }: Props) {
         />
       </svg>
       <div className="flex flex-col items-start gap-0.5 text-[#0f0f12]">
-        <div className="flex items-baseline gap-1 text-[13px] tabular-nums">
+        <div className="flex items-baseline gap-1 text-sm tabular-nums sm:text-[13px]">
           <span
             className="inline-block font-bold transition-transform duration-300 ease-out"
             style={{
@@ -95,7 +95,7 @@ export default function Counter({ tried, total, onClick }: Props) {
             / {isLoading ? "—" : total}
           </span>
         </div>
-        <span className="text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-[#6b6b76]">
+        <span className="hidden text-[10px] font-semibold uppercase leading-none tracking-[0.12em] text-[#6b6b76] sm:inline">
           cuisines tried
         </span>
       </div>

@@ -3,9 +3,13 @@
 
 interface Props {
   onReset: () => void;
+  showLabel?: boolean;
 }
 
-export default function SanFranciscoMarker({ onReset }: Props) {
+export default function SanFranciscoMarker({
+  onReset,
+  showLabel = true,
+}: Props) {
   const labelStyle = {
     fontFamily: "'Inter', sans-serif",
     textShadow:
@@ -49,30 +53,34 @@ export default function SanFranciscoMarker({ onReset }: Props) {
       <circle r={7} fill="url(#sfMarkerGrad)" />
       <circle cx={-1.5} cy={-1.5} r={2.5} fill="#ffffff" opacity={0.9} />
 
-      <text
-        x={-16}
-        y={4}
-        textAnchor="end"
-        fontSize={11}
-        fontWeight={700}
-        letterSpacing="0.08em"
-        fill="#0f0f12"
-        style={labelStyle}
-      >
-        San Francisco
-      </text>
-      <text
-        x={-16}
-        y={16}
-        textAnchor="end"
-        fontSize={8}
-        fontWeight={600}
-        letterSpacing="0.12em"
-        fill="#6b6b76"
-        style={labelStyle}
-      >
-        HOME BASE
-      </text>
+      {showLabel && (
+        <>
+          <text
+            x={-16}
+            y={4}
+            textAnchor="end"
+            fontSize={11}
+            fontWeight={700}
+            letterSpacing="0.08em"
+            fill="#0f0f12"
+            style={labelStyle}
+          >
+            San Francisco
+          </text>
+          <text
+            x={-16}
+            y={16}
+            textAnchor="end"
+            fontSize={8}
+            fontWeight={600}
+            letterSpacing="0.12em"
+            fill="#6b6b76"
+            style={labelStyle}
+          >
+            HOME BASE
+          </text>
+        </>
+      )}
     </g>
   );
 }
