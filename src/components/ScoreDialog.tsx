@@ -87,8 +87,12 @@ export default function ScoreDialog({
   const closeOrBack = () => {
     if (isPickerActive) {
       resetPicker();
-      return;
     }
+    onClose();
+  };
+
+  const handleBackButton = () => {
+    resetPicker();
     onClose();
   };
 
@@ -299,7 +303,7 @@ export default function ScoreDialog({
             <button
               ref={backButtonRef}
               type="button"
-              onClick={closeOrBack}
+              onClick={handleBackButton}
               className="h-12 rounded-xl border border-black/[0.08] bg-white/70 px-4 text-sm font-semibold text-[#0f0f12] transition-all hover:bg-white hover:shadow-[0_4px_14px_rgba(15,15,18,0.06)] active:scale-[0.98]"
             >
               {backLabel}
