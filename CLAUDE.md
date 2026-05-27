@@ -49,15 +49,17 @@ Allow users to track their own culinary journey across the map:
 
 ## Current Implementation Snapshot
 
-Updated 2026-05-26.
+Updated 2026-05-27.
 
 - The food passport loop has been pulled into the shipped app: users can mark countries as tried, see the counter update, and reopen the app with tried state restored from `localStorage`.
-- The hamburger menu now has four items: `View list`, `About`, `Get involved`, and `Legal & credits`.
+- The desktop hamburger menu has four items: `View list`, `About`, `Get involved`, and `Legal & credits`. Mobile hides `View list` because checklist mode is exposed through the bottom `Map` / `List` toggle.
 - `About` is a dedicated story dialog. `Get involved` is a separate dialog with GitHub, restaurant-tip, email, and social links. Legal/privacy/attribution remain in `Legal & credits` and `LEGAL.md`.
-- Mobile is no longer a minimal fallback. It uses a compact top bar, a cover-cropped map that fills the available frame, floating filter pills (`Soon`, `In SF`, `Tried`), and a floating `Finish` CTA inside the map.
+- Mobile is no longer a minimal fallback. It uses a compact top bar, a cover-cropped map that fills the available frame, floating filter pills (`Soon`, `In SF`, `Tried`), and a floating `Map` / `List` toggle inside the map. The mobile score pill acts as the map-side score/finish entry point.
+- The score dialog tracks whether it was opened from the map or checklist. Its back button reads `Back to map` or `Back to list` accordingly, and browser/phone back closes the current list or score overlay before leaving the page.
 - Mobile map panning bounds are computed from the actual cropped viewport so users can pan to offscreen regions such as Australia.
 - Mobile hides desktop-only map affordances that do not make sense in the cropped view: the `Back to world view` button, tried-country flag overlays, and the San Francisco text label. The San Francisco marker dot remains.
 - About, Get involved, and Legal sheets use `dvh`-aware mobile height caps to avoid iOS Safari toolbar clipping.
+- The About dialog uses `public/suman-about.jpg`, an optimized derivative of the original `public/suman.jpg`, for faster downloads.
 - Desktop keeps the original larger hero/header composition, desktop legend labels, desktop map controls, and desktop marker labels.
 
 ---
@@ -183,6 +185,8 @@ tastemapsf/
 │   ├── og.png                  # Open Graph social preview
 │   ├── favicon.png             # Browser tab icon
 │   ├── avatar.svg              # Map avatar figure
+│   ├── suman-about.jpg         # Optimized About dialog photo
+│   ├── suman.jpg               # Original About photo source
 │   └── dolores.jpg             # Welcome dialog photo
 ├── src/
 │   ├── components/             # WorldMap, CountryPanel, ScoreDialog, Counter, … (.tsx)
@@ -240,4 +244,4 @@ tastemapsf/
 
 ---
 
-*Last updated: 2026-05-26*
+*Last updated: 2026-05-27*

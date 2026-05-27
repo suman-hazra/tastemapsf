@@ -8,17 +8,21 @@ Repo: sumanhazra/tastemapsf (origin) | Commit at plan-time: 9b1bbb1
 
 ## Implementation Status Note
 
-Updated 2026-05-26.
+Updated 2026-05-27.
 
 This document remains the historical Phase 1 plan. Several originally deferred
 items have since shipped:
 
 - Mobile now has a dedicated layout: compact top bar, full-frame cover-cropped
-  map, floating map filters, floating Finish CTA, and mobile-safe pan bounds.
+  map, floating map filters, a bottom `Map` / `List` toggle, and mobile-safe
+  pan bounds. The mobile score pill opens the score dialog.
 - Tried state is persisted locally with `localStorage`; cross-device passport
   sync remains future scope.
-- The hamburger menu now contains four flows: `View list`, `About`,
-  `Get involved`, and `Legal & credits`.
+- The desktop hamburger menu contains four flows: `View list`, `About`,
+  `Get involved`, and `Legal & credits`. Mobile hides `View list` because the
+  bottom `Map` / `List` toggle owns checklist mode.
+- The score dialog returns to map or list based on where it was opened, and
+  browser/phone back closes list and score overlays before leaving the page.
 - `About` and `Get involved` are separate dialogs. Legal/privacy/attribution
   remain in `Legal & credits` and `LEGAL.md`.
 - iOS Safari sheet clipping has been addressed with `dvh`-aware mobile dialog

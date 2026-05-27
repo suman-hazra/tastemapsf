@@ -27,9 +27,10 @@ details.
 
 ### 1. Proper mobile responsive (bottom sheet + touch-friendly map)
 Shipped — mobile now uses a compact top bar, full-height cover-cropped map,
-floating filter pills, floating Finish CTA, mobile-safe panning bounds, hidden
-desktop-only map controls/labels, and iOS-safe dialog heights. Country details
-already render as the mobile bottom-sheet style.
+floating filter pills, a bottom `Map` / `List` toggle, mobile-safe panning
+bounds, hidden desktop-only map controls/labels, and iOS-safe dialog heights.
+The mobile score pill opens the score dialog, and country details already
+render as the mobile bottom-sheet style.
 **Completed:** 2026-05-26
 
 ### 10. About page
