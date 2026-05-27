@@ -144,6 +144,7 @@ export const isoToSlug: Record<string, string> = {
   "148": "chad",
   "180": "congo_drc",
   "178": "congo_republic",
+  "384": "cote-divoire",
   "262": "djibouti",
   "818": "egypt",
   "226": "equatorial_guinea",

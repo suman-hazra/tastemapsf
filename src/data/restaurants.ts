@@ -1989,6 +1989,19 @@ export const countries: Country[] = [
     restaurants: [],
   },
   {
+    id: "cote-divoire",
+    name: "Côte d’Ivoire",
+    continent: "Africa",
+    flag: "🇨🇮",
+    cuisine_summary: "Ivorian cuisine is built around attiéké, alloco, and kedjenou — cassava, ripe plantains, and slow-steamed stews served with rice or yam and plenty of sauce.",
+    signature_dishes: [
+      { name: "Attiéké", description: "Fermented cassava couscous with a light tang and fluffy, grainy texture. Often served with fish, onions, and chili." },
+      { name: "Kedjenou", description: "Chicken or guinea fowl slow-steamed with tomato, onion, and spices in a sealed pot until intensely concentrated." },
+      { name: "Alloco", description: "Ripe plantains fried until caramelized and crisp at the edges. The essential Ivorian street snack." },
+    ],
+    restaurants: [],
+  },
+  {
     id: "djibouti",
     name: "Djibouti",
     continent: "Africa",
