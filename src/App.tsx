@@ -8,7 +8,7 @@
 //   state.unseededFlag   — flag emoji for the selected unseeded country
 //   state.triedSet       — slugs the user has marked "tried"
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import AboutDialog from "./components/AboutDialog";
 import Counter from "./components/Counter";
 import CountryListMenu from "./components/CountryListMenu";
@@ -30,11 +30,21 @@ interface SharedScore {
 }
 
 type MapFilter = "soon" | "available" | "tried";
+type ScoreReturnView = "map" | "list";
+type OverlayHistoryState = {
+  tastemapOverlay?: "list" | "score" | null;
+  scoreReturnView?: ScoreReturnView;
+};
 
 const WELCOME_STORAGE_KEY = "tastemap-welcome-dismissed";
 const WELCOME_STORAGE_VERSION = "v1";
 const TRIED_STORAGE_KEY = "tastemap-tried-countries";
 const TRIED_HINT_STORAGE_KEY = "tastemap-tried-hint-dismissed";
+
+function isOverlayHistoryState(state: unknown): state is OverlayHistoryState {
+  if (state === null || typeof state !== "object") return false;
+  return "tastemapOverlay" in state;
+}
 
 function readWelcomeSeen(): boolean {
   try {
@@ -101,6 +111,8 @@ export default function App() {
   // tried hint does not point at a cuisine the user likely has not tried yet.
   const [suggestedSlug, setSuggestedSlug] = useState<string | null>(null);
   const [showScoreDialog, setShowScoreDialog] = useState(false);
+  const [scoreReturnView, setScoreReturnView] =
+    useState<ScoreReturnView>("map");
   const [showProgressDialog, setShowProgressDialog] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCountryList, setShowCountryList] = useState(false);
@@ -124,6 +136,45 @@ export default function App() {
   // this. The Finish button is position:fixed on desktop, so it doesn't count.
   const headerChromeRef = useRef<HTMLDivElement>(null);
   const [headerChromeHeight, setHeaderChromeHeight] = useState(0);
+  const showCountryListRef = useRef(showCountryList);
+  const showScoreDialogRef = useRef(showScoreDialog);
+
+  useEffect(() => {
+    showCountryListRef.current = showCountryList;
+    showScoreDialogRef.current = showScoreDialog;
+  }, [showCountryList, showScoreDialog]);
+
+  useEffect(() => {
+    const onPopState = (event: PopStateEvent) => {
+      const state = isOverlayHistoryState(event.state) ? event.state : null;
+      setShowMenu(false);
+
+      if (state?.tastemapOverlay === "score") {
+        const returnView = state.scoreReturnView ?? "map";
+        setScoreReturnView(returnView);
+        setShowCountryList(false);
+        setShowScoreDialog(true);
+        setSharedScore(null);
+        return;
+      }
+
+      if (state?.tastemapOverlay === "list") {
+        setScoreReturnView("list");
+        setShowScoreDialog(false);
+        setSharedScore(null);
+        setShowCountryList(true);
+        return;
+      }
+
+      setScoreReturnView("map");
+      setShowScoreDialog(false);
+      setSharedScore(null);
+      setShowCountryList(false);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   useEffect(() => {
     const el = headerChromeRef.current;
@@ -161,6 +212,44 @@ export default function App() {
     } catch {
       // Ignore storage errors — the hint may reappear next visit.
     }
+  };
+
+  const currentOverlay = () => {
+    const state = window.history.state;
+    return isOverlayHistoryState(state) ? state.tastemapOverlay : null;
+  };
+
+  const pushOverlayHistory = (state: OverlayHistoryState) => {
+    const current = window.history.state;
+    if (
+      isOverlayHistoryState(current) &&
+      current.tastemapOverlay === state.tastemapOverlay &&
+      current.scoreReturnView === state.scoreReturnView
+    ) {
+      return;
+    }
+
+    window.history.pushState(state, "", window.location.href);
+  };
+
+  const openCountryList = () => {
+    pushOverlayHistory({ tastemapOverlay: "list" });
+    setShowMenu(false);
+    setShowAboutDialog(false);
+    setShowGetInvolvedDialog(false);
+    setShowLegalDialog(false);
+    setShowCountryList(true);
+    setSelectedSlug(null);
+    setUnseededName(null);
+    setUnseededFlag(null);
+  };
+
+  const closeCountryList = () => {
+    if (showCountryListRef.current && currentOverlay() === "list") {
+      window.history.back();
+      return;
+    }
+    setShowCountryList(false);
   };
 
   const openAboutDialog = () => {
@@ -227,7 +316,12 @@ export default function App() {
     setUnseededFlag(null);
   };
 
-  const openScoreDialog = () => {
+  const openScoreDialog = (returnView: ScoreReturnView = "map") => {
+    pushOverlayHistory({
+      tastemapOverlay: "score",
+      scoreReturnView: returnView,
+    });
+    setScoreReturnView(returnView);
     setSharedScore(null);
     setShowMenu(false);
     setShowCountryList(false);
@@ -238,8 +332,15 @@ export default function App() {
   };
 
   const closeScoreDialog = () => {
+    if (showScoreDialogRef.current && currentOverlay() === "score") {
+      window.history.back();
+      return;
+    }
+
+    const shouldReturnToList = showScoreDialog && scoreReturnView === "list";
     setShowScoreDialog(false);
     setSharedScore(null);
+    setShowCountryList(shouldReturnToList);
   };
 
   const openProgressDialog = () => {
@@ -249,6 +350,8 @@ export default function App() {
     setShowAboutDialog(false);
     setShowGetInvolvedDialog(false);
     setShowScoreDialog(false);
+    setScoreReturnView("map");
+    setShowCountryList(false);
     setSharedScore(null);
     setShowProgressDialog(true);
   };
@@ -384,11 +487,20 @@ export default function App() {
                 />
               </a>
               <div className="relative flex items-center gap-2">
-                <Counter
-                  tried={triedCount}
-                  total={total}
-                  onClick={openProgressDialog}
-                />
+                <div className="sm:hidden">
+                  <Counter
+                    tried={triedCount}
+                    total={total}
+                    onClick={() => openScoreDialog("map")}
+                  />
+                </div>
+                <div className="hidden sm:block">
+                  <Counter
+                    tried={triedCount}
+                    total={total}
+                    onClick={openProgressDialog}
+                  />
+                </div>
                 <button
                   ref={menuButtonRef}
                   type="button"
@@ -426,14 +538,7 @@ export default function App() {
                       menuButtonRef.current?.focus();
                     }}
                     onViewList={() => {
-                      setShowMenu(false);
-                      setShowAboutDialog(false);
-                      setShowGetInvolvedDialog(false);
-                      setShowLegalDialog(false);
-                      setShowCountryList(true);
-                      setSelectedSlug(null);
-                      setUnseededName(null);
-                      setUnseededFlag(null);
+                      openCountryList();
                     }}
                     onAbout={openAboutDialog}
                     onGetInvolved={openGetInvolvedDialog}
@@ -490,7 +595,7 @@ export default function App() {
             <div className="h-3 sm:hidden" />
             {mapData.status === "ready" && (
               <div className="hidden sm:block">
-              <FinishButton onClick={openScoreDialog} />
+                <FinishButton onClick={() => openScoreDialog("map")} />
               </div>
             )}
           </div>
@@ -586,7 +691,11 @@ export default function App() {
                     />
                   </div>
                   <div className="absolute bottom-4 left-1/2 z-30 -translate-x-1/2 sm:hidden">
-                    <FinishButton onClick={openScoreDialog} />
+                    <MobileViewToggle
+                      isListOpen={showCountryList}
+                      onMap={closeCountryList}
+                      onList={openCountryList}
+                    />
                   </div>
                 </>
               )}
@@ -629,6 +738,7 @@ export default function App() {
               tried={sharedScore?.tried ?? triedCount}
               total={sharedScore?.total ?? mapData.total}
               onClose={closeScoreDialog}
+              backLabel={scoreReturnView === "list" ? "Back to list" : "Back to map"}
               onSuggestNext={suggestNextCountry}
               canSuggestNext={!sharedScore && untriedCountries.length > 0}
               untriedCountries={sharedScore ? [] : untriedCountries}
@@ -642,8 +752,8 @@ export default function App() {
               countries={mapData.countries}
               triedSet={triedSet}
               onSetTried={setCountryTried}
-              onFinish={openScoreDialog}
-              onClose={() => setShowCountryList(false)}
+              onFinish={() => openScoreDialog("list")}
+              onClose={closeCountryList}
             />
           )}
           {showLegalDialog && (
@@ -660,6 +770,117 @@ export default function App() {
         </main>
       </div>
     </ErrorBoundary>
+  );
+}
+
+function MobileViewToggle({
+  isListOpen,
+  onMap,
+  onList,
+}: {
+  isListOpen: boolean;
+  onMap: () => void;
+  onList: () => void;
+}) {
+  return (
+    <div
+      className="inline-flex h-11 items-center gap-1 rounded-[18px] border border-black/[0.08] bg-white/90 p-1 shadow-[0_8px_26px_rgba(124,58,237,0.16),0_2px_8px_rgba(15,15,18,0.08)] backdrop-blur-[20px]"
+      role="group"
+      aria-label="Choose view"
+    >
+      <MobileViewToggleButton
+        label="Map"
+        isActive={!isListOpen}
+        onClick={onMap}
+        icon={<MapViewIcon />}
+      />
+      <MobileViewToggleButton
+        label="List"
+        isActive={isListOpen}
+        onClick={onList}
+        icon={<ListViewToggleIcon />}
+      />
+    </div>
+  );
+}
+
+function MobileViewToggleButton({
+  label,
+  isActive,
+  onClick,
+  icon,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  icon: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={isActive}
+      onClick={onClick}
+      className={`inline-flex h-9 min-w-[74px] items-center justify-center gap-2 rounded-[14px] px-3 text-[13px] font-bold leading-none transition-all duration-150 active:scale-[0.98] ${
+        isActive
+          ? "bg-[linear-gradient(135deg,#7c3aed_0%,#06b6d4_100%)] text-white shadow-[0_5px_15px_rgba(124,58,237,0.28),0_2px_6px_rgba(6,182,212,0.14)]"
+          : "text-[#4f4f58] hover:bg-black/[0.04]"
+      }`}
+    >
+      {icon}
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function MapViewIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 15 15"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path
+        d="M2.4 3.4L5.6 2.1l3.8 1.4 3.2-1.2v9.3l-3.2 1.2-3.8-1.4-3.2 1.3V3.4Z"
+        stroke="currentColor"
+        strokeWidth="1.35"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5.6 2.1v9.3M9.4 3.5v9.3"
+        stroke="currentColor"
+        strokeWidth="1.35"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ListViewToggleIcon() {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 15 15"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path
+        d="M5.2 4.2h6.2M5.2 7.5h6.2M5.2 10.8h6.2"
+        stroke="currentColor"
+        strokeWidth="1.45"
+        strokeLinecap="round"
+      />
+      <path
+        d="M3.2 4.2h.1M3.2 7.5h.1M3.2 10.8h.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
@@ -723,7 +944,12 @@ function HamburgerMenu({
 }) {
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const items = [
-    { label: "View list", icon: <ListIcon />, action: onViewList },
+    {
+      label: "View list",
+      icon: <ListIcon />,
+      action: onViewList,
+      hideOnMobile: true,
+    },
     { label: "About", icon: <InfoIcon />, action: onAbout },
     {
       label: "Get involved",
@@ -734,10 +960,17 @@ function HamburgerMenu({
   ];
 
   useEffect(() => {
-    itemRefs.current[0]?.focus();
+    const visibleItems = () =>
+      itemRefs.current.filter(
+        (item): item is HTMLButtonElement =>
+          item !== null && item.offsetParent !== null,
+      );
+
+    visibleItems()[0]?.focus();
 
     const onKey = (event: KeyboardEvent) => {
-      const activeIndex = itemRefs.current.findIndex(
+      const focusableItems = visibleItems();
+      const activeIndex = focusableItems.findIndex(
         (item) => item === document.activeElement,
       );
 
@@ -748,22 +981,26 @@ function HamburgerMenu({
       }
       if (event.key === "ArrowDown") {
         event.preventDefault();
-        itemRefs.current[(activeIndex + 1 + items.length) % items.length]?.focus();
+        focusableItems[
+          (activeIndex + 1 + focusableItems.length) % focusableItems.length
+        ]?.focus();
         return;
       }
       if (event.key === "ArrowUp") {
         event.preventDefault();
-        itemRefs.current[(activeIndex - 1 + items.length) % items.length]?.focus();
+        focusableItems[
+          (activeIndex - 1 + focusableItems.length) % focusableItems.length
+        ]?.focus();
         return;
       }
       if (event.key === "Home") {
         event.preventDefault();
-        itemRefs.current[0]?.focus();
+        focusableItems[0]?.focus();
         return;
       }
       if (event.key === "End") {
         event.preventDefault();
-        itemRefs.current[items.length - 1]?.focus();
+        focusableItems[focusableItems.length - 1]?.focus();
       }
     };
 
@@ -800,7 +1037,7 @@ function HamburgerMenu({
               type="button"
               role="menuitem"
               onClick={item.action}
-              className={`flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium leading-[1.4] text-[#0f0f12] transition-colors hover:bg-[#7c3aed]/[0.04] focus:bg-[#7c3aed]/[0.04] focus:outline-none ${
+              className={`${item.hideOnMobile ? "hidden sm:flex" : "flex"} w-full items-center gap-3 px-4 py-3 text-left text-sm font-medium leading-[1.4] text-[#0f0f12] transition-colors hover:bg-[#7c3aed]/[0.04] focus:bg-[#7c3aed]/[0.04] focus:outline-none ${
                 index < items.length - 1 ? "border-b border-black/[0.08]" : ""
               }`}
             >

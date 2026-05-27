@@ -11,6 +11,7 @@ interface Props {
   tried: number;
   total: number;
   onClose: () => void;
+  backLabel: string;
   onSuggestNext: (countryId: string) => void;
   canSuggestNext: boolean;
   untriedCountries: NextBiteCountry[];
@@ -48,6 +49,7 @@ export default function ScoreDialog({
   tried,
   total,
   onClose,
+  backLabel,
   onSuggestNext,
   canSuggestNext,
   untriedCountries,
@@ -300,7 +302,7 @@ export default function ScoreDialog({
               onClick={closeOrBack}
               className="h-12 rounded-xl border border-black/[0.08] bg-white/70 px-4 text-sm font-semibold text-[#0f0f12] transition-all hover:bg-white hover:shadow-[0_4px_14px_rgba(15,15,18,0.06)] active:scale-[0.98]"
             >
-              Back to map
+              {backLabel}
             </button>
             {canSuggestNext && (
               isRevealed && nextBite ? (

@@ -99,7 +99,7 @@ export default function AboutDialog({ onClose }: Props) {
         <div className="flex-1 overflow-y-auto [-webkit-overflow-scrolling:touch]">
           <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-black/[0.08] bg-[#0f0f12]">
             <img
-              src="/suman.jpg"
+              src="/suman-about.jpg"
               alt="Suman pulling a cheesy bite at a San Francisco restaurant"
               loading="lazy"
               className="h-full w-full object-cover object-[center_22%]"

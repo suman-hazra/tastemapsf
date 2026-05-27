@@ -114,8 +114,12 @@ export default function WelcomeDialog({ onDismiss }: Props) {
           >
             i
           </span>
-          <span className="min-w-0 text-wrap">
-            Prefer a checklist instead? Open the menu and choose{" "}
+          <span className="min-w-0 text-wrap sm:hidden">
+            Prefer a checklist? Tap{" "}
+            <span className="font-semibold text-[#0f0f12]">List</span> below.
+          </span>
+          <span className="hidden min-w-0 text-wrap sm:inline">
+            Prefer a checklist? Open the menu and choose{" "}
             <span className="font-semibold text-[#0f0f12]">View list</span>.
           </span>
         </p>
