@@ -1993,7 +1993,7 @@ export const countries: Country[] = [
     name: "Côte d’Ivoire",
     continent: "Africa",
     flag: "🇨🇮",
-    cuisine_summary: "Ivorian cuisine is built around attiéké, alloco, and kedjenou — cassava, ripe plantains, and slow-steamed stews served with rice or yam and plenty of sauce.",
+    cuisine_summary: "Ivorian cuisine is one of the most vibrant and varied in West Africa. It relies heavily on grains, tropical tubers (like cassava and yams), fresh seafood, and rich, spicy sauces. Meals are intensely flavorful and often feature complex, slow-simmered sauces paired with a heavy, starchy side.",
     signature_dishes: [
       { name: "Attiéké", description: "Fermented cassava couscous with a light tang and fluffy, grainy texture. Often served with fish, onions, and chili." },
       { name: "Kedjenou", description: "Chicken or guinea fowl slow-steamed with tomato, onion, and spices in a sealed pot until intensely concentrated." },
