@@ -471,7 +471,7 @@ export const countries: Country[] = [
     ],
     restaurants: [
       { id: "cinderella-bakery", name: "Cinderella Bakery & Cafe", neighborhood: "Inner Richmond", address: "436 Balboa St" },
-      { id: "russian-renaissance", name: "Russian Renaissance Restaurant", neighborhood: "Inner Richmond", address: "5241 Geary Blvd" },
+      { id: "red-tavern", name: "Red Tavern", neighborhood: "Outer Richmond", address: "2229 Clement St, San Francisco, CA 94121" },
     ],
   },
   {
