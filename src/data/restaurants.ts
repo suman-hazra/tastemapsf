@@ -1812,7 +1812,9 @@ export const countries: Country[] = [
       { name: "Bint as-sahn", description: "Flaky honey bread, layered with butter, drizzled with honey, dusted with black seed. Breakfast or anytime." },
     ],
     restaurants: [
-      { id: "yemeni-sf", name: "Yemeni", neighborhood: "Tenderloin", address: "39 Taylor St" },
+      { id: "yemeni-kabab-and-mediterranean", name: "Yemeni Kabab & Mediterranean", neighborhood: "Tenderloin", address: "39 Taylor St, San Francisco, CA 94102" },
+      { id: "mandi-house", name: "Mandi House", neighborhood: "Mission", address: "680 Valencia St, San Francisco, CA 94110" },
+      { id: "heyma-yemeni-coffee-and-brunch", name: "Heyma Yemeni Coffee & Brunch", neighborhood: "SoMa", address: "248 9th St, San Francisco, CA 94103" },
     ],
   },
   // ── AFRICA ──
