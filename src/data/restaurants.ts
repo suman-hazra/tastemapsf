@@ -1093,7 +1093,6 @@ export const countries: Country[] = [
     restaurants: [
       { id: "de-afghanan-kabob-house", name: "De Afghanan Kabob House", neighborhood: "Financial District", address: "321 Kearny St, San Francisco, CA 94108" },
       { id: "helmand-palace", name: "Helmand Palace", neighborhood: "Van Ness / Russian Hill", address: "2424 Van Ness Ave, San Francisco, CA 94109" },
-      { id: "se7enbuds", name: "Se7enbuds Restaurant", neighborhood: "Polk Gulch", address: "1426 Polk St, San Francisco, CA 94109" },
     ],
   },
   {
