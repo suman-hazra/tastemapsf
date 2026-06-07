@@ -32,6 +32,7 @@ export const colors = {
 //   • unavailable/no restaurant — quiet gray
 //   • in SF                    — blue/violet gradient
 //   • tried                    — lime/cyan gradient
+//   • World Cup 2026 focus     — red/gold gradient
 // Hover and selection preserve the fill and only darken the outline.
 export const map = {
   logoNavy: "#092652",
@@ -48,6 +49,7 @@ export const map = {
 
   visited: "url(#visitedCountryGrad)",
   visitedInk: "#ffffff",
+  worldCup: "url(#worldCupCountryGrad)",
 
   accent: "#c8281e",       // pin / selected stroke
   accentInk: "#7a1612",    // pin border

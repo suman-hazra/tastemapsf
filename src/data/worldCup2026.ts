@@ -1,0 +1,33 @@
+// Countries from Tastemap SF's restaurant-backed dataset that are participating
+// in the 2026 FIFA World Cup. Treat the app's United Kingdom entry as covered
+// because England and Scotland qualified separately.
+export const WORLD_CUP_2026_SLUGS = [
+  "algeria",
+  "argentina",
+  "australia",
+  "austria",
+  "brazil",
+  "colombia",
+  "croatia",
+  "czechia",
+  "egypt",
+  "france",
+  "germany",
+  "iran",
+  "japan",
+  "jordan",
+  "mexico",
+  "morocco",
+  "norway",
+  "portugal",
+  "senegal",
+  "korea",
+  "spain",
+  "sweden",
+  "switzerland",
+  "tunisia",
+  "turkey",
+  "uk",
+  "usa",
+  "uzbekistan",
+] as const;

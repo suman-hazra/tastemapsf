@@ -40,6 +40,8 @@ interface Props {
   seededSlugs: readonly string[];
   /** Country slugs with cuisine/dish data. Used for hover/click panels. */
   knownSlugs: readonly string[];
+  /** Restaurant-backed country slugs participating in World Cup 2026. */
+  worldCupSlugs: readonly string[];
   /** Resolve a slug to its centroid for pin/label placement. */
   centroidForSlug: (slug: string) => [number, number] | undefined;
   /** Display name lookup for known countries. */
@@ -47,7 +49,7 @@ interface Props {
   /** Flag emoji lookup for known countries. */
   flagForSlug: (slug: string) => string | undefined;
   /** Optional category focus from the map legend. */
-  activeFilter: "soon" | "available" | "tried" | null;
+  activeFilter: "soon" | "available" | "tried" | "worldCup" | null;
   /**
    * Called on country click. If the country has cuisine/dish data, `slug` is
    * set and unseeded fields are null. Otherwise, `slug` is null and unseeded
@@ -110,6 +112,8 @@ const UNMAPPED_PIN_OFFSETS: Record<string, [number, number]> = {
   grenada: [40, -28],
   saint_lucia: [8, -6],
 };
+
+const HIDDEN_UNMAPPED_PIN_SLUGS = new Set(["andorra"]);
 
 const OCEAN_LABELS: Array<{
   name: string;
@@ -330,6 +334,7 @@ export default function WorldMap({
   selectedCentroid,
   seededSlugs,
   knownSlugs,
+  worldCupSlugs,
   centroidForSlug,
   nameForSlug,
   flagForSlug,
@@ -354,6 +359,10 @@ export default function WorldMap({
   } | null>(null);
   const seededSlugSet = useMemo(() => new Set(seededSlugs), [seededSlugs]);
   const knownSlugSet = useMemo(() => new Set(knownSlugs), [knownSlugs]);
+  const worldCupSlugSet = useMemo(
+    () => new Set(worldCupSlugs),
+    [worldCupSlugs],
+  );
 
   // Track container size so we can project lat/lng to CSS pixels (for the
   // HTML-img centroid avatar — keeps it the same size as the cursor avatar
@@ -490,12 +499,15 @@ export default function WorldMap({
     if (!slug) return activeFilter === "soon" ? 1 : 0.15;
     const hasRestaurants = seededSlugSet.has(slug);
     const isTried = hasRestaurants && triedSet.has(slug);
+    const isWorldCup = hasRestaurants && worldCupSlugSet.has(slug);
     const isMatch =
       activeFilter === "tried"
         ? isTried
         : activeFilter === "available"
           ? hasRestaurants
-          : !hasRestaurants;
+          : activeFilter === "worldCup"
+            ? isWorldCup
+            : !hasRestaurants;
     return isMatch ? 1 : 0.15;
   };
 
@@ -516,6 +528,10 @@ export default function WorldMap({
               const hasRestaurants =
                 slug !== undefined && seededSlugSet.has(slug);
               const isTried = hasRestaurants && triedSet.has(slug);
+              const isWorldCup =
+                hasRestaurants &&
+                slug !== undefined &&
+                worldCupSlugSet.has(slug);
               const isSelected = isKnown && slug === selectedSlug;
               const isHovered = isKnown && slug === hovered;
               const opacity = opacityForSlug(slug);
@@ -527,7 +543,9 @@ export default function WorldMap({
               const stroke = isEmphasized ? c.chromeText : c.landLine;
               const strokeWidth = isEmphasized ? 1.2 : 0.6;
 
-              if (!hasRestaurants) {
+              if (activeFilter === "worldCup" && isWorldCup) {
+                fill = c.worldCup;
+              } else if (!hasRestaurants) {
                 fill =
                   activeFilter === "soon" && opacity === 1
                     ? "#c7c7d1"
@@ -789,17 +807,21 @@ export default function WorldMap({
           seeded/tried state, with its name shown on hover or selection. */}
       {knownSlugs.map((slug) => {
         if (!KNOWN_UNMAPPED_SLUGS.has(slug)) return null;
+        if (HIDDEN_UNMAPPED_PIN_SLUGS.has(slug)) return null;
         const coord = centroidForSlug(slug);
         if (!coord) return null;
 
         const hasRestaurants = seededSlugSet.has(slug);
         const isTried = hasRestaurants && triedSet.has(slug);
+        const isWorldCup = hasRestaurants && worldCupSlugSet.has(slug);
         const isSelected = slug === selectedSlug;
         const isHovered = slug === hovered;
         const emphasized = isSelected || isHovered;
         const [offsetX, offsetY] = UNMAPPED_PIN_OFFSETS[slug] ?? [0, 0];
         const hasOffset = offsetX !== 0 || offsetY !== 0;
-        const fill = isTried
+        const fill = activeFilter === "worldCup" && isWorldCup
+          ? "url(#worldCupCountryGrad)"
+          : isTried
           ? "url(#visitedCountryGrad)"
           : hasRestaurants
             ? "url(#activeCountryGrad)"
@@ -920,6 +942,10 @@ export default function WorldMap({
           <linearGradient id="visitedCountryGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#84cc16" />
             <stop offset="100%" stopColor="#22d3ee" />
+          </linearGradient>
+          <linearGradient id="worldCupCountryGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="100%" stopColor="#f59e0b" />
           </linearGradient>
           <linearGradient id="sfMarkerGrad" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="#f59e0b" />

@@ -23,13 +23,14 @@ import ScoreDialog from "./components/ScoreDialog";
 import WelcomeDialog from "./components/WelcomeDialog";
 import WorldMap from "./components/WorldMap";
 import { useMapData } from "./hooks/useMapData";
+import { WORLD_CUP_2026_SLUGS } from "./data/worldCup2026";
 
 interface SharedScore {
   tried: number;
   total: number;
 }
 
-type MapFilter = "soon" | "available" | "tried";
+type MapFilter = "soon" | "available" | "tried" | "worldCup";
 type ScoreReturnView = "map" | "list";
 type OverlayHistoryState = {
   tastemapOverlay?: "list" | "score" | null;
@@ -590,6 +591,17 @@ export default function App() {
                     )
                   }
                 />
+                <LegendButton
+                  label="⚽ FIFA WC26"
+                  mobileLabel="⚽ FIFA WC26"
+                  gradient="linear-gradient(135deg, #ef4444 0%, #f59e0b 100%)"
+                  isActive={activeMapFilter === "worldCup"}
+                  onClick={() =>
+                    setActiveMapFilter((filter) =>
+                      filter === "worldCup" ? null : "worldCup",
+                    )
+                  }
+                />
               </div>
             </div>
             <div className="h-3 sm:hidden" />
@@ -644,6 +656,7 @@ export default function App() {
                       knownSlugs={mapData.allCountries.map(
                         (country) => country.id,
                       )}
+                      worldCupSlugs={WORLD_CUP_2026_SLUGS}
                       centroidForSlug={mapData.centroidForSlug}
                       nameForSlug={(slug) =>
                         mapData.allCountryBySlug.get(slug)?.name
@@ -658,7 +671,7 @@ export default function App() {
                       onResetSelection={resetMapSelection}
                     />
                   </div>
-                  <div className="absolute left-1/2 top-4 z-30 flex w-[calc(100%-2rem)] -translate-x-1/2 flex-nowrap items-center justify-center gap-4 text-xs font-medium text-[#0f0f12] sm:hidden">
+                  <div className="absolute left-1/2 top-4 z-30 flex w-[calc(100%-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 text-xs font-medium text-[#0f0f12] sm:hidden">
                     <LegendButton
                       label="Soon"
                       color="#e8e8ee"
@@ -686,6 +699,17 @@ export default function App() {
                       onClick={() =>
                         setActiveMapFilter((filter) =>
                           filter === "tried" ? null : "tried",
+                        )
+                      }
+                    />
+                    <LegendButton
+                      label="⚽ FIFA WC26"
+                      mobileLabel="⚽ FIFA WC26"
+                      gradient="linear-gradient(135deg, #ef4444 0%, #f59e0b 100%)"
+                      isActive={activeMapFilter === "worldCup"}
+                      onClick={() =>
+                        setActiveMapFilter((filter) =>
+                          filter === "worldCup" ? null : "worldCup",
                         )
                       }
                     />
