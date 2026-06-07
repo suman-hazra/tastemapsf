@@ -9,6 +9,7 @@ Tastemap SF is a static React app that turns SF's restaurant diversity into a wo
 ## Features
 
 - **Interactive world map**: countries with curated cuisine data are highlighted; unseeded countries still open a short suggestion state. Microstates omitted by the 110m TopoJSON render as clickable pins.
+- **FIFA WC26 filter**: highlight the restaurant-backed Tastemap countries participating in the 2026 FIFA World Cup, with the United Kingdom counted via England/Scotland.
 - **Country side panel**: each seeded country shows cuisine context, signature dishes, and restaurant cards.
 - **Tried prompt**: clicking a seeded country opens a Yes/No dialog. Answering or closing the dialog also clears the side panel.
 - **Visual progress**: tried countries turn green, receive a consistent green outline, and show the country flag on the map.
@@ -73,6 +74,7 @@ The source of truth is in `data/`:
 - `data/restaurants.csv`: restaurant rows joined by `country_id`.
 - `data/build.mjs`: generates `src/data/restaurants.ts`.
 - `src/data/countryIdMap.ts`: map coverage config, including TopoJSON ISO mappings and pin coordinates for microstates omitted by the 110m map.
+- `src/data/worldCup2026.ts`: restaurant-backed country slugs used by the `FIFA WC26` map filter.
 
 Do not edit `src/data/restaurants.ts` directly. It is generated.
 
@@ -94,13 +96,14 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 7. If a country has no restaurants yet, use `Send me one` to draft a restaurant suggestion email.
 8. Open the score dialog from desktop `Finish`, the mobile score pill, or the checklist footer to see your score, share it, or use `Pick My Next Bite`.
 9. `Pick My Next Bite` spins a wheel, reveals a larger country flag/name, then shifts the map to that country's details.
-10. Use `About`, `Get involved`, and `Legal & credits` from the hamburger menu for project context, contribution links, and policy/attribution notes.
+10. Use the map legend filters to focus on `Soon`, `In SF`, `Tried`, or `FIFA WC26` countries.
+11. Use `About`, `Get involved`, and `Legal & credits` from the hamburger menu for project context, contribution links, and policy/attribution notes.
 
 ### Mobile UX Notes
 
 - The mobile map intentionally uses a cover-cropped world view so the map fills the available frame.
 - Mobile panning bounds are calculated from the visible cropped viewport, so users can pan to regions such as Australia even though the full world is not visible at once.
-- The mobile legend appears as floating pills inside the map: `Soon`, `In SF`, and `Tried`.
+- The mobile legend appears as floating pills inside the map: `Soon`, `In SF`, `Tried`, and `FIFA WC26`.
 - The mobile score pill opens the score dialog; there is no separate mobile `Finish` CTA on the map.
 - The mobile `Map` / `List` toggle floats at the bottom of the map and opens the same checklist used by desktop.
 - Browser/phone back closes the current list or score overlay before leaving the page. If the score dialog was opened from the list, `Back to list` and browser back both return to the list.
@@ -116,6 +119,8 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 - The About dialog uses `public/suman-about.jpg`, an optimized derivative of `public/suman.jpg`, to reduce mobile image download cost.
 - The public contact email for restaurant suggestions and privacy requests is `tastemapsf@gmail.com`.
 - Some marker positions use visual overrides where raw geometry centroids look wrong at this scale.
+- Andorra remains in the data but its microstate map pin is hidden because it visually interferes with France at the current map scale.
+- The `FIFA WC26` filter is a static curated list in `src/data/worldCup2026.ts`; update it as qualification data changes.
 - The logo assets were generated with OpenAI tools. The Dolores Park photo attribution still needs exact Wikimedia Commons source confirmation before broader launch.
 - The `feedback/` folder is ignored and should stay local.
 
@@ -131,6 +136,7 @@ When adding a country, also make sure its TopoJSON ISO code is mapped in `src/da
 - [x] Restaurant suggestion email flow
 - [x] Legal, privacy, and attribution dialog
 - [x] Desktop/mobile viewport polish
+- [x] FIFA WC26 map filter
 - [x] Separate About and Get involved menu/dialog flows
 - [x] CSV-driven data workflow
 - [x] Local-device persisted progress
